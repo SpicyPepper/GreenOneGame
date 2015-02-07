@@ -17,8 +17,8 @@ function preload() {
     game.load.image('tiles-1', 'resources/tiles-1.png');
     game.load.image('bullet', 'visuals/laser.png');
     game.load.image('background', 'visuals/bkgrnd_sand.png');
-    game.load.spritesheet('hero', '/visuals/test_runner.png', 138, 128);
-    game.load.spritesheet('enemyChase', '/visuals/megaenemy.png', 56.68, 67);
+    game.load.spritesheet('hero', '/visuals/test_runner.png', 138, 115);
+    game.load.spritesheet('enemyChase', '/visuals/megaenemy.png', 56.66, 60);
 }
 function create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -45,7 +45,7 @@ function create() {
     first = true;
     //Phaser.Physics.Arcade.collideSpriteVsTilemapLayer(hero, 
     //hero sprite
-    hero = game.add.sprite(50, 350, 'hero'); // Start location
+    hero = game.add.sprite(50, 300, 'hero'); // Start location
     enemyChase = game.add.sprite(0, 300, 'enemyChase'); // Start location
     floor = true;
     hero.animations.add('run');
