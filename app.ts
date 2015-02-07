@@ -26,7 +26,7 @@ var heroJumped = false;
         game.load.image('background', 'visuals/bkgrnd_sand.png');
         game.load.spritesheet('hero', 'visuals/test_runner.png', 138, 115);
         game.load.spritesheet('enemyChase', 'visuals/megaenemy.png', 56.66, 60);
-        game.load.audio('DnB', ['audio/Title_DnB.mp3', 'audio/Title_DnB.ogg']);
+//        game.load.audio('DnB', ['audio/Title_DnB.mp3', 'audio/Title_DnB.ogg']);
         game.load.audio('House', ['audio/Title_TechHouse.mp3', 'audio/Title_TechHouse.ogg']);
         
     }
@@ -36,13 +36,17 @@ var heroJumped = false;
         
         game.physics.startSystem(Phaser.Physics.ARCADE);
         game.world.setBounds(0, 0, 2000, 512);
-
+       
+         //MUSIC :D
         music = game.add.audio('House');
         music.play();
-        //adds tilesprite (tilespritet necessary for parallax scrolling);
+        
+        //SCROLLING BACKGROUND :D
         background = game.add.tileSprite(0, 0, 1024, 512, 'background');
         background.fixedToCamera = true;
-        //map = game.add.tilemap('level1');
+        
+
+        //LEVEL :D
         map = game.add.tilemap('level2');
         //set collision
         map.addTilesetImage('tiles-1');
