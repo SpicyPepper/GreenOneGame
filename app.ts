@@ -24,19 +24,24 @@ var heroJumped = false;
         game.load.image('tiles-1', 'resources/tiles-1.png');
         game.load.image('bullet', 'visuals/laser.png');
         game.load.image('background', 'visuals/bkgrnd_sand.png');
-        game.load.spritesheet('hero', '/visuals/test_runner.png', 138, 115);
-        game.load.spritesheet('enemyChase', '/visuals/megaenemy.png', 56.66, 60);
+        game.load.spritesheet('hero', 'visuals/test_runner.png', 138, 115);
+        game.load.spritesheet('enemyChase', 'visuals/megaenemy.png', 56.66, 60);
+        game.load.audio('DnB', ['audio/Title_DnB.mp3', 'audio/Title_DnB.ogg']);
+        game.load.audio('House', ['audio/Title_TechHouse.mp3', 'audio/Title_TechHouse.ogg']);
         
     }
     
+    var music;
     function create() {
         
         game.physics.startSystem(Phaser.Physics.ARCADE);
         game.world.setBounds(0, 0, 2000, 512);
 
+        music = game.add.audio('House');
+        music.play();
         //adds tilesprite (tilespritet necessary for parallax scrolling);
         background = game.add.tileSprite(0, 0, 1024, 512, 'background');
-
+        background.fixedToCamera = true;
         //map = game.add.tilemap('level1');
         map = game.add.tilemap('level2');
         //set collision
@@ -51,7 +56,6 @@ var heroJumped = false;
 
         game.physics.arcade.gravity.y = 0;
         
-
         bullets = game.add.group();
         bullets.enableBody = true;
         bullets.physicsBodyType = Phaser.Physics.ARCADE;
@@ -96,7 +100,7 @@ var heroJumped = false;
         game.physics.arcade.collide(hero, layer);
         game.physics.arcade.collide(enemyChase, layer);
         background.tilePosition.x -= 2;
-        game.camera.x += 2;
+        game.camera.x += 20;
         hero.body.velocity.x = 240;
         hero.body.velocity.y = 0;
         enemyChase.body.x = hero.body.x - 150;
@@ -207,6 +211,6 @@ function flipEnemy() {
     }
 
     function render() {
-        game.debug.cameraInfo(game.camera, 500, 32);//164
-        game.debug.spriteCoords(hero, 32, 32);
+       // game.debug.cameraInfo(game.camera, 500, 32);//164
+       // game.debug.spriteCoords(hero, 32, 32);
     }
