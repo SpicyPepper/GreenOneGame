@@ -15,7 +15,7 @@ var first;
 var jumpLocation;
 var heroJumped = false;
 function preload() {
-    game.load.tilemap('level1', 'resources/level1.json', null, Phaser.Tilemap.TILED_JSON);
+    //        game.load.tilemap('level1', 'resources/level1.json', null, Phaser.Tilemap.TILED_JSON);
     game.load.tilemap('level2', 'resources/level2.json', null, Phaser.Tilemap.TILED_JSON);
     game.load.image('tiles-1', 'resources/tiles-1.png');
     game.load.image('bullet', 'visuals/laser.png');

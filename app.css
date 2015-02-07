@@ -1,7 +1,19 @@
 ﻿body {
+    color: white;
     font-family: 'Segoe UI', sans-serif;
+    /* IE10 Consumer Preview */
+    background-image: -ms-radial-gradient(left top, circle farthest-side, #080808 30%, #00283B 100%);
+    /* Mozilla Firefox */
+    background-image: -moz-radial-gradient(left top, circle farthest-side, #080808 30%, #00283B 100%);
+    /* Opera */
+    background-image: -o-radial-gradient(left top, circle farthest-side, #080808 30%, #00283B 100%);
+    /* Webkit (Safari/Chrome 10) */
+    background-image: -webkit-gradient(radial, left top, 0, left top, 971, color-stop(.3, #080808), color-stop(1, #00283B));
+    /* Webkit (Chrome 11+) */
+    background-image: -webkit-radial-gradient(left top, circle farthest-side, #080808 30%, #00283B 100%);
+    /* W3C Markup, IE10 Release Preview */
+    background-image: radial-gradient(circle farthest-side at left top, #080808 30%, #00283B 100%);
 }
-
 span {
     font-style: italic;
 }
