@@ -1,5 +1,5 @@
 ﻿
-var game = new Phaser.Game(800, 512, Phaser.AUTO, 'greenone', { preload: preload, create: create, update: update, render: render });
+var game = new Phaser.Game(800, 512, Phaser.CANVAS, 'greenone', { preload: preload, create: create, update: update, render: render });
 var map;
 var hero;
 var bullets;
@@ -93,9 +93,8 @@ var heroJumped = false;
         enemyChase.body.bounce.y = 0.2;
         enemyChase.body.collideWorldBounds = true;
         enemyChase.body.allowRotation = true;
-
-        hero.body.gravity.y = 10000;
-        enemyChase.body.gravity.y = 10000;
+        hero.body.gravity.y = 18000;
+        enemyChase.body.gravity.y = 18000;
         cursors = game.input.keyboard.createCursorKeys();  
         gravityButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);  
     }
@@ -104,9 +103,8 @@ var heroJumped = false;
         game.physics.arcade.collide(hero, layer);
         game.physics.arcade.collide(enemyChase, layer);
         background.tilePosition.x -= 2;
-        game.camera.x += 20;
-        hero.body.velocity.x = 240;
         hero.body.velocity.y = 0;
+        hero.body.velocity.x = 400;
         enemyChase.body.x = hero.body.x - 150;
         //enemyChase.body.velocity.x = 200;
         enemyChase.body.velocity.y = 0;
