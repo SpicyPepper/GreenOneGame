@@ -11,7 +11,10 @@ var background;
 var layer;
 var gravityButton;
 var floor; // boolean for is character on the floor
+var floorEnemy;
 var first;
+var jumpLocation;
+var heroJumped = false;
 
 
     function preload() {
@@ -46,7 +49,8 @@ var first;
 
         layer.resizeWorld();
 
-        game.physics.arcade.gravity.y = 10000;
+        game.physics.arcade.gravity.y = 0;
+        
 
         bullets = game.add.group();
         bullets.enableBody = true;
@@ -61,10 +65,12 @@ var first;
 
         //Phaser.Physics.Arcade.collideSpriteVsTilemapLayer(hero, 
         //hero sprite
-        hero = game.add.sprite(50, 300, 'hero'); // Start location
+        hero = game.add.sprite(150, 300, 'hero'); // Start location
+        
         enemyChase = game.add.sprite(0, 300, 'enemyChase'); // Start location
 
         floor = true;
+        floorEnemy = true;
         hero.animations.add('run');
         hero.animations.play('run', 10, true);
         game.physics.enable(hero, Phaser.Physics.ARCADE);
@@ -80,7 +86,8 @@ var first;
         enemyChase.body.collideWorldBounds = true;
         enemyChase.body.allowRotation = true;
 
-
+        hero.body.gravity.y = 10000;
+        enemyChase.body.gravity.y = 10000;
         cursors = game.input.keyboard.createCursorKeys();  
         gravityButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);  
     }
@@ -92,34 +99,75 @@ var first;
         game.camera.x += 2;
         hero.body.velocity.x = 240;
         hero.body.velocity.y = 0;
-        enemyChase.body.x = hero.body.x - 100;
+        enemyChase.body.x = hero.body.x - 150;
+        //enemyChase.body.velocity.x = 200;
         enemyChase.body.velocity.y = 0;
 
         //if (gravityButton.isDown) {
         if (gravityButton.isDown && hero.body.blocked.down || gravityButton.isDown && hero.body.blocked.up) {
-            if (floor) {
-                hero.anchor.setTo(1, .5); //so it flips around its middle
-                hero.scale.y = 1; //facing default direction
-                hero.scale.y = -1; //flipped
-                enemyChase.anchor.setTo(1, .5); //so it flips around its middle
-                enemyChase.scale.y = 1; //facing default direction
-                enemyChase.scale.y = -1; //flipped
-                floor = false;
-            } else {
-                hero.anchor.setTo(1, .5); //so it flips around its middle
-                hero.scale.y = -1; //facing default direction
-                hero.scale.y = 1; //flipped
-                enemyChase.anchor.setTo(1, .5); //so it flips around its middle
-                enemyChase.scale.y = -1; //facing default direction
-                enemyChase.scale.y = 1; //flipped
-                floor = true;
-            }
-            game.physics.arcade.gravity.y = game.physics.arcade.gravity.y * -1;
+            flipHero();
+            heroJumped = true;
+            jumpLocation = hero.body.x;
+            hero.body.gravity.y = hero.body.gravity.y * -1;
+            //game.physics.arcade.gravity.y = game.physics.arcade.gravity.y * -1;
             first = false;
         }
+
+        if (enemyChase.body.x >= jumpLocation && heroJumped && (enemyChase.body.blocked.down || enemyChase.body.blocked.up )){
+            if (floorEnemy != floor) {
+                flipEnemy();
+                enemyChase.body.gravity.y = enemyChase.body.gravity.y * -1;
+            }
+            heroJumped = false;
+        }
+
+        //if (floorEnemy != floor) {
+        //    floorEnemy = floor;
+        //}
+
         if (cursors.right.isDown) {
             fireBullet();
         }
+    }
+
+    function flipHero() {
+        if (floor) {
+            hero.anchor.setTo(1, .5); //so it flips around its middle
+            hero.scale.y = 1; //facing default direction
+            hero.scale.y = -1; //flipped
+            //enemyChase.anchor.setTo(1, .5); //so it flips around its middle
+            //enemyChase.scale.y = 1; //facing default direction
+            //enemyChase.scale.y = -1; //flipped
+            floor = false;
+        } else {
+            hero.anchor.setTo(1, .5); //so it flips around its middle
+            hero.scale.y = -1; //facing default direction
+            hero.scale.y = 1; //flipped
+            //enemyChase.anchor.setTo(1, .5); //so it flips around its middle
+            //enemyChase.scale.y = -1; //facing default direction
+            //enemyChase.scale.y = 1; //flipped
+            floor = true;
+        }
+    }
+
+function flipEnemy() {
+    if (floorEnemy) {
+        //hero.anchor.setTo(1, .5); //so it flips around its middle
+        //hero.scale.y = 1; //facing default direction
+        //hero.scale.y = -1; //flipped
+        enemyChase.anchor.setTo(1, .5); //so it flips around its middle
+        enemyChase.scale.y = 1; //facing default direction
+        enemyChase.scale.y = -1; //flipped
+        floorEnemy = false;
+    } else {
+        //hero.anchor.setTo(1, .5); //so it flips around its middle
+        //hero.scale.y = -1; //facing default direction
+        //hero.scale.y = 1; //flipped
+        enemyChase.anchor.setTo(1, .5); //so it flips around its middle
+        enemyChase.scale.y = -1; //facing default direction
+        enemyChase.scale.y = 1; //flipped
+        floorEnemy = true;
+    }
     }
 
     function fireBullet() {
