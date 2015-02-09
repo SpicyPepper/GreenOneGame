@@ -62,19 +62,19 @@
 
         }
 
-        flipHero(floor) {
-            if (floor) {
+        //flipHero() {
+        //    if (floor) {
 
-                this.anchor.setTo(1, .5); //so it flips around its middle
-                this.scale.y = 1; //facing default direction
-                this.scale.y = -1; //flipped
-                floor = false;
-            } else {
-                this.anchor.setTo(1, .5); //so it flips around its middle
-                this.scale.y = -1; //facing default direction
-                this.scale.y = 1; //flipped
-                floor = true;
-            }
-        }
+        //        this.anchor.setTo(1, .5); //so it flips around its middle
+        //        this.scale.y = 1; //facing default direction
+        //        this.scale.y = -1; //flipped
+        //        floor = false;
+        //    } else {
+        //        this.anchor.setTo(1, .5); //so it flips around its middle
+        //        this.scale.y = -1; //facing default direction
+        //        this.scale.y = 1; //flipped
+        //        floor = true;
+        //    }
+        //}
     }
 }

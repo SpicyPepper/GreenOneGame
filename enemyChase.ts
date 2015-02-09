@@ -1,14 +1,7 @@
 ﻿module GravityGuy {
-    var bullet;
-    var bulletTime = 0;
-    var cursors;
-    var layer;
-    var gravityButton;
-    var floor; // boolean for is character on the floor
     
-    var first;
-    var jumpLocation;
-    var heroJumped = false;
+    
+ 
     export class enemyChase extends Phaser.Sprite {
 
    
@@ -29,8 +22,7 @@
             this.body.allowRotation = true;
             this.body.gravity.y = 18000;
             this.anchor.setTo(0.5, 0);
-            first = true;
-            floor = true;
+        
             //this.animations.add('walk', [0, 1, 2, 3, 4], 10, true);
         }
 
@@ -83,20 +75,20 @@
 
 
       
-        flip() {
-            if (floor) {
+        //flip() {
+        //    if (floor) {
 
-                this.anchor.setTo(1, .5); //so it flips around its middle
-                this.scale.y = 1; //facing default direction
-                this.scale.y = -1; //flipped
-                floor = false;
-            } else {
-                this.anchor.setTo(1, .5); //so it flips around its middle
-                this.scale.y = -1; //facing default direction
-                this.scale.y = 1; //flipped
-                floor = true;
-            }
-        }
+        //        this.anchor.setTo(1, .5); //so it flips around its middle
+        //        this.scale.y = 1; //facing default direction
+        //        this.scale.y = -1; //flipped
+        //        floor = false;
+        //    } else {
+        //        this.anchor.setTo(1, .5); //so it flips around its middle
+        //        this.scale.y = -1; //facing default direction
+        //        this.scale.y = 1; //flipped
+        //        floor = true;
+        //    }
+        //}
     }
 }
  
