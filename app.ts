@@ -1,5 +1,5 @@
 ﻿
-var game = new Phaser.Game(800, 512, Phaser.CANVAS, 'greenone', { preload: preload, create: create, update: update, render: render });
+/*var game = new Phaser.Game(800, 512, Phaser.CANVAS, 'greenone', { preload: preload, create: create, update: update, render: render });
 var map;
 var hero;
 var bullets;
@@ -95,6 +95,7 @@ var heroJumped = false;
         enemyChase.body.allowRotation = true;
         hero.body.gravity.y = 18000;
         enemyChase.body.gravity.y = 18000;
+
         cursors = game.input.keyboard.createCursorKeys();  
         gravityButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);  
     }
@@ -217,4 +218,10 @@ function flipEnemy() {
     function render() {
        // game.debug.cameraInfo(game.camera, 500, 32);//164
        // game.debug.spriteCoords(hero, 32, 32);
-    }
+    }*/
+
+    window.onload = () => {
+
+        var game = new GravityGuy.Game();
+
+    };

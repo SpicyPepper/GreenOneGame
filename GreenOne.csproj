@@ -25,8 +25,15 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
+    <TypeScriptCompile Include="Boot.ts" />
+    <TypeScriptCompile Include="enemyChase.ts" />
+    <TypeScriptCompile Include="Game.ts" />
+    <TypeScriptCompile Include="Hero.ts" />
+    <TypeScriptCompile Include="Level1.ts" />
+    <TypeScriptCompile Include="MainMenu.ts" />
     <TypeScriptCompile Include="phaser.d.ts" />
     <TypeScriptCompile Include="pixi.d.ts" />
+    <TypeScriptCompile Include="Preloader.ts" />
     <TypeScriptCompile Include="States\TitleScreenState.ts" />
   </ItemGroup>
   <ItemGroup>
@@ -71,7 +78,8 @@
   </ProjectExtensions>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <TypeScriptRemoveComments>false</TypeScriptRemoveComments>
-    <TypeScriptSourceMap>true</TypeScriptSourceMap>
+    <TypeScriptSourceMap>False</TypeScriptSourceMap>
+    <TypeScriptOutFile>game.js</TypeScriptOutFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
