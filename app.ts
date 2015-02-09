@@ -100,13 +100,15 @@ var heroJumped = false;
     }
 
     function update() {
+        //console.log("HERO " + hero.body.x);
+        //console.log("Enemy " + enemyChase.body.x);
         game.physics.arcade.collide(hero, layer);
         game.physics.arcade.collide(enemyChase, layer);
         background.tilePosition.x -= 2;
         hero.body.velocity.y = 0;
         hero.body.velocity.x = 400;
-        enemyChase.body.x = hero.body.x - 150;
-        //enemyChase.body.velocity.x = 200;
+        //enemyChase.body.x = hero.body.x - 150;
+        enemyChase.body.velocity.x = 400;
         enemyChase.body.velocity.y = 0;
 
         //if (gravityButton.isDown) {
@@ -127,9 +129,9 @@ var heroJumped = false;
             heroJumped = false;
         }
 
-        //if (floorEnemy != floor) {
-        //    floorEnemy = floor;
-        //}
+        if (enemyChase.body.x <= hero.body.x - 300) {
+            enemyChase.body.x = hero.body.x - 100;
+        }
 
         if (cursors.right.isDown) {
             fireBullet();
