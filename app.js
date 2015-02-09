@@ -1,7 +1,6 @@
 var game = new Phaser.Game(800, 512, Phaser.CANVAS, 'greenone', { preload: preload, create: create, update: update, render: render });
 var map;
 var hero;
-var heroScale = .5;
 var bullets;
 var bullet;
 var bulletTime = 0;
@@ -24,20 +23,14 @@ function preload() {
     game.load.spritesheet('hero', 'visuals/test_runner.png', 138, 115);
     game.load.spritesheet('enemyChase', 'visuals/megaenemy.png', 56.66, 60);
     //        game.load.audio('DnB', ['audio/Title_DnB.mp3', 'audio/Title_DnB.ogg']);
-    game.load.audio('hero_fire', 'audio/Hero_fire.mp3');
-    game.load.audio('house', ['audio/Title_TechHouse.mp3', 'audio/Title_TechHouse.ogg']);
-    game.load.audio('hero_jump', 'audio/hero_jump.mp3');
+    game.load.audio('House', ['audio/Title_TechHouse.mp3', 'audio/Title_TechHouse.ogg']);
 }
 var music;
-var hero_fire;
-var hero_jump;
 function create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
     game.world.setBounds(0, 0, 2000, 512);
     //MUSIC :D
-    music = game.add.audio('house');
-    hero_fire = game.add.audio('hero_fire');
-    hero_jump = game.add.audio('hero_jump');
+    music = game.add.audio('House');
     music.play();
     //SCROLLING BACKGROUND :D
     background = game.add.tileSprite(0, 0, 1024, 512, 'background');
@@ -63,7 +56,6 @@ function create() {
     //Phaser.Physics.Arcade.collideSpriteVsTilemapLayer(hero, 
     //hero sprite
     hero = game.add.sprite(150, 300, 'hero'); // Start location
-    hero.scale.setTo(heroScale, heroScale);
     enemyChase = game.add.sprite(0, 300, 'enemyChase'); // Start location
     floor = true;
     floorEnemy = true;
@@ -120,11 +112,10 @@ function update() {
     }
 }
 function flipHero() {
-    hero_jump.play();
     if (floor) {
         hero.anchor.setTo(1, .5); //so it flips around its middle
-        hero.scale.y = heroScale; //facing default direction
-        hero.scale.y = -heroScale; //flipped
+        hero.scale.y = 1; //facing default direction
+        hero.scale.y = -1; //flipped
         //enemyChase.anchor.setTo(1, .5); //so it flips around its middle
         //enemyChase.scale.y = 1; //facing default direction
         //enemyChase.scale.y = -1; //flipped
@@ -132,8 +123,8 @@ function flipHero() {
     }
     else {
         hero.anchor.setTo(1, .5); //so it flips around its middle
-        hero.scale.y = -heroScale; //facing default direction
-        hero.scale.y = heroScale; //flipped
+        hero.scale.y = -1; //facing default direction
+        hero.scale.y = 1; //flipped
         //enemyChase.anchor.setTo(1, .5); //so it flips around its middle
         //enemyChase.scale.y = -1; //facing default direction
         //enemyChase.scale.y = 1; //flipped
@@ -169,7 +160,6 @@ function fireBullet() {
             if (floor) {
                 if (first) {
                     //  And fire it
-                    hero_fire.play();
                     bullet.reset(hero.x + 170, hero.y + 30);
                     bullet.body.velocity.x = 10000;
                     bulletTime = game.time.now + 200;
@@ -178,11 +168,9 @@ function fireBullet() {
                     bullet.reset(hero.x + 30, hero.y - 30);
                     bullet.body.velocity.x = 10000;
                     bulletTime = game.time.now + 200;
-                    hero_fire.play();
                 }
             }
             else {
-                hero_fire.play();
                 bullet.reset(hero.x + 30, hero.y + 5);
                 bullet.body.velocity.x = 10000;
                 bulletTime = game.time.now + 200;
