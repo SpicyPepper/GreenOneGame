@@ -2,6 +2,20 @@
 
     var bullet;
     var bulletTime = 0;
+    var enemies;
+    var enemiesTotal;
+    var enemiesDead;
+    var enemyBullet;
+    var enemyBulletTime = 0;
+    var newEnemyX = 0;
+    var enemyBulletWait = 0;
+    var enemyAlive = false;
+    var enemyAliveCount;
+    var scoreString = 'Score : ';
+    var scoreText;
+    var score = 0;
+    var lives;
+    var numLives = 3;
     var layer; 
     var gravityButton;
     var cursors;
@@ -22,10 +36,11 @@
         //end
         music: Phaser.Sound;
         bullets: Phaser.Group
+        enemyBullets: Phaser.Group
         //player: GravityGuy.Player;
         hero: GravityGuy.Hero;
         enemyChase: GravityGuy.enemyChase
-       
+        enemy: GravityGuy.Enemy
 
 
         create() {
@@ -41,6 +56,7 @@
 
             this.physics.startSystem(Phaser.Physics.ARCADE);
             this.world.setBounds(0, 0, 2000, 512);
+
 
             this.background = this.add.tileSprite(0, 0, 1024, 512, 'background');
             this.background.fixedToCamera = true;
@@ -65,7 +81,18 @@
             this.enemyChase = new enemyChase(this.game, 0, 300);
             this.physics.arcade.enableBody(this.enemyChase);
             //this.add.sprite(150, 300, 'hero'); // Start location
+            
+            enemies = [];
 
+            enemiesTotal = 24;
+            enemiesDead = 0;
+
+            for (var i = 0; i < enemiesTotal; i++) {
+                newEnemyX = this.game.rnd.integerInRange(newEnemyX + 1200, newEnemyX + 2200);
+                enemies.push(new Enemy(this.game, newEnemyX, 300));
+            }
+
+         
             first = true;
             floor = true;
             floorEnemy = true;
@@ -86,10 +113,20 @@
 
             //end added 
 
+            //Enemy Bullets
+            this.enemyBullets = this.game.add.group();
+            this.enemyBullets.enableBody = true;
+            this.enemyBullets.physicsBodyType = Phaser.Physics.ARCADE;
+            this.enemyBullets.createMultiple(30, 'enemybullet');
+            this.enemyBullets.setAll('anchor.x', 1);
+            this.enemyBullets.setAll('anchor.y', 0);
+            this.enemyBullets.setAll('outOfBoundsKill', true);
+            this.enemyBullets.setAll('checkWorldBounds', true);
+
         }
 
         update() {
-            
+            score++;
             this.physics.arcade.collide(this.hero, layer);
             this.physics.arcade.collide(this.enemyChase, layer);
             this.background.tilePosition.x -= 2;
@@ -120,6 +157,23 @@
             if (cursors.right.isDown) {
                 this.fireBullet();
             }
+            
+            for (var i = 0; i < enemies.length; i++) {
+                this.physics.arcade.collide(enemies[i], layer);
+            }
+
+            for (var j = enemiesDead; j < enemies.length; j++) {
+                if (enemies[j].x - this.hero.x <= 575) {
+                    enemyBulletWait++;
+                    if (enemyBulletWait % 60 == 0) {
+                        this.fireEnemyBullet(enemies[j]);
+                    }
+                }
+                if (enemies[j].x < this.hero.x) {
+                    enemiesDead++;
+                }
+            }
+            
             /*this.body.velocity.x = 0;
 
             if (this.game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
@@ -221,6 +275,39 @@
             //  Called if the bullet goes out of the screen
             bullet.kill();
 
+        }
+
+        fireEnemyBullet(activeEnemy) {
+
+            //  To avoid them being allowed to fire too fast we set a time limit
+            if (this.game.time.now > enemyBulletTime) {
+                //  Grab the first bullet we can from the pool
+                enemyBullet = this.enemyBullets.getFirstExists(false);
+
+                if (enemyBullet) {
+                    enemyBullet.reset(activeEnemy.body.x + 10, activeEnemy.y + 15);
+                    enemyBullet.body.velocity.x = -250;
+                    enemyBulletTime = this.game.time.now + 200;
+                }
+
+            }
+
+        }
+
+
+        resetEnemyBullet(enemyBullet) {
+
+            //  Called if the bullet goes out of the screen
+            enemyBullet.kill();
+
+        }
+
+        render() {
+            //  The score
+            this.game.debug.text(scoreString + score, 32, 24, 'white', '34px Arial');
+
+            //  Lives
+            this.game.debug.text('Lives : ' + numLives, 648, 24, 'white', '34px Arial');
         }
 
     }

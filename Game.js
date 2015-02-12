@@ -256,6 +256,49 @@ var GravityGuy;
 })(GravityGuy || (GravityGuy = {}));
 var GravityGuy;
 (function (GravityGuy) {
+    var cursors;
+    var layer;
+    var Enemy = (function (_super) {
+        __extends(Enemy, _super);
+        function Enemy(game, x, y) {
+            _super.call(this, game, x, y, 'enemy1', 0);
+            //layer = layerT;
+            this.game.physics.arcade.enableBody(this);
+            this.game.add.existing(this);
+            //added
+            //this.game = game;
+            this.animations.add('walk');
+            this.animations.play('walk', 8, true);
+            this.game.physics.enable(this, Phaser.Physics.ARCADE);
+            this.body.collideWorldBounds = true;
+            this.body.allowRotation = true;
+            this.body.gravity.y = 18000;
+            this.anchor.setTo(0.5, 0);
+            //this.animations.add('walk', [0, 1, 2, 3, 4], 10, true);
+            //
+        }
+        Enemy.prototype.update = function () {
+            //
+            //console.log("Hero " + gravityButton.isDown);
+            this.body.velocity.y = 0;
+            this.body.velocity.x = -70;
+            //enemyChase.body.x = hero.body.x - 150;
+            //if (gravityButton.isDown) {
+            //if (gravityButton.isDown && this.body.blocked.down || gravityButton.isDown && this.body.blocked.up) {
+            //    this.flipHero();
+            //    heroJumped = true;
+            //    jumpLocation = this.body.x;
+            //    this.body.gravity.y = this.body.gravity.y * -1;
+            //    //game.physics.arcade.gravity.y = game.physics.arcade.gravity.y * -1;
+            //    first = false;
+            //}
+        };
+        return Enemy;
+    })(Phaser.Sprite);
+    GravityGuy.Enemy = Enemy;
+})(GravityGuy || (GravityGuy = {}));
+var GravityGuy;
+(function (GravityGuy) {
     var enemyChase = (function (_super) {
         __extends(enemyChase, _super);
         function enemyChase(game, x, y) {
@@ -383,6 +426,20 @@ var GravityGuy;
 (function (GravityGuy) {
     var bullet;
     var bulletTime = 0;
+    var enemies;
+    var enemiesTotal;
+    var enemiesDead;
+    var enemyBullet;
+    var enemyBulletTime = 0;
+    var newEnemyX = 0;
+    var enemyBulletWait = 0;
+    var enemyAlive = false;
+    var enemyAliveCount;
+    var scoreString = 'Score : ';
+    var scoreText;
+    var score = 0;
+    var lives;
+    var numLives = 3;
     var layer;
     var gravityButton;
     var cursors;
@@ -420,6 +477,13 @@ var GravityGuy;
             this.enemyChase = new GravityGuy.enemyChase(this.game, 0, 300);
             this.physics.arcade.enableBody(this.enemyChase);
             //this.add.sprite(150, 300, 'hero'); // Start location
+            enemies = [];
+            enemiesTotal = 24;
+            enemiesDead = 0;
+            for (var i = 0; i < enemiesTotal; i++) {
+                newEnemyX = this.game.rnd.integerInRange(newEnemyX + 1200, newEnemyX + 2200);
+                enemies.push(new GravityGuy.Enemy(this.game, newEnemyX, 300));
+            }
             first = true;
             floor = true;
             floorEnemy = true;
@@ -435,8 +499,18 @@ var GravityGuy;
             this.bullets.setAll('outOfBoundsKill', true);
             this.bullets.setAll('checkWorldBounds', true);
             //end added 
+            //Enemy Bullets
+            this.enemyBullets = this.game.add.group();
+            this.enemyBullets.enableBody = true;
+            this.enemyBullets.physicsBodyType = Phaser.Physics.ARCADE;
+            this.enemyBullets.createMultiple(30, 'enemybullet');
+            this.enemyBullets.setAll('anchor.x', 1);
+            this.enemyBullets.setAll('anchor.y', 0);
+            this.enemyBullets.setAll('outOfBoundsKill', true);
+            this.enemyBullets.setAll('checkWorldBounds', true);
         };
         Level1.prototype.update = function () {
+            score++;
             this.physics.arcade.collide(this.hero, layer);
             this.physics.arcade.collide(this.enemyChase, layer);
             this.background.tilePosition.x -= 2;
@@ -460,6 +534,20 @@ var GravityGuy;
             }
             if (cursors.right.isDown) {
                 this.fireBullet();
+            }
+            for (var i = 0; i < enemies.length; i++) {
+                this.physics.arcade.collide(enemies[i], layer);
+            }
+            for (var j = enemiesDead; j < enemies.length; j++) {
+                if (enemies[j].x - this.hero.x <= 575) {
+                    enemyBulletWait++;
+                    if (enemyBulletWait % 60 == 0) {
+                        this.fireEnemyBullet(enemies[j]);
+                    }
+                }
+                if (enemies[j].x < this.hero.x) {
+                    enemiesDead++;
+                }
             }
             /*this.body.velocity.x = 0;
 
@@ -556,6 +644,28 @@ var GravityGuy;
             //  Called if the bullet goes out of the screen
             bullet.kill();
         };
+        Level1.prototype.fireEnemyBullet = function (activeEnemy) {
+            //  To avoid them being allowed to fire too fast we set a time limit
+            if (this.game.time.now > enemyBulletTime) {
+                //  Grab the first bullet we can from the pool
+                enemyBullet = this.enemyBullets.getFirstExists(false);
+                if (enemyBullet) {
+                    enemyBullet.reset(activeEnemy.body.x + 10, activeEnemy.y + 15);
+                    enemyBullet.body.velocity.x = -250;
+                    enemyBulletTime = this.game.time.now + 200;
+                }
+            }
+        };
+        Level1.prototype.resetEnemyBullet = function (enemyBullet) {
+            //  Called if the bullet goes out of the screen
+            enemyBullet.kill();
+        };
+        Level1.prototype.render = function () {
+            //  The score
+            this.game.debug.text(scoreString + score, 32, 24, 'white', '34px Arial');
+            //  Lives
+            this.game.debug.text('Lives : ' + numLives, 648, 24, 'white', '34px Arial');
+        };
         return Level1;
     })(Phaser.State);
     GravityGuy.Level1 = Level1;
@@ -609,9 +719,11 @@ var GravityGuy;
             this.load.tilemap('level2', 'resources/level2.json', null, Phaser.Tilemap.TILED_JSON);
             this.load.image('tiles-1', 'resources/tiles-1.png');
             this.load.image('bullet', 'visuals/laser.png');
+            this.load.image('enemybullet', 'visuals/enemylaser.png');
             this.load.image('background', 'visuals/bkgrnd_sand.png');
             this.load.spritesheet('hero', 'visuals/test_runner.png', 138, 115);
             this.load.spritesheet('enemyChase', 'visuals/megaenemy.png', 56.66, 60);
+            this.load.spritesheet('enemy1', 'visuals/enemy1.png', 68, 99);
             this.load.audio('House', ['audio/Title_TechHouse.mp3', 'audio/Title_TechHouse.ogg']);
             //end added
         };
