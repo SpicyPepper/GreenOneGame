@@ -4,7 +4,7 @@
 
         preload() {
 
-            this.load.image('preloadBar', 'assets/loader.png');
+            this.load.image('preloadBar', 'visuals/loadbar.png');
 
         }
 

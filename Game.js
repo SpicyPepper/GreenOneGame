@@ -235,7 +235,7 @@ var GravityGuy;
             _super.apply(this, arguments);
         }
         Boot.prototype.preload = function () {
-            this.load.image('preloadBar', 'assets/loader.png');
+            this.load.image('preloadBar', 'visuals/loadbar.png');
         };
         Boot.prototype.create = function () {
             //  Unless you specifically need to support multitouch I would recommend setting this to 1
@@ -366,7 +366,7 @@ var GravityGuy;
     var Game = (function (_super) {
         __extends(Game, _super);
         function Game() {
-            _super.call(this, 800, 600, Phaser.AUTO, 'content', null);
+            _super.call(this, 800, 512, Phaser.AUTO, 'content', null);
             this.state.add('Boot', GravityGuy.Boot, false);
             this.state.add('Preloader', GravityGuy.Preloader, false);
             this.state.add('MainMenu', GravityGuy.MainMenu, false);
@@ -678,15 +678,18 @@ var GravityGuy;
             _super.apply(this, arguments);
         }
         MainMenu.prototype.create = function () {
+            this.song = this.add.audio('title_music');
+            this.song.play();
             this.background = this.add.sprite(0, 0, 'titlepage');
             this.background.alpha = 0;
-            this.logo = this.add.sprite(this.world.centerX, -300, 'logo');
+            this.logo = this.add.sprite(this.world.centerX, -300, 'title_planet');
             this.logo.anchor.setTo(0.5, 0.5);
             this.add.tween(this.background).to({ alpha: 1 }, 2000, Phaser.Easing.Bounce.InOut, true);
-            this.add.tween(this.logo).to({ y: 220 }, 2000, Phaser.Easing.Elastic.Out, true, 2000);
+            this.add.tween(this.logo).to({ alpha: 1 }, 6000, Phaser.Easing.Back.Out, true, 2000, 0, false);
             this.input.onDown.addOnce(this.fadeOut, this);
         };
         MainMenu.prototype.fadeOut = function () {
+            this.song.fadeOut(2000);
             this.add.tween(this.background).to({ alpha: 0 }, 2000, Phaser.Easing.Linear.None, true);
             var tween = this.add.tween(this.logo).to({ y: 800 }, 2000, Phaser.Easing.Linear.None, true);
             tween.onComplete.add(this.startGame, this);
@@ -706,26 +709,12 @@ var GravityGuy;
             _super.apply(this, arguments);
         }
         Preloader.prototype.preload = function () {
-            //  Set-up our preloader sprite
-            this.preloadBar = this.add.sprite(200, 250, 'preloadBar');
+            this.preloadBar = this.add.sprite(420, 475, 'preloadBar');
             this.load.setPreloadSprite(this.preloadBar);
-            //  Load our actual games assets
-            this.load.image('titlepage', 'assets/titlepage.jpg');
-            this.load.image('logo', 'assets/logo.png');
-            //this.load.audio('music', 'assets/title.mp3', true);
-            //this.load.spritesheet('simon', 'assets/simon.png', 58, 96, 5);
-            //this.load.image('level1', 'assets/level1.png');
-            //added
-            this.load.tilemap('level2', 'resources/level2.json', null, Phaser.Tilemap.TILED_JSON);
-            this.load.image('tiles-1', 'resources/tiles-1.png');
-            this.load.image('bullet', 'visuals/laser.png');
-            this.load.image('enemybullet', 'visuals/enemylaser.png');
-            this.load.image('background', 'visuals/bkgrnd_sand.png');
-            this.load.spritesheet('hero', 'visuals/test_runner.png', 138, 115);
-            this.load.spritesheet('enemyChase', 'visuals/megaenemy.png', 56.66, 60);
-            this.load.spritesheet('enemy1', 'visuals/enemy1.png', 68, 99);
-            this.load.audio('House', ['audio/Title_TechHouse.mp3', 'audio/Title_TechHouse.ogg']);
-            //end added
+            this.loadMaps();
+            this.loadAudio();
+            this.loadSpritesheets();
+            this.loadImages();
         };
         Preloader.prototype.create = function () {
             var tween = this.add.tween(this.preloadBar).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
@@ -733,6 +722,28 @@ var GravityGuy;
         };
         Preloader.prototype.startMainMenu = function () {
             this.game.state.start('MainMenu', true, false);
+        };
+        Preloader.prototype.loadAudio = function () {
+            this.load.audio('title_music', ['audio/title_music.mp3', 'audio/title_music.ogg']);
+            this.load.audio('House', ['audio/Title_TechHouse.mp3', 'audio/Title_TechHouse.ogg']);
+            this.load.audio('hero_fire', ['audio/hero_fire.mp3', 'audio/hero_fire.ogg']);
+            this.load.audio('hero_gravity', ['audio/hero_gravity.mp3', 'audio/hero_gravity.mp3']);
+        };
+        Preloader.prototype.loadImages = function () {
+            this.load.image('titlepage', 'visuals/title_background_scaled.png');
+            this.load.image('title_planet', 'visuals/title_planet.png');
+            this.load.image('tiles-1', 'resources/tiles-1.png');
+            this.load.image('bullet', 'visuals/laser.png');
+            this.load.image('enemybullet', 'visuals/enemylaser.png');
+            this.load.image('background', 'visuals/bkgrnd_sand.png');
+        };
+        Preloader.prototype.loadMaps = function () {
+            this.load.tilemap('level2', 'resources/level2.json', null, Phaser.Tilemap.TILED_JSON);
+        };
+        Preloader.prototype.loadSpritesheets = function () {
+            this.load.spritesheet('hero', 'visuals/test_runner.png', 138, 115);
+            this.load.spritesheet('enemyChase', 'visuals/megaenemy.png', 56.66, 60);
+            this.load.spritesheet('enemy1', 'visuals/enemy1.png', 68, 99);
         };
         return Preloader;
     })(Phaser.State);
