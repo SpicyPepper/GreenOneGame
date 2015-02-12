@@ -6,7 +6,7 @@
 
         preload() {
 
-            this.preloadBar = this.add.sprite(420, 475, 'preloadBar');
+            this.preloadBar = this.add.sprite(250, 470, 'preloadBar');
             this.load.setPreloadSprite(this.preloadBar);
            
             this.loadMaps();

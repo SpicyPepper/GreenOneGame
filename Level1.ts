@@ -24,23 +24,27 @@
     var first;
     var floor;
     var floorEnemy;
+    var hero_scale = 0.7;
+  
 
     export class Level1 extends Phaser.State {
 
-        //background: Phaser.Sprite;
-        //changed
         background: Phaser.TileSprite;
-        //end
-        //added
+
         map: Phaser.Tilemap
-        //end
-        music: Phaser.Sound;
+ 
+        music: Phaser.Sound
+        sound_hero_gravity: Phaser.Sound
+        sound_hero_fire: Phaser.Sound
+
         bullets: Phaser.Group
         enemyBullets: Phaser.Group
+
         //player: GravityGuy.Player;
-        hero: GravityGuy.Hero;
+        hero: GravityGuy.Hero
         enemyChase: GravityGuy.enemyChase
         enemy: GravityGuy.Enemy
+        
 
 
         create() {
@@ -62,6 +66,8 @@
             this.background.fixedToCamera = true;
 
             this.music = this.add.audio('House');
+            this.sound_hero_gravity = this.add.audio('hero_gravity');
+            this.sound_hero_fire = this.add.audio('hero_fire');
             this.music.play();
 
             //LEVEL :D
@@ -77,6 +83,7 @@
             layer.resizeWorld();
 
             this.hero = new Hero(this.game, 150, 300);
+            this.hero.scale.setTo(hero_scale, hero_scale);
             this.physics.arcade.enableBody(this.hero);
             this.enemyChase = new enemyChase(this.game, 0, 300);
             this.physics.arcade.enableBody(this.enemyChase);
@@ -201,18 +208,17 @@
         }
 
         flipHero() {
+            this.sound_hero_gravity.play();
             if (floor) {
                 this.hero.anchor.setTo(1, .5); //so it flips around its middle
-                this.hero.scale.y = 1; //facing default direction
-                this.hero.scale.y = -1; //flipped
+                this.hero.scale.y = -hero_scale; //flipped
                 //enemyChase.anchor.setTo(1, .5); //so it flips around its middle
                 //enemyChase.scale.y = 1; //facing default direction
                 //enemyChase.scale.y = -1; //flipped
                 floor = false;
             } else {
                 this.hero.anchor.setTo(1, .5); //so it flips around its middle
-                this.hero.scale.y = -1; //facing default direction
-                this.hero.scale.y = 1; //flipped
+                this.hero.scale.y = hero_scale; //flipped
                 //enemyChase.anchor.setTo(1, .5); //so it flips around its middle
                 //enemyChase.scale.y = -1; //facing default direction
                 //enemyChase.scale.y = 1; //flipped
@@ -221,12 +227,11 @@
         }
 
         flipEnemy() {
+            this.sound_hero_gravity.play();
             if (floorEnemy) {
-                //hero.anchor.setTo(1, .5); //so it flips around its middle
-                //hero.scale.y = 1; //facing default direction
-                //hero.scale.y = -1; //flipped
+
                 this.enemyChase.anchor.setTo(1, .5); //so it flips around its middle
-                this.enemyChase.scale.y = 1; //facing default direction
+              //  this.enemyChase.scale.y = 1; //facing default direction
                 this.enemyChase.scale.y = -1; //flipped
                 floorEnemy = false;
             } else {
@@ -234,36 +239,30 @@
                 //hero.scale.y = -1; //facing default direction
                 //hero.scale.y = 1; //flipped
                 this.enemyChase.anchor.setTo(1, .5); //so it flips around its middle
-                this.enemyChase.scale.y = -1; //facing default direction
+                //this.enemyChase.scale.y = -1; //facing default direction
                 this.enemyChase.scale.y = 1; //flipped
                 floorEnemy = true;
             }
         }
 
         fireBullet() {
-
             //  To avoid them being allowed to fire too fast we set a time limit
             if (this.game.time.now > bulletTime) {
                 //  Grab the first bullet we can from the pool
                 bullet = this.bullets.getFirstExists(false);
 
                 if (bullet) {
+                    this.sound_hero_fire.play();
                     if (floor) {
-                        if (first) {
-                            //  And fire it
-                            bullet.reset(this.hero.body.x + 170, this.hero.y + 30);
-                            bullet.body.velocity.x = 10000;
-                            bulletTime = this.game.time.now + 200;
-                        } else {
+                        if (first)                       
+                            bullet.reset(this.hero.body.x + 170, this.hero.y + 30);//  And fire it
+                        else
                             bullet.reset(this.hero.x + 30, this.hero.y - 30);
-                            bullet.body.velocity.x = 10000;
-                            bulletTime = this.game.time.now + 200;
-                        }
                     } else {
                         bullet.reset(this.hero.x + 30, this.hero.y + 5);
-                        bullet.body.velocity.x = 10000;
-                        bulletTime = this.game.time.now + 200;
                     }
+                    bullet.body.velocity.x = 10000;
+                    bulletTime = this.game.time.now + 200;
                 }
             }
 
