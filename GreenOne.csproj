@@ -30,6 +30,7 @@
     <TypeScriptCompile Include="enemyChase.ts" />
     <TypeScriptCompile Include="Game.ts" />
     <TypeScriptCompile Include="Hero.ts" />
+    <TypeScriptCompile Include="IntroLevel.ts" />
     <TypeScriptCompile Include="Level1.ts" />
     <TypeScriptCompile Include="MainMenu.ts" />
     <TypeScriptCompile Include="phaser.d.ts" />

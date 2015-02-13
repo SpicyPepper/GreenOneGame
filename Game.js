@@ -270,6 +270,7 @@ var GravityGuy;
             this.animations.add('walk');
             this.animations.play('walk', 8, true);
             this.game.physics.enable(this, Phaser.Physics.ARCADE);
+            this.body.bounce.y = 0.2;
             this.body.collideWorldBounds = true;
             this.body.allowRotation = true;
             this.body.gravity.y = 18000;
@@ -431,7 +432,6 @@ var GravityGuy;
     var enemiesDead;
     var enemyBullet;
     var enemyBulletTime = 0;
-    var newEnemyX = 0;
     var enemyBulletWait = 0;
     var enemyAlive = false;
     var enemyAliveCount;
@@ -449,25 +449,25 @@ var GravityGuy;
     var floor;
     var floorEnemy;
     var hero_scale = 0.7;
+    var emitter;
     var Level1 = (function (_super) {
         __extends(Level1, _super);
         function Level1() {
             _super.apply(this, arguments);
         }
         Level1.prototype.create = function () {
-            //this.background = this.add.sprite(0, 0, 'level1');
-            //this.music = this.add.audio('music', 1, false);
-            //this.music.play();
-            //this.player = new Player(this.game, 130, 284);
-            //added
             this.physics.startSystem(Phaser.Physics.ARCADE);
-            this.world.setBounds(0, 0, 2000, 512);
+            this.world.setBounds(0, 0, 800, 512);
             this.background = this.add.tileSprite(0, 0, 1024, 512, 'background');
             this.background.fixedToCamera = true;
             this.music = this.add.audio('House');
             this.sound_hero_gravity = this.add.audio('hero_gravity');
+            this.sound_hero_death = this.add.audio('hero_death');
             this.sound_hero_fire = this.add.audio('hero_fire');
             this.music.play();
+            emitter = this.game.add.emitter(0, 0, 20);
+            emitter.makeParticles('explosion_small');
+            emitter.gravity = 200;
             //LEVEL :D
             this.map = this.add.tilemap('level2');
             //set collision
@@ -480,19 +480,37 @@ var GravityGuy;
             this.physics.arcade.enableBody(this.hero);
             this.enemyChase = new GravityGuy.enemyChase(this.game, 0, 300);
             this.physics.arcade.enableBody(this.enemyChase);
-            //this.add.sprite(150, 300, 'hero'); // Start location
             enemies = [];
             enemiesTotal = 24;
             enemiesDead = 0;
+            var newEnemyX = 0;
             for (var i = 0; i < enemiesTotal; i++) {
                 newEnemyX = this.game.rnd.integerInRange(newEnemyX + 1200, newEnemyX + 2200);
-                enemies.push(new GravityGuy.Enemy(this.game, newEnemyX, 300));
+                var anotherEnemy = new GravityGuy.Enemy(this.game, newEnemyX, 300);
+                this.physics.arcade.enableBody(anotherEnemy);
+                enemies.push(anotherEnemy);
             }
             first = true;
             floor = true;
             floorEnemy = true;
             gravityButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
             cursors = this.game.input.keyboard.createCursorKeys();
+            /* ## HERE IS A CURRENT ATTEMPT AT IMPLEMENTING AN ENEMY GROUP. ##
+             * ## MUST GET RID OF ENEMY[] ETC ## */
+            //this.game.add.sprite(0, 0, 'enemy1');
+            //this.enemies = this.game.add.group();
+            //for (var i = 0; i < 12; i++) {
+            //    this.enemies.create(this.game.rnd.integerInRange(i * 1200,(i + 1) * 1200), 300, 'enemy1');
+            //}
+            //this.enemies.enableBody = true;
+            //this.enemies.createMultiple(24, 'enemy1');
+            //this.enemies.setAll('anchor.x', 0.5);
+            //this.enemies.setAll('anchor.y', 0);
+            //this.enemies.setAll('outOfBoundsKill', true);
+            //this.enemies.setAll('checkWorldBounds', true);
+            //this.enemies.setAll('gravity.y', 18000);
+            //this.enemies.callAll('animations.add', 'animations', 'walk');
+            //this.enemies.callAll('play', 8, true);
             //Bullets
             this.bullets = this.game.add.group();
             this.bullets.enableBody = true;
@@ -514,9 +532,10 @@ var GravityGuy;
             this.enemyBullets.setAll('checkWorldBounds', true);
         };
         Level1.prototype.update = function () {
+            //we should implement this as being tied to time rather than update call.
             score++;
-            this.physics.arcade.collide(this.hero, layer);
-            this.physics.arcade.collide(this.enemyChase, layer);
+            /* this method will handle all collision events */
+            this.collideEverything();
             this.background.tilePosition.x -= 2;
             if (gravityButton.isDown && this.hero.body.blocked.down || gravityButton.isDown && this.hero.body.blocked.up) {
                 this.flipHero();
@@ -576,6 +595,29 @@ var GravityGuy;
             else {
                 this.animations.frame = 0;
             }*/
+        };
+        Level1.prototype.collideEverything = function () {
+            this.physics.arcade.collide(this.hero, layer);
+            this.physics.arcade.collide(this.enemyChase, layer);
+            this.physics.arcade.collide(this.enemy, layer);
+            this.physics.arcade.overlap(this.bullets, this.enemy, this.heroShootsEnemy, null, this);
+            this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
+        };
+        Level1.prototype.heroShootsEnemy = function (bullet, enemy) {
+            bullet.kill();
+            enemy.kill();
+            score += 10000;
+        };
+        Level1.prototype.enemyShootsHero = function (enemyBullet, hero) {
+            this.shotExplosion(hero);
+            this.sound_hero_death.play();
+            enemyBullet.kill();
+            hero.kill();
+        };
+        Level1.prototype.shotExplosion = function (entity) {
+            emitter.x = entity.x;
+            emitter.y = entity.y;
+            emitter.start(true, 1000, null, 10);
         };
         Level1.prototype.flipHero = function () {
             this.sound_hero_gravity.play();
@@ -707,8 +749,8 @@ var GravityGuy;
         Preloader.prototype.preload = function () {
             this.preloadBar = this.add.sprite(250, 470, 'preloadBar');
             this.load.setPreloadSprite(this.preloadBar);
-            this.loadMaps();
             this.loadAudio();
+            this.loadMaps();
             this.loadSpritesheets();
             this.loadImages();
         };
@@ -720,12 +762,14 @@ var GravityGuy;
             this.game.state.start('MainMenu', true, false);
         };
         Preloader.prototype.loadAudio = function () {
+            this.load.audio('hero_death', ['audio/hero_death.mp3', 'audio/hero_death.mp3']);
             this.load.audio('title_music', ['audio/title_music.mp3', 'audio/title_music.ogg']);
             this.load.audio('House', ['audio/Title_TechHouse.mp3', 'audio/Title_TechHouse.ogg']);
             this.load.audio('hero_fire', ['audio/hero_fire.mp3', 'audio/hero_fire.ogg']);
             this.load.audio('hero_gravity', ['audio/hero_gravity.mp3', 'audio/hero_gravity.mp3']);
         };
         Preloader.prototype.loadImages = function () {
+            this.load.image('explosion_small', 'visuals/explosion_small.png');
             this.load.image('titlepage', 'visuals/title_background_scaled.png');
             this.load.image('title_planet', 'visuals/title_planet.png');
             this.load.image('tiles-1', 'resources/tiles-1.png');

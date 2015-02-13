@@ -7,7 +7,6 @@
     var enemiesDead;
     var enemyBullet;
     var enemyBulletTime = 0;
-    var newEnemyX = 0;
     var enemyBulletWait = 0;
     var enemyAlive = false;
     var enemyAliveCount;
@@ -25,7 +24,7 @@
     var floor;
     var floorEnemy;
     var hero_scale = 0.7;
-  
+    var emitter;  
 
     export class Level1 extends Phaser.State {
 
@@ -34,41 +33,39 @@
         map: Phaser.Tilemap
  
         music: Phaser.Sound
+        sound_hero_death: Phaser.Sound
         sound_hero_gravity: Phaser.Sound
         sound_hero_fire: Phaser.Sound
 
         bullets: Phaser.Group
         enemyBullets: Phaser.Group
+        enemies: Phaser.Group
 
         //player: GravityGuy.Player;
         hero: GravityGuy.Hero
         enemyChase: GravityGuy.enemyChase
         enemy: GravityGuy.Enemy
+
         
 
 
         create() {
-            
-            //this.background = this.add.sprite(0, 0, 'level1');
-
-            //this.music = this.add.audio('music', 1, false);
-            //this.music.play();
-
-            //this.player = new Player(this.game, 130, 284);
-
-            //added
 
             this.physics.startSystem(Phaser.Physics.ARCADE);
-            this.world.setBounds(0, 0, 2000, 512);
-
+            this.world.setBounds(0, 0, 800, 512);
 
             this.background = this.add.tileSprite(0, 0, 1024, 512, 'background');
             this.background.fixedToCamera = true;
 
             this.music = this.add.audio('House');
             this.sound_hero_gravity = this.add.audio('hero_gravity');
+            this.sound_hero_death = this.add.audio('hero_death');
             this.sound_hero_fire = this.add.audio('hero_fire');
             this.music.play();
+
+            emitter = this.game.add.emitter(0, 0, 20);
+            emitter.makeParticles('explosion_small');
+            emitter.gravity = 200;
 
             //LEVEL :D
             this.map = this.add.tilemap('level2');
@@ -85,18 +82,23 @@
             this.hero = new Hero(this.game, 150, 300);
             this.hero.scale.setTo(hero_scale, hero_scale);
             this.physics.arcade.enableBody(this.hero);
+
             this.enemyChase = new enemyChase(this.game, 0, 300);
             this.physics.arcade.enableBody(this.enemyChase);
-            //this.add.sprite(150, 300, 'hero'); // Start location
+
+      
             
             enemies = [];
 
             enemiesTotal = 24;
             enemiesDead = 0;
-
+            var newEnemyX = 0;
             for (var i = 0; i < enemiesTotal; i++) {
+              
                 newEnemyX = this.game.rnd.integerInRange(newEnemyX + 1200, newEnemyX + 2200);
-                enemies.push(new Enemy(this.game, newEnemyX, 300));
+                var anotherEnemy = new Enemy(this.game, newEnemyX, 300);
+                this.physics.arcade.enableBody(anotherEnemy);
+                enemies.push(anotherEnemy);
             }
 
          
@@ -106,7 +108,23 @@
             gravityButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
             cursors = this.game.input.keyboard.createCursorKeys();
 
+            /* ## HERE IS A CURRENT ATTEMPT AT IMPLEMENTING AN ENEMY GROUP. ##
+             * ## MUST GET RID OF ENEMY[] ETC ## */
+            //this.game.add.sprite(0, 0, 'enemy1');
 
+            //this.enemies = this.game.add.group();
+            //for (var i = 0; i < 12; i++) {
+            //    this.enemies.create(this.game.rnd.integerInRange(i * 1200,(i + 1) * 1200), 300, 'enemy1');
+            //}
+            //this.enemies.enableBody = true;
+            //this.enemies.createMultiple(24, 'enemy1');
+            //this.enemies.setAll('anchor.x', 0.5);
+            //this.enemies.setAll('anchor.y', 0);
+            //this.enemies.setAll('outOfBoundsKill', true);
+            //this.enemies.setAll('checkWorldBounds', true);
+            //this.enemies.setAll('gravity.y', 18000);
+            //this.enemies.callAll('animations.add', 'animations', 'walk');
+            //this.enemies.callAll('play', 8, true);
 
             //Bullets
             this.bullets = this.game.add.group();
@@ -133,9 +151,12 @@
         }
 
         update() {
+            //we should implement this as being tied to time rather than update call.
             score++;
-            this.physics.arcade.collide(this.hero, layer);
-            this.physics.arcade.collide(this.enemyChase, layer);
+
+            /* this method will handle all collision events */
+            this.collideEverything();
+
             this.background.tilePosition.x -= 2;
 
             if (gravityButton.isDown && this.hero.body.blocked.down || gravityButton.isDown && this.hero.body.blocked.up) {
@@ -207,6 +228,36 @@
 
         }
 
+        collideEverything() {
+            this.physics.arcade.collide(this.hero, layer);
+            this.physics.arcade.collide(this.enemyChase, layer);
+            this.physics.arcade.collide(this.enemy, layer);
+            this.physics.arcade.overlap(this.bullets, this.enemy, this.heroShootsEnemy, null, this);
+            this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
+            
+        }
+        
+        heroShootsEnemy(bullet, enemy) {
+            bullet.kill();
+            enemy.kill();
+
+            score += 10000;
+
+        }
+
+        enemyShootsHero(enemyBullet, hero) {
+            this.shotExplosion(hero);
+            this.sound_hero_death.play();
+            enemyBullet.kill();
+            hero.kill();
+        }
+
+        shotExplosion(entity) {
+            emitter.x = entity.x;
+            emitter.y = entity.y;
+
+            emitter.start(true, 1000, null, 10);
+        }
         flipHero() {
             this.sound_hero_gravity.play();
             if (floor) {

@@ -20,6 +20,7 @@
             this.animations.add('walk');
             this.animations.play('walk', 8, true);
             this.game.physics.enable(this, Phaser.Physics.ARCADE);
+            this.body.bounce.y = 0.2;
             this.body.collideWorldBounds = true;
             this.body.allowRotation = true;
             this.body.gravity.y = 18000;

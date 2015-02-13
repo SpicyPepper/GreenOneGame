@@ -5,8 +5,10 @@
         background: Phaser.Sprite;
         logo: Phaser.Sprite;
         song: Phaser.Sound;
+        preloadBar: Phaser.Sprite;
 
         create() {
+
 
             this.song = this.add.audio('title_music');
             this.song.play();

@@ -9,9 +9,9 @@
             this.preloadBar = this.add.sprite(250, 470, 'preloadBar');
             this.load.setPreloadSprite(this.preloadBar);
            
-            this.loadMaps();
-
             this.loadAudio();
+
+            this.loadMaps();
 
             this.loadSpritesheets();
 
@@ -34,7 +34,7 @@
         }
 
         loadAudio() {
-
+            this.load.audio('hero_death', ['audio/hero_death.mp3', 'audio/hero_death.mp3']);
             this.load.audio('title_music', ['audio/title_music.mp3', 'audio/title_music.ogg']);
             this.load.audio('House', ['audio/Title_TechHouse.mp3', 'audio/Title_TechHouse.ogg']);
             this.load.audio('hero_fire', ['audio/hero_fire.mp3', 'audio/hero_fire.ogg']);
@@ -43,7 +43,7 @@
         }
 
         loadImages() {
-
+            this.load.image('explosion_small', 'visuals/explosion_small.png');
             this.load.image('titlepage', 'visuals/title_background_scaled.png');
             this.load.image('title_planet', 'visuals/title_planet.png');
             this.load.image('tiles-1', 'resources/tiles-1.png');
