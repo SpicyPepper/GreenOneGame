@@ -392,10 +392,10 @@ var GravityGuy;
             //added
             //this.game = game;
             this.animations.add('run');
-            this.animations.play('run', 10, true);
+            this.animations.play('run', 15, true);
             this.game.physics.enable(this, Phaser.Physics.ARCADE);
             this.body.bounce.y = 0.2;
-            this.body.collideWorldBounds = true;
+            this.body.collideWorldBounds = false;
             this.game.camera.follow(this);
             this.body.allowRotation = true;
             this.body.gravity.y = 18000;
@@ -436,7 +436,7 @@ var GravityGuy;
     var enemyAlive = false;
     var enemyAliveCount;
     var scoreString = 'Score : ';
-    var scoreText;
+    var score_text;
     var score = 0;
     var lives;
     var numLives = 3;
@@ -450,6 +450,7 @@ var GravityGuy;
     var floorEnemy;
     var hero_scale = 0.7;
     var emitter;
+    var game_over = false;
     var Level1 = (function (_super) {
         __extends(Level1, _super);
         function Level1() {
@@ -469,10 +470,11 @@ var GravityGuy;
             emitter.makeParticles('explosion_small');
             emitter.gravity = 200;
             //LEVEL :D
+            // this.map = this.add.tilemap('level2');
             this.map = this.add.tilemap('level2');
-            //set collision
             this.map.addTilesetImage('tiles-1');
             this.map.setCollisionByExclusion([]);
+            //      layer = this.map.createLayer('layer_1');
             layer = this.map.createLayer('Tile Layer 1');
             layer.resizeWorld();
             this.hero = new GravityGuy.Hero(this.game, 150, 300);
@@ -480,6 +482,8 @@ var GravityGuy;
             this.physics.arcade.enableBody(this.hero);
             this.enemyChase = new GravityGuy.enemyChase(this.game, 0, 300);
             this.physics.arcade.enableBody(this.enemyChase);
+            score_text = this.add.text(10, 10, scoreString, { font: "64px Arial", fill: "#ffffff", align: "left" });
+            this.time.events.loop(50, this.timedUpdate, this);
             enemies = [];
             enemiesTotal = 24;
             enemiesDead = 0;
@@ -532,17 +536,13 @@ var GravityGuy;
             this.enemyBullets.setAll('checkWorldBounds', true);
         };
         Level1.prototype.update = function () {
-            //we should implement this as being tied to time rather than update call.
-            score++;
             /* this method will handle all collision events */
             this.collideEverything();
-            this.background.tilePosition.x -= 2;
             if (gravityButton.isDown && this.hero.body.blocked.down || gravityButton.isDown && this.hero.body.blocked.up) {
                 this.flipHero();
                 heroJumped = true;
                 jumpLocation = this.hero.body.x;
                 this.hero.body.gravity.y = this.hero.body.gravity.y * -1;
-                //game.physics.arcade.gravity.y = game.physics.arcade.gravity.y * -1;
                 first = false;
             }
             if (this.enemyChase.body.x >= jumpLocation && heroJumped && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
@@ -572,29 +572,15 @@ var GravityGuy;
                     enemiesDead++;
                 }
             }
-            /*this.body.velocity.x = 0;
-
-            if (this.game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
-
-                this.body.velocity.x = -150;
-                this.animations.play('run');
-
-                if (this.scale.x == 1) {
-                    this.scale.x = -1;
-                }
-            }
-            else if (this.game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
-
-                this.body.velocity.x = 150;
-                this.animations.play('run');
-
-                if (this.scale.x == -1) {
-                    this.scale.x = 1;
-                }
-            }
-            else {
-                this.animations.frame = 0;
-            }*/
+        };
+        Level1.prototype.itsGameOver = function () {
+            game_over = true;
+            //other stuff can happen here.
+        };
+        Level1.prototype.timedUpdate = function () {
+            score += 10;
+            score_text.setText(scoreString + score);
+            this.background.tilePosition.x -= 0.4;
         };
         Level1.prototype.collideEverything = function () {
             this.physics.arcade.collide(this.hero, layer);
@@ -602,17 +588,24 @@ var GravityGuy;
             this.physics.arcade.collide(this.enemy, layer);
             this.physics.arcade.overlap(this.bullets, this.enemy, this.heroShootsEnemy, null, this);
             this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
+            if (!game_over && (this.hero.body.y >= 512 || this.hero.body.y <= -100)) {
+                this.hero.kill();
+                this.sound_hero_death.play();
+                this.itsGameOver();
+            }
         };
         Level1.prototype.heroShootsEnemy = function (bullet, enemy) {
             bullet.kill();
             enemy.kill();
             score += 10000;
+            this.itsGameOver();
         };
         Level1.prototype.enemyShootsHero = function (enemyBullet, hero) {
             this.shotExplosion(hero);
             this.sound_hero_death.play();
             enemyBullet.kill();
             hero.kill();
+            this.itsGameOver();
         };
         Level1.prototype.shotExplosion = function (entity) {
             emitter.x = entity.x;
@@ -623,20 +616,13 @@ var GravityGuy;
             this.sound_hero_gravity.play();
             if (floor) {
                 this.hero.anchor.setTo(1, .5); //so it flips around its middle
-                this.hero.scale.y = -hero_scale; //flipped
-                //enemyChase.anchor.setTo(1, .5); //so it flips around its middle
-                //enemyChase.scale.y = 1; //facing default direction
-                //enemyChase.scale.y = -1; //flipped
-                floor = false;
+                this.hero.scale.y = -hero_scale; //flipped           
             }
             else {
                 this.hero.anchor.setTo(1, .5); //so it flips around its middle
-                this.hero.scale.y = hero_scale; //flipped
-                //enemyChase.anchor.setTo(1, .5); //so it flips around its middle
-                //enemyChase.scale.y = -1; //facing default direction
-                //enemyChase.scale.y = 1; //flipped
-                floor = true;
+                this.hero.scale.y = hero_scale; //flipped           
             }
+            floor = !floor;
         };
         Level1.prototype.flipEnemy = function () {
             this.sound_hero_gravity.play();
@@ -699,9 +685,9 @@ var GravityGuy;
         };
         Level1.prototype.render = function () {
             //  The score
-            this.game.debug.text(scoreString + score, 32, 24, 'white', '34px Arial');
-            //  Lives
-            this.game.debug.text('Lives : ' + numLives, 648, 24, 'white', '34px Arial');
+            this.game.debug.text(scoreString + score, 10, 35, 'white', '34px Arial');
+            this.game.debug.spriteCoords(this.hero, 300, 300);
+            this.game.debug.text('Lives : ' + numLives, 648, 35, 'white', '34px Arial');
         };
         return Level1;
     })(Phaser.State);
@@ -779,6 +765,7 @@ var GravityGuy;
         };
         Preloader.prototype.loadMaps = function () {
             this.load.tilemap('level2', 'resources/level2.json', null, Phaser.Tilemap.TILED_JSON);
+            //         this.load.tilemap('level_test', 'resources/level_test.json', null, Phaser.Tilemap.TILED_JSON);
         };
         Preloader.prototype.loadSpritesheets = function () {
             this.load.spritesheet('hero', 'visuals/test_runner.png', 138, 115);

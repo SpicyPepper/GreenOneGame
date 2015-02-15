@@ -55,7 +55,9 @@
 
         loadMaps() {
 
+            
             this.load.tilemap('level2', 'resources/level2.json', null, Phaser.Tilemap.TILED_JSON);
+   //         this.load.tilemap('level_test', 'resources/level_test.json', null, Phaser.Tilemap.TILED_JSON);
 
         }
 
