@@ -451,12 +451,17 @@ var GravityGuy;
     var hero_scale = 0.7;
     var emitter;
     var game_over = false;
+    var swapGravity = false;
+    var keyboard_grav;
     var Level1 = (function (_super) {
         __extends(Level1, _super);
         function Level1() {
             _super.apply(this, arguments);
         }
         Level1.prototype.create = function () {
+            /*Working on key binding*/
+            keyboard_grav = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+            keyboard_grav.onDown.add(this.attemptGravitySwap, this);
             this.physics.startSystem(Phaser.Physics.ARCADE);
             this.world.setBounds(0, 0, 800, 512);
             this.background = this.add.tileSprite(0, 0, 1024, 512, 'background');
@@ -482,7 +487,6 @@ var GravityGuy;
             this.physics.arcade.enableBody(this.hero);
             this.enemyChase = new GravityGuy.enemyChase(this.game, 0, 300);
             this.physics.arcade.enableBody(this.enemyChase);
-            score_text = this.add.text(10, 10, scoreString, { font: "64px Arial", fill: "#ffffff", align: "left" });
             this.time.events.loop(50, this.timedUpdate, this);
             enemies = [];
             enemiesTotal = 24;
@@ -538,11 +542,11 @@ var GravityGuy;
         Level1.prototype.update = function () {
             /* this method will handle all collision events */
             this.collideEverything();
-            if (gravityButton.isDown && this.hero.body.blocked.down || gravityButton.isDown && this.hero.body.blocked.up) {
+            if (swapGravity) {
                 this.flipHero();
                 heroJumped = true;
                 jumpLocation = this.hero.body.x;
-                this.hero.body.gravity.y = this.hero.body.gravity.y * -1;
+                this.hero.body.gravity.y = -this.hero.body.gravity.y;
                 first = false;
             }
             if (this.enemyChase.body.x >= jumpLocation && heroJumped && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
@@ -572,6 +576,10 @@ var GravityGuy;
                     enemiesDead++;
                 }
             }
+            swapGravity = false;
+        };
+        Level1.prototype.attemptGravitySwap = function () {
+            swapGravity = (this.hero.body.blocked.down || this.hero.body.blocked.up);
         };
         Level1.prototype.itsGameOver = function () {
             game_over = true;
@@ -579,7 +587,6 @@ var GravityGuy;
         };
         Level1.prototype.timedUpdate = function () {
             score += 10;
-            score_text.setText(scoreString + score);
             this.background.tilePosition.x -= 0.4;
         };
         Level1.prototype.collideEverything = function () {

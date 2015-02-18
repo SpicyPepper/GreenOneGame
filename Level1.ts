@@ -27,6 +27,9 @@
     var emitter;  
     var game_over = false;
 
+    var swapGravity = false;
+    var keyboard_grav;
+
     export class Level1 extends Phaser.State {
 
         background: Phaser.TileSprite;
@@ -51,6 +54,10 @@
 
 
         create() {
+
+            /*Working on key binding*/
+            keyboard_grav = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+            keyboard_grav.onDown.add(this.attemptGravitySwap, this);
 
             this.physics.startSystem(Phaser.Physics.ARCADE);
             this.world.setBounds(0, 0, 800, 512);
@@ -86,8 +93,6 @@
 
             this.enemyChase = new enemyChase(this.game, 0, 300);
             this.physics.arcade.enableBody(this.enemyChase);
-
-            score_text = this.add.text(10, 10, scoreString, { font: "64px Arial", fill: "#ffffff", align: "left" });
             this.time.events.loop(50, this.timedUpdate, this);
             
             enemies = [];
@@ -157,12 +162,11 @@
             /* this method will handle all collision events */
             this.collideEverything();
 
-            if (gravityButton.isDown && this.hero.body.blocked.down || gravityButton.isDown && this.hero.body.blocked.up) {
-
+            if (swapGravity) {
                 this.flipHero();
                 heroJumped = true;
                 jumpLocation = this.hero.body.x;
-                this.hero.body.gravity.y = this.hero.body.gravity.y * -1;
+                this.hero.body.gravity.y = -this.hero.body.gravity.y;
                 first = false;
             }
             if (this.enemyChase.body.x >= jumpLocation && heroJumped && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
@@ -198,7 +202,13 @@
                 }
             }
 
+            swapGravity = false;
+        }
 
+        attemptGravitySwap() {
+
+            swapGravity = (this.hero.body.blocked.down || this.hero.body.blocked.up)
+ 
         }
 
         itsGameOver() {
@@ -207,8 +217,6 @@
         }
         timedUpdate() {
             score += 10;
- 
-            score_text.setText(scoreString + score);
             this.background.tilePosition.x -= 0.4;
         }
         
@@ -230,7 +238,6 @@
         heroShootsEnemy(bullet, enemy) {
             bullet.kill();
             enemy.kill();
-
             score += 10000;
             this.itsGameOver();
         }
