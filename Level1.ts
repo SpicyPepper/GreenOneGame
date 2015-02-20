@@ -38,8 +38,10 @@
  
         music: Phaser.Sound
         sound_hero_death: Phaser.Sound
+        sound_hero_jump: Phaser.Sound
         sound_hero_gravity: Phaser.Sound
         sound_hero_fire: Phaser.Sound
+        sound_enemy_shoot: Phaser.Sound
 
         bullets: Phaser.Group
         enemyBullets: Phaser.Group
@@ -50,9 +52,7 @@
         enemyChase: GravityGuy.enemyChase
         enemy: GravityGuy.Enemy
 
-        
-
-
+       
         create() {
 
             /*Working on key binding*/
@@ -68,7 +68,9 @@
             this.music = this.add.audio('House');
             this.sound_hero_gravity = this.add.audio('hero_gravity');
             this.sound_hero_death = this.add.audio('hero_death');
+            this.sound_hero_jump = this.add.audio('hero_jump');
             this.sound_hero_fire = this.add.audio('hero_fire');
+            this.sound_enemy_shoot = this.add.audio('enemy_shoot');
             this.music.play();
 
             emitter = this.game.add.emitter(0, 0, 20);
@@ -262,6 +264,8 @@
             emitter.start(true, 1000, null, 10);
         }
         flipHero() {
+
+            this.sound_hero_jump.play();
             this.sound_hero_gravity.play();
             if (floor) {
                 this.hero.anchor.setTo(1, .5); //so it flips around its middle
@@ -276,7 +280,6 @@
         flipEnemy() {
             this.sound_hero_gravity.play();
             if (floorEnemy) {
-
                 this.enemyChase.anchor.setTo(1, .5); //so it flips around its middle
               //  this.enemyChase.scale.y = 1; //facing default direction
                 this.enemyChase.scale.y = -1; //flipped
@@ -331,6 +334,7 @@
                 enemyBullet = this.enemyBullets.getFirstExists(false);
 
                 if (enemyBullet) {
+                    this.sound_enemy_shoot.play();
                     enemyBullet.reset(activeEnemy.body.x + 10, activeEnemy.y + 15);
                     enemyBullet.body.velocity.x = -250;
                     enemyBulletTime = this.game.time.now + 200;
