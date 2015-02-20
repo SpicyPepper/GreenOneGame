@@ -186,10 +186,6 @@
                 this.fireBullet();
             }
 
-            for (var i = 0; i < enemies.length; i++) {
-                this.physics.arcade.collide(enemies[i], layer);
-            }
-
             for (var j = enemiesDead; j < enemies.length; j++) {
                 if (enemies[j].x - this.hero.x <= 575) {
                     enemyBulletWait++;
@@ -224,8 +220,15 @@
         collideEverything() {
             this.physics.arcade.collide(this.hero, layer);
             this.physics.arcade.collide(this.enemyChase, layer);
-            this.physics.arcade.collide(this.enemy, layer);
-            this.physics.arcade.overlap(this.bullets, this.enemy, this.heroShootsEnemy, null, this);
+            this.physics.arcade.collide(this.enemies, layer);
+            for (var i = 0; i < enemies.length; i++) {
+                this.physics.arcade.collide(enemies[i], layer);
+            }
+            for (var i = 0; i < enemies.length; i++) {
+                this.physics.arcade.overlap(this.bullets, enemies[i], this.heroShootsEnemy, null, this);
+            }
+
+            this.physics.arcade.overlap(this.bullets, this.enemies, this.heroShootsEnemy, null, this);
             this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
 
             if (!game_over && (this.hero.body.y >= 512 || this.hero.body.y <= -100)) {
