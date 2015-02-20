@@ -24,7 +24,7 @@
             this.body.collideWorldBounds = false;
             this.game.camera.follow(this);
             this.body.allowRotation = true;
-            this.body.gravity.y = 18000;
+            this.body.gravity.y = 20000;
 
             
             

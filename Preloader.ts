@@ -46,7 +46,7 @@
             this.load.image('explosion_small', 'visuals/explosion_small.png');
             this.load.image('titlepage', 'visuals/title_background_scaled.png');
             this.load.image('title_planet', 'visuals/title_planet.png');
-            this.load.image('tiles-1', 'resources/tiles-1.png');
+            this.load.image('tileset_1', 'resources/tileset_1.png');
             this.load.image('bullet', 'visuals/laser.png');
             this.load.image('enemybullet', 'visuals/enemylaser.png');
             this.load.image('background', 'visuals/bkgrnd_sand.png');
@@ -56,8 +56,8 @@
         loadMaps() {
 
             
-            this.load.tilemap('level2', 'resources/level2.json', null, Phaser.Tilemap.TILED_JSON);
-   //         this.load.tilemap('level_test', 'resources/level_test.json', null, Phaser.Tilemap.TILED_JSON);
+           // this.load.tilemap('level2', 'resources/level2.json', null, Phaser.Tilemap.TILED_JSON);
+            this.load.tilemap('level_test', 'resources/level_test.json', null, Phaser.Tilemap.TILED_JSON);
 
         }
 

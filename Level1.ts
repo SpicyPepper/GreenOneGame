@@ -77,13 +77,13 @@
 
             //LEVEL :D
            // this.map = this.add.tilemap('level2');
-            this.map = this.add.tilemap('level2');
-            this.map.addTilesetImage('tiles-1');
+            this.map = this.add.tilemap('level_test');
+            this.map.addTilesetImage('tileset_1');
 
             this.map.setCollisionByExclusion([]);
 
       //      layer = this.map.createLayer('layer_1');
-            layer = this.map.createLayer('Tile Layer 1');
+            layer = this.map.createLayer('layer_1');
         
             layer.resizeWorld();
 
@@ -140,7 +140,7 @@
             this.bullets.createMultiple(30, 'bullet');
             this.bullets.setAll('anchor.x', 1);
             this.bullets.setAll('anchor.y', 0);
-            this.bullets.setAll('outOfBoundsKill', true);
+            this.bullets.setAll('outOfBoundsKill', false);
             this.bullets.setAll('checkWorldBounds', true);
 
             //end added 
@@ -152,7 +152,7 @@
             this.enemyBullets.createMultiple(30, 'enemybullet');
             this.enemyBullets.setAll('anchor.x', 1);
             this.enemyBullets.setAll('anchor.y', 0);
-            this.enemyBullets.setAll('outOfBoundsKill', true);
+            this.enemyBullets.setAll('outOfBoundsKill', false);
             this.enemyBullets.setAll('checkWorldBounds', true);
 
         }
@@ -221,6 +221,7 @@
             this.physics.arcade.collide(this.hero, layer);
             this.physics.arcade.collide(this.enemyChase, layer);
             this.physics.arcade.collide(this.enemies, layer);
+
             for (var i = 0; i < enemies.length; i++) {
                 this.physics.arcade.collide(enemies[i], layer);
             }
@@ -228,8 +229,9 @@
                 this.physics.arcade.overlap(this.bullets, enemies[i], this.heroShootsEnemy, null, this);
             }
 
-            this.physics.arcade.overlap(this.bullets, this.enemies, this.heroShootsEnemy, null, this);
-            this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
+
+            /* COMMENT THIS OUT TO REMOVE ENEMY BULLETS KILLING HERO. */
+ //           this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
 
             if (!game_over && (this.hero.body.y >= 512 || this.hero.body.y <= -100)) {
                 this.hero.kill();
@@ -349,7 +351,7 @@
         render() {
             //  The score
             this.game.debug.text(scoreString + score, 10, 35, 'white', '34px Arial');
-            this.game.debug.spriteCoords(this.hero, 300, 300);
+           // this.game.debug.spriteCoords(this.hero, 300, 300);
             this.game.debug.text('Lives : ' + numLives, 648, 35, 'white', '34px Arial');
         }
 

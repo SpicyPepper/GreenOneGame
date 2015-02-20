@@ -367,7 +367,7 @@ var GravityGuy;
     var Game = (function (_super) {
         __extends(Game, _super);
         function Game() {
-            _super.call(this, 800, 512, Phaser.AUTO, 'content', null);
+            _super.call(this, 800, 512, Phaser.CANVAS, 'content', null);
             this.state.add('Boot', GravityGuy.Boot, false);
             this.state.add('Preloader', GravityGuy.Preloader, false);
             this.state.add('MainMenu', GravityGuy.MainMenu, false);
@@ -398,7 +398,7 @@ var GravityGuy;
             this.body.collideWorldBounds = false;
             this.game.camera.follow(this);
             this.body.allowRotation = true;
-            this.body.gravity.y = 18000;
+            this.body.gravity.y = 20000;
             this.anchor.setTo(0.5, 0);
             //this.animations.add('walk', [0, 1, 2, 3, 4], 10, true);
             //
@@ -476,11 +476,11 @@ var GravityGuy;
             emitter.gravity = 200;
             //LEVEL :D
             // this.map = this.add.tilemap('level2');
-            this.map = this.add.tilemap('level2');
-            this.map.addTilesetImage('tiles-1');
+            this.map = this.add.tilemap('level_test');
+            this.map.addTilesetImage('tileset_1');
             this.map.setCollisionByExclusion([]);
             //      layer = this.map.createLayer('layer_1');
-            layer = this.map.createLayer('Tile Layer 1');
+            layer = this.map.createLayer('layer_1');
             layer.resizeWorld();
             this.hero = new GravityGuy.Hero(this.game, 150, 300);
             this.hero.scale.setTo(hero_scale, hero_scale);
@@ -526,7 +526,7 @@ var GravityGuy;
             this.bullets.createMultiple(30, 'bullet');
             this.bullets.setAll('anchor.x', 1);
             this.bullets.setAll('anchor.y', 0);
-            this.bullets.setAll('outOfBoundsKill', true);
+            this.bullets.setAll('outOfBoundsKill', false);
             this.bullets.setAll('checkWorldBounds', true);
             //end added 
             //Enemy Bullets
@@ -536,7 +536,7 @@ var GravityGuy;
             this.enemyBullets.createMultiple(30, 'enemybullet');
             this.enemyBullets.setAll('anchor.x', 1);
             this.enemyBullets.setAll('anchor.y', 0);
-            this.enemyBullets.setAll('outOfBoundsKill', true);
+            this.enemyBullets.setAll('outOfBoundsKill', false);
             this.enemyBullets.setAll('checkWorldBounds', true);
         };
         Level1.prototype.update = function () {
@@ -596,8 +596,8 @@ var GravityGuy;
             for (var i = 0; i < enemies.length; i++) {
                 this.physics.arcade.overlap(this.bullets, enemies[i], this.heroShootsEnemy, null, this);
             }
-            this.physics.arcade.overlap(this.bullets, this.enemies, this.heroShootsEnemy, null, this);
-            this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
+            /* COMMENT THIS OUT TO REMOVE ENEMY BULLETS KILLING HERO. */
+            //           this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
             if (!game_over && (this.hero.body.y >= 512 || this.hero.body.y <= -100)) {
                 this.hero.kill();
                 this.sound_hero_death.play();
@@ -696,7 +696,7 @@ var GravityGuy;
         Level1.prototype.render = function () {
             //  The score
             this.game.debug.text(scoreString + score, 10, 35, 'white', '34px Arial');
-            this.game.debug.spriteCoords(this.hero, 300, 300);
+            // this.game.debug.spriteCoords(this.hero, 300, 300);
             this.game.debug.text('Lives : ' + numLives, 648, 35, 'white', '34px Arial');
         };
         return Level1;
@@ -768,14 +768,14 @@ var GravityGuy;
             this.load.image('explosion_small', 'visuals/explosion_small.png');
             this.load.image('titlepage', 'visuals/title_background_scaled.png');
             this.load.image('title_planet', 'visuals/title_planet.png');
-            this.load.image('tiles-1', 'resources/tiles-1.png');
+            this.load.image('tileset_1', 'resources/tileset_1.png');
             this.load.image('bullet', 'visuals/laser.png');
             this.load.image('enemybullet', 'visuals/enemylaser.png');
             this.load.image('background', 'visuals/bkgrnd_sand.png');
         };
         Preloader.prototype.loadMaps = function () {
-            this.load.tilemap('level2', 'resources/level2.json', null, Phaser.Tilemap.TILED_JSON);
-            //         this.load.tilemap('level_test', 'resources/level_test.json', null, Phaser.Tilemap.TILED_JSON);
+            // this.load.tilemap('level2', 'resources/level2.json', null, Phaser.Tilemap.TILED_JSON);
+            this.load.tilemap('level_test', 'resources/level_test.json', null, Phaser.Tilemap.TILED_JSON);
         };
         Preloader.prototype.loadSpritesheets = function () {
             this.load.spritesheet('hero', 'visuals/test_runner.png', 138, 115);
