@@ -8,15 +8,10 @@
 
             this.preloadBar = this.add.sprite(250, 470, 'preloadBar');
             this.load.setPreloadSprite(this.preloadBar);
-           
             this.loadAudio();
-
             this.loadMaps();
-
             this.loadSpritesheets();
-
             this.loadImages();
-            
 
         }
 
@@ -70,10 +65,6 @@
             this.load.spritesheet('enemy1', 'visuals/enemy1.png', 68, 99);
         }
 
-
-
-
     }
-
 
 } 

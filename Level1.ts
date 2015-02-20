@@ -9,6 +9,7 @@
     var enemyBulletTime = 0;
     var enemyBulletWait = 0;
     var enemyAlive = false;
+    var heroAlive = true;
     var enemyAliveCount;
     var scoreString = 'Score : ';
     var score_text;
@@ -161,46 +162,50 @@
 
         update() {
 
-            /* this method will handle all collision events */
-            this.collideEverything();
+            /* When hero is alive */
+            if (heroAlive) {
 
-            if (swapGravity) {
-                this.flipHero();
-                heroJumped = true;
-                jumpLocation = this.hero.body.x;
-                this.hero.body.gravity.y = -this.hero.body.gravity.y;
-                first = false;
-            }
-            if (this.enemyChase.body.x >= jumpLocation && heroJumped && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
-                if (floorEnemy != floor) {
-                    this.flipEnemy();
-                    this.enemyChase.body.gravity.y = this.enemyChase.body.gravity.y * -1;
+                /* this method will handle all collision events */
+                this.collideEverything();
+
+                if (swapGravity) {
+                    this.flipHero();
+                    heroJumped = true;
+                    jumpLocation = this.hero.body.x;
+                    this.hero.body.gravity.y = -this.hero.body.gravity.y;
+                    first = false;
                 }
-                heroJumped = false;
-            }
+                if (this.enemyChase.body.x >= jumpLocation && heroJumped && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
+                    if (floorEnemy != floor) {
+                        this.flipEnemy();
+                        this.enemyChase.body.gravity.y = this.enemyChase.body.gravity.y * -1;
+                    }
+                    heroJumped = false;
+                }
 
-            if (this.enemyChase.body.x <= this.hero.body.x - 300) {
-                this.enemyChase.body.x = this.hero.body.x - 100;
-            }
+                if (this.enemyChase.body.x <= this.hero.body.x - 300) {
+                    this.enemyChase.body.x = this.hero.body.x - 100;
+                }
 
 
-            if (cursors.right.isDown) {
-                this.fireBullet();
-            }
+                if (cursors.right.isDown) {
+                    this.fireBullet();
+                }
 
-            for (var j = enemiesDead; j < enemies.length; j++) {
-                if (enemies[j].x - this.hero.x <= 575) {
-                    enemyBulletWait++;
-                    if (enemyBulletWait % 60 == 0) {
-                        this.fireEnemyBullet(enemies[j]);
+                for (var j = enemiesDead; j < enemies.length; j++) {
+                    if (enemies[j].x - this.hero.x <= 575) {
+                        enemyBulletWait++;
+                        if (enemyBulletWait % 60 == 0) {
+                            this.fireEnemyBullet(enemies[j]);
+                        }
+                    }
+                    if (enemies[j].x < this.hero.x) {
+                        enemiesDead++;
                     }
                 }
-                if (enemies[j].x < this.hero.x) {
-                    enemiesDead++;
-                }
-            }
 
-            swapGravity = false;
+                swapGravity = false;
+            }
         }
 
         attemptGravitySwap() {
@@ -211,7 +216,8 @@
 
         itsGameOver() {
             game_over = true;
-            //other stuff can happen here.
+            
+
         }
         timedUpdate() {
             score += 10;
@@ -233,7 +239,7 @@
 
 
             /* COMMENT THIS OUT TO REMOVE ENEMY BULLETS KILLING HERO. */
- //           this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
+            this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
 
             if (!game_over && (this.hero.body.y >= 512 || this.hero.body.y <= -100)) {
                 this.hero.kill();
@@ -267,7 +273,7 @@
 
             this.sound_hero_jump.play();
             this.sound_hero_gravity.play();
-            if (floor) {
+            if (floor) {                                           
                 this.hero.anchor.setTo(1, .5); //so it flips around its middle
                 this.hero.scale.y = -hero_scale; //flipped           
             } else {
