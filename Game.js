@@ -693,7 +693,7 @@ var GravityGuy;
                 this.physics.arcade.overlap(this.bullets, enemies[i], this.heroShootsEnemy, null, this);
             }
             /* COMMENT THIS OUT TO REMOVE ENEMY BULLETS KILLING HERO. */
-            //this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
+            this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
             if (!game_over && heroAlive && (this.hero.body.y >= 512 || this.hero.body.y <= -100)) {
                 this.hero.kill();
                 this.sound_hero_death.play();

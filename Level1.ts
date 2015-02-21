@@ -351,7 +351,7 @@
             }
 
             /* COMMENT THIS OUT TO REMOVE ENEMY BULLETS KILLING HERO. */
-            //this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
+            this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
 
 
             if (!game_over && heroAlive && (this.hero.body.y >= 512 || this.hero.body.y <= -100)) {
