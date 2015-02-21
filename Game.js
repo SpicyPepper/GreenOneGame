@@ -583,10 +583,11 @@ var GravityGuy;
                     heroJumped = false;
                 }
                 for (var j = enemiesDead; j < enemies.length; j++) {
-                    if (enemies[j].alive && enemies[j].x - this.hero.x <= 325 && enemies[j].y - this.hero.y > 50) {
+                    if (enemies[j].alive && enemies[j].x - this.hero.x <= 400 && enemies[j].y - this.hero.y > 25) {
                         if (enemyJump && (enemies[j].body.blocked.down || enemies[j].body.blocked.up)) {
                             this.flipOtherEnemy(enemies[j]);
                             enemies[j].body.gravity.y = enemies[j].body.gravity.y * -1;
+                            enemyJump = false;
                         }
                     }
                 }
@@ -720,20 +721,19 @@ var GravityGuy;
         Level1.prototype.flipOtherEnemy = function (otherEnemy) {
             this.sound_hero_gravity.play();
             if (floorOtherEnemy) {
-                otherEnemy.anchor.setTo(0, .5); //so it flips around its middle
+                otherEnemy.anchor.setTo(1, .5); //so it flips around its middle
                 //  this.enemyChase.scale.y = 1; //facing default direction
-                otherEnemy.scale.y = -1; //flipped
-                floorOtherEnemy = false;
+                otherEnemy.scale.y = -enemy_scale; //flipped
             }
             else {
                 //hero.anchor.setTo(1, .5); //so it flips around its middle
                 //hero.scale.y = -1; //facing default direction
                 //hero.scale.y = 1; //flipped
-                otherEnemy.anchor.setTo(0, .5); //so it flips around its middle
+                otherEnemy.anchor.setTo(1, .5); //so it flips around its middle
                 //this.enemyChase.scale.y = -1; //facing default direction
-                otherEnemy.scale.y = 1; //flipped
-                floorOtherEnemy = true;
+                otherEnemy.scale.y = enemy_scale; //flipped
             }
+            floorOtherEnemy = !floorOtherEnemy;
         };
         Level1.prototype.fireBullet = function () {
             //  To avoid them being allowed to fire too fast we set a time limit
