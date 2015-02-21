@@ -450,9 +450,11 @@ var GravityGuy;
     var cursors;
     var jumpLocation;
     var heroJumped = false;
+    var enemyJump = false;
     var first;
     var floor;
     var floorEnemy;
+    var floorOtherEnemy;
     var hero_scale = 0.7;
     var enemy_scale = 0.8;
     var emitter;
@@ -500,7 +502,7 @@ var GravityGuy;
             this.physics.arcade.enableBody(this.enemyChase);
             this.time.events.loop(50, this.timedUpdate, this);
             enemies = [];
-            enemiesTotal = 24;
+            enemiesTotal = 30;
             enemiesDead = 0;
             var newEnemyX = 0;
             for (var i = 0; i < enemiesTotal; i++) {
@@ -515,6 +517,7 @@ var GravityGuy;
             first = true;
             floor = true;
             floorEnemy = true;
+            floorOtherEnemy = true;
             gravityButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
             cursors = this.game.input.keyboard.createCursorKeys();
             /* ## HERE IS A CURRENT ATTEMPT AT IMPLEMENTING AN ENEMY GROUP. ##
@@ -578,6 +581,14 @@ var GravityGuy;
                         this.enemyChase.body.gravity.y = this.enemyChase.body.gravity.y * -1;
                     }
                     heroJumped = false;
+                }
+                for (var j = enemiesDead; j < enemies.length; j++) {
+                    if (enemies[j].alive && enemies[j].x - this.hero.x <= 325 && enemies[j].y - this.hero.y > 50) {
+                        if (enemyJump && (enemies[j].body.blocked.down || enemies[j].body.blocked.up)) {
+                            this.flipOtherEnemy(enemies[j]);
+                            enemies[j].body.gravity.y = enemies[j].body.gravity.y * -1;
+                        }
+                    }
                 }
                 if (this.enemyChase.body.x <= this.hero.body.x - 300) {
                     this.enemyChase.body.x = this.hero.body.x - 100;
@@ -678,11 +689,13 @@ var GravityGuy;
             this.sound_hero_gravity.play();
             if (floor) {
                 this.hero.anchor.setTo(1, .5); //so it flips around its middle
-                this.hero.scale.y = -hero_scale; //flipped           
+                this.hero.scale.y = -hero_scale; //flipped
+                enemyJump = true;
             }
             else {
                 this.hero.anchor.setTo(1, .5); //so it flips around its middle
-                this.hero.scale.y = hero_scale; //flipped           
+                this.hero.scale.y = hero_scale; //flipped
+                enemyJump = false;
             }
             floor = !floor;
         };
@@ -702,6 +715,24 @@ var GravityGuy;
                 //this.enemyChase.scale.y = -1; //facing default direction
                 this.enemyChase.scale.y = 1; //flipped
                 floorEnemy = true;
+            }
+        };
+        Level1.prototype.flipOtherEnemy = function (otherEnemy) {
+            this.sound_hero_gravity.play();
+            if (floorOtherEnemy) {
+                otherEnemy.anchor.setTo(0, .5); //so it flips around its middle
+                //  this.enemyChase.scale.y = 1; //facing default direction
+                otherEnemy.scale.y = -1; //flipped
+                floorOtherEnemy = false;
+            }
+            else {
+                //hero.anchor.setTo(1, .5); //so it flips around its middle
+                //hero.scale.y = -1; //facing default direction
+                //hero.scale.y = 1; //flipped
+                otherEnemy.anchor.setTo(0, .5); //so it flips around its middle
+                //this.enemyChase.scale.y = -1; //facing default direction
+                otherEnemy.scale.y = 1; //flipped
+                floorOtherEnemy = true;
             }
         };
         Level1.prototype.fireBullet = function () {
@@ -758,8 +789,6 @@ var GravityGuy;
                 this.game.debug.text('Enemies Killed: ' + enemiesKilled, 240, 350, 'white', '40px Arial');
                 this.game.debug.text('Bonus: ' + enemiesKilled * 5000, 285, 400, 'white', '40px Arial');
                 if (!bonusAdded) {
-                    for (var i = 0; i < 50000000; i++) {
-                    }
                     for (var i = 0; i < enemiesKilled * 5000; i++) {
                         score++;
                     }
