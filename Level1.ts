@@ -320,8 +320,6 @@
                     //var currentTime = Math.floor(this.game.time.time / 1000) % 60;
                     if ((Math.floor(this.game.time.time / 1000) % 60) >= timeDelay) {
                         this.music.mute = true;
-                        console.log("WOOT");
-                        //this.create();
                         this.game.state.start('GameOver', true, false);
                     }
                     
@@ -502,8 +500,9 @@
             if (!levelComplete && this.game.time.now > bulletTime) {
                 //  Grab the first bullet we can from the pool
                 bullet = this.bullets.getFirstExists(false);
-
+                
                 if (bullet) {
+                    this.physics.arcade.collide(bullet, layer);
                     this.sound_hero_fire.play();
                     if (floor) {
                         if (first)                       
@@ -537,6 +536,7 @@
                 enemyBullet = this.enemyBullets.getFirstExists(false);
 
                 if (enemyBullet) {
+                    this.physics.arcade.collide(enemyBullet, layer);
                     this.sound_enemy_shoot.play();
                     enemyBullet.reset(activeEnemy.body.x + 10, activeEnemy.y + 18);
                     enemyBullet.body.velocity.x = -250;
