@@ -2,9 +2,11 @@
 
     var bullet;
     var bulletTime = 0;
+    var bulletFired = false;
     var enemies;
     var enemiesTotal;
     var enemiesDead;
+    var enemiesKilled = 0;
     var enemyBullet;
     var enemyBulletTime = 0;
     var enemyBulletWait = 0;
@@ -25,9 +27,11 @@
     var floor;
     var floorEnemy;
     var hero_scale = 0.7;
-    var emitter;  
+    var enemy_scale = 0.8;
+    var emitter;
+    var levelComplete = false;  
     var game_over = false;
-
+    var bonusAdded = false;
     var swapGravity = false;
     var keyboard_grav;
 
@@ -43,6 +47,7 @@
         sound_hero_gravity: Phaser.Sound
         sound_hero_fire: Phaser.Sound
         sound_enemy_shoot: Phaser.Sound
+        victoryMusic: Phaser.Sound
 
         bullets: Phaser.Group
         enemyBullets: Phaser.Group
@@ -72,8 +77,9 @@
             this.sound_hero_jump = this.add.audio('hero_jump');
             this.sound_hero_fire = this.add.audio('hero_fire');
             this.sound_enemy_shoot = this.add.audio('enemy_shoot');
+            this.victoryMusic = this.add.audio('victory');
             this.music.play();
-
+            
             emitter = this.game.add.emitter(0, 0, 20);
             emitter.makeParticles('explosion_small');
             emitter.gravity = 200;
@@ -104,14 +110,16 @@
             enemiesDead = 0;
             var newEnemyX = 0;
             for (var i = 0; i < enemiesTotal; i++) {
-              
-                newEnemyX = this.game.rnd.integerInRange(newEnemyX + 1200, newEnemyX + 2200);
-                var anotherEnemy = new Enemy(this.game, newEnemyX, 300);
+                newEnemyX = this.game.rnd.integerInRange(newEnemyX + 1000, newEnemyX + 1800);
+                var anotherEnemy = new Enemy(this.game, newEnemyX, 100);
+                anotherEnemy.scale.setTo(enemy_scale, enemy_scale);
                 this.physics.arcade.enableBody(anotherEnemy);
                 enemies.push(anotherEnemy);
+                console.log('enemy created at ' + newEnemyX);
             }
 
-         
+            var spaceship = this.game.add.sprite(17080, 245, 'spaceship');
+
             first = true;
             floor = true;
             floorEnemy = true;
@@ -165,8 +173,17 @@
             /* When hero is alive */
             if (heroAlive) {
 
+                if (!levelComplete && this.hero.x >= 17150) {
+                    this.levelComplete();
+                }
+
                 /* this method will handle all collision events */
                 this.collideEverything();
+
+                if (bulletFired && bullet.x - this.hero.x >= 400) {
+                    this.resetBullet(bullet);
+                    bulletFired = false;
+                }
 
                 if (swapGravity) {
                     this.flipHero();
@@ -193,9 +210,9 @@
                 }
 
                 for (var j = enemiesDead; j < enemies.length; j++) {
-                    if (enemies[j].x - this.hero.x <= 575) {
+                    if (enemies[j].alive && enemies[j].x - this.hero.x <= 575) {
                         enemyBulletWait++;
-                        if (enemyBulletWait % 60 == 0) {
+                        if (enemyBulletWait % 75 == 0) {
                             this.fireEnemyBullet(enemies[j]);
                         }
                     }
@@ -220,10 +237,19 @@
 
         }
         timedUpdate() {
-            if (!game_over) {
+            if (!game_over && !levelComplete) {
                 score += 10;
                 this.background.tilePosition.x--;
             }
+        }
+
+        levelComplete() {
+            this.hero.kill();
+            this.enemyChase.kill();
+            this.deathBurst(this.enemyChase);
+            levelComplete = true;
+            this.victoryMusic.play();
+            this.music.stop();
         }
 
         heroEnemyCollide(hero, enemy) {
@@ -249,9 +275,8 @@
                 this.physics.arcade.overlap(this.bullets, enemies[i], this.heroShootsEnemy, null, this);
             }
 
-
             /* COMMENT THIS OUT TO REMOVE ENEMY BULLETS KILLING HERO. */
-//            this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
+            this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
 
 
             if (!game_over && (this.hero.body.y >= 512 || this.hero.body.y <= -100)) {
@@ -259,13 +284,22 @@
                 this.sound_hero_death.play();
                 this.itsGameOver();
             }
+
+            for (var i = 0; i < enemies.length; i++) {
+                if (!game_over && (enemies[i].y >= 512 || enemies[i].body.y <= -100)) {
+                    enemies[i].kill();
+                }
+            }
         }
         
         heroShootsEnemy(bullet, enemy) {
             this.deathBurst(enemy);
             bullet.kill();
             enemy.kill();
-            score += 10000;
+            if (enemyBullet) {
+                enemyBullet.kill();
+            }
+            enemiesKilled++;
         }
 
         enemyShootsHero(enemyBullet, hero) {
@@ -317,7 +351,7 @@
 
         fireBullet() {
             //  To avoid them being allowed to fire too fast we set a time limit
-            if (this.game.time.now > bulletTime) {
+            if (!levelComplete && this.game.time.now > bulletTime) {
                 //  Grab the first bullet we can from the pool
                 bullet = this.bullets.getFirstExists(false);
 
@@ -325,14 +359,15 @@
                     this.sound_hero_fire.play();
                     if (floor) {
                         if (first)                       
-                            bullet.reset(this.hero.body.x + 170, this.hero.y + 30);//  And fire it
+                            bullet.reset(this.hero.body.x + 140, this.hero.y + 20);//  And fire it
                         else
-                            bullet.reset(this.hero.x + 30, this.hero.y - 30);
+                            bullet.reset(this.hero.x + 32, this.hero.y - 22);
                     } else {
-                        bullet.reset(this.hero.x + 30, this.hero.y + 5);
+                        bullet.reset(this.hero.x + 35, this.hero.y);
                     }
-                    bullet.body.velocity.x = 10000;
+                    bullet.body.velocity.x = 5000;
                     bulletTime = this.game.time.now + 200;
+                    bulletFired = true;
                 }
             }
 
@@ -355,7 +390,7 @@
 
                 if (enemyBullet) {
                     this.sound_enemy_shoot.play();
-                    enemyBullet.reset(activeEnemy.body.x + 10, activeEnemy.y + 15);
+                    enemyBullet.reset(activeEnemy.body.x + 10, activeEnemy.y + 18);
                     enemyBullet.body.velocity.x = -250;
                     enemyBulletTime = this.game.time.now + 200;
                 }
@@ -375,8 +410,21 @@
         render() {
             //  The score
             this.game.debug.text(scoreString + score, 10, 35, 'white', '34px Arial');
-           // this.game.debug.spriteCoords(this.hero, 300, 300);
+            // this.game.debug.spriteCoords(this.hero, 300, 300);
             this.game.debug.text('Lives : ' + numLives, 648, 35, 'white', '34px Arial');
+            if (levelComplete) {
+                this.game.debug.text('Level 1 Complete', 200, 200, 'white', '50px Arial');
+                this.game.debug.text('Score: ' + score, 265, 260, 'white', '45px Arial');
+                this.game.debug.text('Enemies Killed: ' + enemiesKilled, 240, 350, 'white', '40px Arial');
+                this.game.debug.text('Bonus: ' + enemiesKilled * 5000, 285, 400, 'white', '40px Arial');
+                if (!bonusAdded) {
+                    for (var i = 0; i < 50000000; i++) { }
+                    for (var i = 0; i < enemiesKilled * 5000; i++) {
+                        score++;
+                    }
+                    bonusAdded = true;
+                }
+            }
         }
 
     }

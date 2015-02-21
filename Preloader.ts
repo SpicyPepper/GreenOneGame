@@ -36,7 +36,7 @@
             this.load.audio('hero_gravity', ['audio/hero_gravity.mp3', 'audio/hero_gravity.mp3']);
             this.load.audio('hero_jump', ['audio/hero_jump.mp3', 'audio/hero_jump.mp3']);
             this.load.audio('enemy_shoot', ['audio/enemy_shoot.mp3', 'audio/enemy_shoot.mp3']);
-
+            this.load.audio('victory', ['audio/victory.mp3', 'audio/victory.ogg']);
         }
 
         loadImages() {
@@ -47,7 +47,7 @@
             this.load.image('bullet', 'visuals/laser.png');
             this.load.image('enemybullet', 'visuals/enemylaser.png');
             this.load.image('background', 'visuals/bkgrnd_sand.png');
-
+            this.load.image('spaceship', 'visuals/spaceship.png');
         }
 
         loadMaps() {
@@ -62,7 +62,7 @@
 
             this.load.spritesheet('hero', 'visuals/test_runner.png', 138, 115);
             this.load.spritesheet('enemyChase', 'visuals/megaenemy.png', 56.66, 60);
-            this.load.spritesheet('enemy1', 'visuals/enemy1.png', 68, 99);
+            this.load.spritesheet('enemy1', 'visuals/enemy1.png', 68, 93);
         }
 
     }

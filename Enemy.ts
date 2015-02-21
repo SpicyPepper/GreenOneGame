@@ -2,6 +2,7 @@
 
     var cursors;
     var layer;
+    var startMoving;
 
 
     export class Enemy extends Phaser.Sprite {
@@ -13,6 +14,7 @@
 
             super(game, x, y, 'enemy1', 0);
             //layer = layerT;
+            startMoving = x;
             this.game.physics.arcade.enableBody(this);
             this.game.add.existing(this);
             //added
@@ -40,12 +42,13 @@
         }
 
         update() {
-            //
-
+            startMoving--;          
             //console.log("Hero " + gravityButton.isDown);
+
             this.body.velocity.y = 0;
-            this.body.velocity.x = -70;
-            //enemyChase.body.x = hero.body.x - 150;
+
+                this.body.velocity.x = -70;
+                //enemyChase.body.x = hero.body.x - 150;
 
             //if (gravityButton.isDown) {
            

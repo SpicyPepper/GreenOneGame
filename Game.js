@@ -258,11 +258,13 @@ var GravityGuy;
 (function (GravityGuy) {
     var cursors;
     var layer;
+    var startMoving;
     var Enemy = (function (_super) {
         __extends(Enemy, _super);
         function Enemy(game, x, y) {
             _super.call(this, game, x, y, 'enemy1', 0);
             //layer = layerT;
+            startMoving = x;
             this.game.physics.arcade.enableBody(this);
             this.game.add.existing(this);
             //added
@@ -279,7 +281,7 @@ var GravityGuy;
             //
         }
         Enemy.prototype.update = function () {
-            //
+            startMoving--;
             //console.log("Hero " + gravityButton.isDown);
             this.body.velocity.y = 0;
             this.body.velocity.x = -70;
@@ -427,9 +429,11 @@ var GravityGuy;
 (function (GravityGuy) {
     var bullet;
     var bulletTime = 0;
+    var bulletFired = false;
     var enemies;
     var enemiesTotal;
     var enemiesDead;
+    var enemiesKilled = 0;
     var enemyBullet;
     var enemyBulletTime = 0;
     var enemyBulletWait = 0;
@@ -450,8 +454,11 @@ var GravityGuy;
     var floor;
     var floorEnemy;
     var hero_scale = 0.7;
+    var enemy_scale = 0.8;
     var emitter;
+    var levelComplete = false;
     var game_over = false;
+    var bonusAdded = false;
     var swapGravity = false;
     var keyboard_grav;
     var Level1 = (function (_super) {
@@ -473,6 +480,7 @@ var GravityGuy;
             this.sound_hero_jump = this.add.audio('hero_jump');
             this.sound_hero_fire = this.add.audio('hero_fire');
             this.sound_enemy_shoot = this.add.audio('enemy_shoot');
+            this.victoryMusic = this.add.audio('victory');
             this.music.play();
             emitter = this.game.add.emitter(0, 0, 20);
             emitter.makeParticles('explosion_small');
@@ -496,11 +504,14 @@ var GravityGuy;
             enemiesDead = 0;
             var newEnemyX = 0;
             for (var i = 0; i < enemiesTotal; i++) {
-                newEnemyX = this.game.rnd.integerInRange(newEnemyX + 1200, newEnemyX + 2200);
-                var anotherEnemy = new GravityGuy.Enemy(this.game, newEnemyX, 300);
+                newEnemyX = this.game.rnd.integerInRange(newEnemyX + 1000, newEnemyX + 1800);
+                var anotherEnemy = new GravityGuy.Enemy(this.game, newEnemyX, 100);
+                anotherEnemy.scale.setTo(enemy_scale, enemy_scale);
                 this.physics.arcade.enableBody(anotherEnemy);
                 enemies.push(anotherEnemy);
+                console.log('enemy created at ' + newEnemyX);
             }
+            var spaceship = this.game.add.sprite(17080, 245, 'spaceship');
             first = true;
             floor = true;
             floorEnemy = true;
@@ -545,8 +556,15 @@ var GravityGuy;
         Level1.prototype.update = function () {
             /* When hero is alive */
             if (heroAlive) {
+                if (!levelComplete && this.hero.x >= 17150) {
+                    this.levelComplete();
+                }
                 /* this method will handle all collision events */
                 this.collideEverything();
+                if (bulletFired && bullet.x - this.hero.x >= 400) {
+                    this.resetBullet(bullet);
+                    bulletFired = false;
+                }
                 if (swapGravity) {
                     this.flipHero();
                     heroJumped = true;
@@ -568,9 +586,9 @@ var GravityGuy;
                     this.fireBullet();
                 }
                 for (var j = enemiesDead; j < enemies.length; j++) {
-                    if (enemies[j].x - this.hero.x <= 575) {
+                    if (enemies[j].alive && enemies[j].x - this.hero.x <= 575) {
                         enemyBulletWait++;
-                        if (enemyBulletWait % 60 == 0) {
+                        if (enemyBulletWait % 75 == 0) {
                             this.fireEnemyBullet(enemies[j]);
                         }
                     }
@@ -589,10 +607,18 @@ var GravityGuy;
             // this.enemies.   
         };
         Level1.prototype.timedUpdate = function () {
-            if (!game_over) {
+            if (!game_over && !levelComplete) {
                 score += 10;
                 this.background.tilePosition.x--;
             }
+        };
+        Level1.prototype.levelComplete = function () {
+            this.hero.kill();
+            this.enemyChase.kill();
+            this.deathBurst(this.enemyChase);
+            levelComplete = true;
+            this.victoryMusic.play();
+            this.music.stop();
         };
         Level1.prototype.heroEnemyCollide = function (hero, enemy) {
             this.deathBurst(hero);
@@ -614,18 +640,26 @@ var GravityGuy;
                 this.physics.arcade.overlap(this.bullets, enemies[i], this.heroShootsEnemy, null, this);
             }
             /* COMMENT THIS OUT TO REMOVE ENEMY BULLETS KILLING HERO. */
-            //            this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
+            this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
             if (!game_over && (this.hero.body.y >= 512 || this.hero.body.y <= -100)) {
                 this.hero.kill();
                 this.sound_hero_death.play();
                 this.itsGameOver();
+            }
+            for (var i = 0; i < enemies.length; i++) {
+                if (!game_over && (enemies[i].y >= 512 || enemies[i].body.y <= -100)) {
+                    enemies[i].kill();
+                }
             }
         };
         Level1.prototype.heroShootsEnemy = function (bullet, enemy) {
             this.deathBurst(enemy);
             bullet.kill();
             enemy.kill();
-            score += 10000;
+            if (enemyBullet) {
+                enemyBullet.kill();
+            }
+            enemiesKilled++;
         };
         Level1.prototype.enemyShootsHero = function (enemyBullet, hero) {
             this.deathBurst(hero);
@@ -672,22 +706,23 @@ var GravityGuy;
         };
         Level1.prototype.fireBullet = function () {
             //  To avoid them being allowed to fire too fast we set a time limit
-            if (this.game.time.now > bulletTime) {
+            if (!levelComplete && this.game.time.now > bulletTime) {
                 //  Grab the first bullet we can from the pool
                 bullet = this.bullets.getFirstExists(false);
                 if (bullet) {
                     this.sound_hero_fire.play();
                     if (floor) {
                         if (first)
-                            bullet.reset(this.hero.body.x + 170, this.hero.y + 30); //  And fire it
+                            bullet.reset(this.hero.body.x + 140, this.hero.y + 20); //  And fire it
                         else
-                            bullet.reset(this.hero.x + 30, this.hero.y - 30);
+                            bullet.reset(this.hero.x + 32, this.hero.y - 22);
                     }
                     else {
-                        bullet.reset(this.hero.x + 30, this.hero.y + 5);
+                        bullet.reset(this.hero.x + 35, this.hero.y);
                     }
-                    bullet.body.velocity.x = 10000;
+                    bullet.body.velocity.x = 5000;
                     bulletTime = this.game.time.now + 200;
+                    bulletFired = true;
                 }
             }
         };
@@ -702,7 +737,7 @@ var GravityGuy;
                 enemyBullet = this.enemyBullets.getFirstExists(false);
                 if (enemyBullet) {
                     this.sound_enemy_shoot.play();
-                    enemyBullet.reset(activeEnemy.body.x + 10, activeEnemy.y + 15);
+                    enemyBullet.reset(activeEnemy.body.x + 10, activeEnemy.y + 18);
                     enemyBullet.body.velocity.x = -250;
                     enemyBulletTime = this.game.time.now + 200;
                 }
@@ -717,6 +752,20 @@ var GravityGuy;
             this.game.debug.text(scoreString + score, 10, 35, 'white', '34px Arial');
             // this.game.debug.spriteCoords(this.hero, 300, 300);
             this.game.debug.text('Lives : ' + numLives, 648, 35, 'white', '34px Arial');
+            if (levelComplete) {
+                this.game.debug.text('Level 1 Complete', 200, 200, 'white', '50px Arial');
+                this.game.debug.text('Score: ' + score, 265, 260, 'white', '45px Arial');
+                this.game.debug.text('Enemies Killed: ' + enemiesKilled, 240, 350, 'white', '40px Arial');
+                this.game.debug.text('Bonus: ' + enemiesKilled * 5000, 285, 400, 'white', '40px Arial');
+                if (!bonusAdded) {
+                    for (var i = 0; i < 50000000; i++) {
+                    }
+                    for (var i = 0; i < enemiesKilled * 5000; i++) {
+                        score++;
+                    }
+                    bonusAdded = true;
+                }
+            }
         };
         return Level1;
     })(Phaser.State);
@@ -784,6 +833,7 @@ var GravityGuy;
             this.load.audio('hero_gravity', ['audio/hero_gravity.mp3', 'audio/hero_gravity.mp3']);
             this.load.audio('hero_jump', ['audio/hero_jump.mp3', 'audio/hero_jump.mp3']);
             this.load.audio('enemy_shoot', ['audio/enemy_shoot.mp3', 'audio/enemy_shoot.mp3']);
+            this.load.audio('victory', ['audio/victory.mp3', 'audio/victory.ogg']);
         };
         Preloader.prototype.loadImages = function () {
             this.load.image('explosion_small', 'visuals/explosion_small.png');
@@ -793,6 +843,7 @@ var GravityGuy;
             this.load.image('bullet', 'visuals/laser.png');
             this.load.image('enemybullet', 'visuals/enemylaser.png');
             this.load.image('background', 'visuals/bkgrnd_sand.png');
+            this.load.image('spaceship', 'visuals/spaceship.png');
         };
         Preloader.prototype.loadMaps = function () {
             // this.load.tilemap('level2', 'resources/level2.json', null, Phaser.Tilemap.TILED_JSON);
@@ -801,7 +852,7 @@ var GravityGuy;
         Preloader.prototype.loadSpritesheets = function () {
             this.load.spritesheet('hero', 'visuals/test_runner.png', 138, 115);
             this.load.spritesheet('enemyChase', 'visuals/megaenemy.png', 56.66, 60);
-            this.load.spritesheet('enemy1', 'visuals/enemy1.png', 68, 99);
+            this.load.spritesheet('enemy1', 'visuals/enemy1.png', 68, 93);
         };
         return Preloader;
     })(Phaser.State);
