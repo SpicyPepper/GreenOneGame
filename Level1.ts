@@ -31,7 +31,9 @@
     var hero_scale = 0.7;
     var enemy_scale = 0.8;
     var emitter;
-    var levelComplete = false;  
+    var levelComplete = false;
+    var respawn = true;  
+    var respawnButton;
     var game_over = false;
     var bonusAdded = false;
     var swapGravity = false;
@@ -66,6 +68,9 @@
             /*Working on key binding*/
             keyboard_grav = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
             keyboard_grav.onDown.add(this.attemptGravitySwap, this);
+
+            respawnButton = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
+
 
             this.physics.startSystem(Phaser.Physics.ARCADE);
             this.world.setBounds(0, 0, 800, 512);
@@ -113,7 +118,7 @@
             var newEnemyX = 0;
             for (var i = 0; i < enemiesTotal; i++) {
                 newEnemyX = this.game.rnd.integerInRange(newEnemyX + 1000, newEnemyX + 1800);
-                var anotherEnemy = new Enemy(this.game, newEnemyX, 100);
+                var anotherEnemy = new Enemy(this.game, newEnemyX, 50);
                 anotherEnemy.scale.setTo(enemy_scale, enemy_scale);
                 this.physics.arcade.enableBody(anotherEnemy);
                 enemies.push(anotherEnemy);
@@ -129,6 +134,8 @@
 
             gravityButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
             cursors = this.game.input.keyboard.createCursorKeys();
+            respawnButton = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
+
 
             /* ## HERE IS A CURRENT ATTEMPT AT IMPLEMENTING AN ENEMY GROUP. ##
              * ## MUST GET RID OF ENEMY[] ETC ## */
@@ -180,7 +187,9 @@
                 if (!levelComplete && this.hero.x >= 17150) {
                     this.levelComplete();
                 }
+               
 
+                
                 /* this method will handle all collision events */
                 this.collideEverything();
 
@@ -234,6 +243,49 @@
                 }
 
                 swapGravity = false;
+            } else { // HERO DEAD
+
+                this.collideEverything();
+                if (respawnButton.isDown && !respawn) {
+                    this.hero.reset(150, 300);
+                    this.enemyChase.reset(0, 300);
+                    respawn = true;
+                    score = 0;
+                    heroAlive = true;
+                    if (!floor) {
+                        this.flipHero();
+                        this.hero.body.gravity.y *= -1;
+                    }
+                    if (!floorEnemy) {
+                        this.flipEnemy();
+                        this.enemyChase.body.gravity.y *= -1;
+                    }
+                    this.hero.body.gravity.y = 20000;
+                    this.enemyChase.body.gravity.y = 18000;
+                    var newEnemyX = 0
+                    for (var i = 0; i < enemies.length; i++) {
+                        //enemies[i].revive();
+                        newEnemyX = this.game.rnd.integerInRange(newEnemyX + 1000, newEnemyX + 1800);
+                        enemies[i].reset(newEnemyX, 50);
+                    }
+                    //for (var i = 0; i < this.enemyBullets.length; i++) {
+                    //    if (this.enemyBullets[i] != undefined )
+                    //        this.enemyBullets[i].kill();
+                    //}
+                    //var bulletTemp = this.enemyBullets.getFirstExists(false);
+                    //while (bulletTemp) {
+                    //    console.log(bulletTemp);
+                    //    bulletTemp.kill();
+                    //    bulletTemp = this.enemyBullets.getFirstExists(false);
+
+                    //}
+
+                    //if (bullet != undefined)
+                    //    bullet.kill();
+                    //if(enemyBullet != undefined)
+                    //    enemyBullet.kill();
+                }
+
             }
         }
 
@@ -245,11 +297,16 @@
 
         itsGameOver() {
             game_over = true;
-           // this.enemies.   
+            heroAlive = false;
+            this.hero.kill()
+            this.enemyChase.kill(); 
+            for (var i = 0; i < enemies.length; i++) {
+                enemies[i].kill();
+            }
 
         }
         timedUpdate() {
-            if (!game_over && !levelComplete) {
+            if (!game_over && !levelComplete && respawn) {
                 score += 10;
                 this.background.tilePosition.x--;
             }
@@ -270,10 +327,16 @@
             this.sound_hero_death.play();
             enemy.kill();
             hero.kill();
-            this.itsGameOver();
+            if (numLives == 0) {
+                this.itsGameOver();
+            }
+            else {
+                numLives -= 1;
+                this.respawnHero();
+            }
         }
         
-
+        
         collideEverything() {
             this.physics.arcade.collide(this.hero, layer);
             this.physics.arcade.collide(this.enemyChase, layer);
@@ -288,13 +351,19 @@
             }
 
             /* COMMENT THIS OUT TO REMOVE ENEMY BULLETS KILLING HERO. */
-            this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
+            //this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
 
 
-            if (!game_over && (this.hero.body.y >= 512 || this.hero.body.y <= -100)) {
+            if (!game_over && heroAlive && (this.hero.body.y >= 512 || this.hero.body.y <= -100)) {
                 this.hero.kill();
                 this.sound_hero_death.play();
-                this.itsGameOver();
+                if (numLives == 0) {
+                    this.itsGameOver();
+                }
+                else {
+                    numLives -= 1;
+                    this.respawnHero();
+                }
             }
 
             for (var i = 0; i < enemies.length; i++) {
@@ -319,7 +388,13 @@
             this.sound_hero_death.play();
             enemyBullet.kill();
             hero.kill();
-            this.itsGameOver();
+            if (numLives == 0) {
+                this.itsGameOver();
+            }
+            else {
+                numLives -= 1;
+                this.respawnHero();
+            }
         }
 
         deathBurst(entity) {
@@ -430,6 +505,11 @@
 
         }
 
+        respawnHero() {
+            respawn = false;
+            heroAlive = false;
+        }
+
 
         resetEnemyBullet(enemyBullet) {
 
@@ -454,7 +534,27 @@
                     }
                     bonusAdded = true;
                 }
+            } else if (!respawn) {
+                this.game.debug.text("You Have Died......", 180, 200, 'white', '50px Arial');
+                this.game.debug.text("(you're bad, loser)", 180, 260, 'white', '50px Arial');
+                var count = 0;
+                //while (count < 10) {
+                this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Arial');
+                //score -= 1;
+                //count++;
+                //if (score <= 0) {
+                //    score = 0;
+                //}
+                //}
+                this.game.debug.text("Press 'R' to Respawn Baddie", 120, 420, 'white', '40px Arial');
+            } else if (game_over) {
+                this.game.debug.text("Game Over", 265, 200, 'white', '50px Arial');
+                this.game.debug.text("That was sad to watch...", 160, 260, 'white', '50px Arial');
+                //while (count < 10) {
+                this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Arial');
+                this.game.debug.text("That all you got? LOL", 180, 380, 'white', '45px Arial');
             }
+        
         }
 
     }

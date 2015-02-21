@@ -459,6 +459,8 @@ var GravityGuy;
     var enemy_scale = 0.8;
     var emitter;
     var levelComplete = false;
+    var respawn = true;
+    var respawnButton;
     var game_over = false;
     var bonusAdded = false;
     var swapGravity = false;
@@ -472,6 +474,7 @@ var GravityGuy;
             /*Working on key binding*/
             keyboard_grav = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
             keyboard_grav.onDown.add(this.attemptGravitySwap, this);
+            respawnButton = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
             this.physics.startSystem(Phaser.Physics.ARCADE);
             this.world.setBounds(0, 0, 800, 512);
             this.background = this.add.tileSprite(0, 0, 1024, 512, 'background');
@@ -507,7 +510,7 @@ var GravityGuy;
             var newEnemyX = 0;
             for (var i = 0; i < enemiesTotal; i++) {
                 newEnemyX = this.game.rnd.integerInRange(newEnemyX + 1000, newEnemyX + 1800);
-                var anotherEnemy = new GravityGuy.Enemy(this.game, newEnemyX, 100);
+                var anotherEnemy = new GravityGuy.Enemy(this.game, newEnemyX, 50);
                 anotherEnemy.scale.setTo(enemy_scale, enemy_scale);
                 this.physics.arcade.enableBody(anotherEnemy);
                 enemies.push(anotherEnemy);
@@ -520,6 +523,7 @@ var GravityGuy;
             floorOtherEnemy = true;
             gravityButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
             cursors = this.game.input.keyboard.createCursorKeys();
+            respawnButton = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
             /* ## HERE IS A CURRENT ATTEMPT AT IMPLEMENTING AN ENEMY GROUP. ##
              * ## MUST GET RID OF ENEMY[] ETC ## */
             //this.game.add.sprite(0, 0, 'enemy1');
@@ -610,16 +614,47 @@ var GravityGuy;
                 }
                 swapGravity = false;
             }
+            else {
+                this.collideEverything();
+                if (respawnButton.isDown && !respawn) {
+                    this.hero.reset(150, 300);
+                    this.enemyChase.reset(0, 300);
+                    respawn = true;
+                    score = 0;
+                    heroAlive = true;
+                    if (!floor) {
+                        this.flipHero();
+                        this.hero.body.gravity.y *= -1;
+                    }
+                    if (!floorEnemy) {
+                        this.flipEnemy();
+                        this.enemyChase.body.gravity.y *= -1;
+                    }
+                    this.hero.body.gravity.y = 20000;
+                    this.enemyChase.body.gravity.y = 18000;
+                    var newEnemyX = 0;
+                    for (var i = 0; i < enemies.length; i++) {
+                        //enemies[i].revive();
+                        newEnemyX = this.game.rnd.integerInRange(newEnemyX + 1000, newEnemyX + 1800);
+                        enemies[i].reset(newEnemyX, 50);
+                    }
+                }
+            }
         };
         Level1.prototype.attemptGravitySwap = function () {
             swapGravity = (this.hero.body.blocked.down || this.hero.body.blocked.up);
         };
         Level1.prototype.itsGameOver = function () {
             game_over = true;
-            // this.enemies.   
+            heroAlive = false;
+            this.hero.kill();
+            this.enemyChase.kill();
+            for (var i = 0; i < enemies.length; i++) {
+                enemies[i].kill();
+            }
         };
         Level1.prototype.timedUpdate = function () {
-            if (!game_over && !levelComplete) {
+            if (!game_over && !levelComplete && respawn) {
                 score += 10;
                 this.background.tilePosition.x--;
             }
@@ -638,7 +673,13 @@ var GravityGuy;
             this.sound_hero_death.play();
             enemy.kill();
             hero.kill();
-            this.itsGameOver();
+            if (numLives == 0) {
+                this.itsGameOver();
+            }
+            else {
+                numLives -= 1;
+                this.respawnHero();
+            }
         };
         Level1.prototype.collideEverything = function () {
             this.physics.arcade.collide(this.hero, layer);
@@ -652,11 +693,17 @@ var GravityGuy;
                 this.physics.arcade.overlap(this.bullets, enemies[i], this.heroShootsEnemy, null, this);
             }
             /* COMMENT THIS OUT TO REMOVE ENEMY BULLETS KILLING HERO. */
-            this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
-            if (!game_over && (this.hero.body.y >= 512 || this.hero.body.y <= -100)) {
+            //this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
+            if (!game_over && heroAlive && (this.hero.body.y >= 512 || this.hero.body.y <= -100)) {
                 this.hero.kill();
                 this.sound_hero_death.play();
-                this.itsGameOver();
+                if (numLives == 0) {
+                    this.itsGameOver();
+                }
+                else {
+                    numLives -= 1;
+                    this.respawnHero();
+                }
             }
             for (var i = 0; i < enemies.length; i++) {
                 if (!game_over && (enemies[i].y >= 512 || enemies[i].body.y <= -100)) {
@@ -678,7 +725,13 @@ var GravityGuy;
             this.sound_hero_death.play();
             enemyBullet.kill();
             hero.kill();
-            this.itsGameOver();
+            if (numLives == 0) {
+                this.itsGameOver();
+            }
+            else {
+                numLives -= 1;
+                this.respawnHero();
+            }
         };
         Level1.prototype.deathBurst = function (entity) {
             emitter.x = entity.body.x;
@@ -774,6 +827,10 @@ var GravityGuy;
                 }
             }
         };
+        Level1.prototype.respawnHero = function () {
+            respawn = false;
+            heroAlive = false;
+        };
         Level1.prototype.resetEnemyBullet = function (enemyBullet) {
             //  Called if the bullet goes out of the screen
             enemyBullet.kill();
@@ -794,6 +851,27 @@ var GravityGuy;
                     }
                     bonusAdded = true;
                 }
+            }
+            else if (!respawn) {
+                this.game.debug.text("You Have Died......", 180, 200, 'white', '50px Arial');
+                this.game.debug.text("(you're bad, loser)", 180, 260, 'white', '50px Arial');
+                var count = 0;
+                //while (count < 10) {
+                this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Arial');
+                //score -= 1;
+                //count++;
+                //if (score <= 0) {
+                //    score = 0;
+                //}
+                //}
+                this.game.debug.text("Press 'R' to Respawn Baddie", 120, 420, 'white', '40px Arial');
+            }
+            else if (game_over) {
+                this.game.debug.text("Game Over", 265, 200, 'white', '50px Arial');
+                this.game.debug.text("That was sad to watch...", 160, 260, 'white', '50px Arial');
+                //while (count < 10) {
+                this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Arial');
+                this.game.debug.text("That all you got? LOL", 180, 380, 'white', '45px Arial');
             }
         };
         return Level1;
