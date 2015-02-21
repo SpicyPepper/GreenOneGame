@@ -143,7 +143,7 @@
             this.bullets.createMultiple(30, 'bullet');
             this.bullets.setAll('anchor.x', 1);
             this.bullets.setAll('anchor.y', 0);
-            this.bullets.setAll('outOfBoundsKill', false);
+            this.bullets.setAll('outOfBoundsKill', true);
             this.bullets.setAll('checkWorldBounds', true);
 
             //end added 
@@ -216,12 +216,23 @@
 
         itsGameOver() {
             game_over = true;
-            
+           // this.enemies.   
 
         }
         timedUpdate() {
-            score += 10;
-            this.background.tilePosition.x -= 0.4;
+            if (!game_over) {
+                score += 10;
+                this.background.tilePosition.x--;
+            }
+        }
+
+        heroEnemyCollide(hero, enemy) {
+            this.deathBurst(hero);
+            this.deathBurst(enemy);
+            this.sound_hero_death.play();
+            enemy.kill();
+            hero.kill();
+            this.itsGameOver();
         }
         
 
@@ -232,6 +243,7 @@
 
             for (var i = 0; i < enemies.length; i++) {
                 this.physics.arcade.collide(enemies[i], layer);
+                this.physics.arcade.overlap(this.hero, enemies[i], this.heroEnemyCollide, null, this);
             }
             for (var i = 0; i < enemies.length; i++) {
                 this.physics.arcade.overlap(this.bullets, enemies[i], this.heroShootsEnemy, null, this);
@@ -239,7 +251,8 @@
 
 
             /* COMMENT THIS OUT TO REMOVE ENEMY BULLETS KILLING HERO. */
-            this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
+//            this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
+
 
             if (!game_over && (this.hero.body.y >= 512 || this.hero.body.y <= -100)) {
                 this.hero.kill();
@@ -249,26 +262,27 @@
         }
         
         heroShootsEnemy(bullet, enemy) {
+            this.deathBurst(enemy);
             bullet.kill();
             enemy.kill();
             score += 10000;
-            this.itsGameOver();
         }
 
         enemyShootsHero(enemyBullet, hero) {
-            this.shotExplosion(hero);
+            this.deathBurst(hero);
             this.sound_hero_death.play();
             enemyBullet.kill();
             hero.kill();
             this.itsGameOver();
         }
 
-        shotExplosion(entity) {
-            emitter.x = entity.x;
-            emitter.y = entity.y;
+        deathBurst(entity) {
+            emitter.x = entity.body.x;
+            emitter.y = entity.body.y;
 
             emitter.start(true, 1000, null, 10);
         }
+
         flipHero() {
 
             this.sound_hero_jump.play();

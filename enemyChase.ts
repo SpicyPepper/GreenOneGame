@@ -18,7 +18,7 @@
             this.animations.play('run', 10, true);
             this.game.physics.enable(this, Phaser.Physics.ARCADE);
             this.body.bounce.y = 0.2;
-            this.body.collideWorldBounds = true;
+            this.body.collideWorldBounds = false;
             this.body.allowRotation = true;
             this.body.gravity.y = 18000;
             this.anchor.setTo(0.5, 0);

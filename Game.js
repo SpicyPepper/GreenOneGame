@@ -271,7 +271,7 @@ var GravityGuy;
             this.animations.play('walk', 8, true);
             this.game.physics.enable(this, Phaser.Physics.ARCADE);
             this.body.bounce.y = 0.2;
-            this.body.collideWorldBounds = true;
+            this.body.collideWorldBounds = false;
             this.body.allowRotation = true;
             this.body.gravity.y = 18000;
             this.anchor.setTo(0.5, 0);
@@ -313,7 +313,7 @@ var GravityGuy;
             this.animations.play('run', 10, true);
             this.game.physics.enable(this, Phaser.Physics.ARCADE);
             this.body.bounce.y = 0.2;
-            this.body.collideWorldBounds = true;
+            this.body.collideWorldBounds = false;
             this.body.allowRotation = true;
             this.body.gravity.y = 18000;
             this.anchor.setTo(0.5, 0);
@@ -434,6 +434,7 @@ var GravityGuy;
     var enemyBulletTime = 0;
     var enemyBulletWait = 0;
     var enemyAlive = false;
+    var heroAlive = true;
     var enemyAliveCount;
     var scoreString = 'Score : ';
     var score_text;
@@ -469,7 +470,9 @@ var GravityGuy;
             this.music = this.add.audio('House');
             this.sound_hero_gravity = this.add.audio('hero_gravity');
             this.sound_hero_death = this.add.audio('hero_death');
+            this.sound_hero_jump = this.add.audio('hero_jump');
             this.sound_hero_fire = this.add.audio('hero_fire');
+            this.sound_enemy_shoot = this.add.audio('enemy_shoot');
             this.music.play();
             emitter = this.game.add.emitter(0, 0, 20);
             emitter.makeParticles('explosion_small');
@@ -526,7 +529,7 @@ var GravityGuy;
             this.bullets.createMultiple(30, 'bullet');
             this.bullets.setAll('anchor.x', 1);
             this.bullets.setAll('anchor.y', 0);
-            this.bullets.setAll('outOfBoundsKill', false);
+            this.bullets.setAll('outOfBoundsKill', true);
             this.bullets.setAll('checkWorldBounds', true);
             //end added 
             //Enemy Bullets
@@ -540,51 +543,64 @@ var GravityGuy;
             this.enemyBullets.setAll('checkWorldBounds', true);
         };
         Level1.prototype.update = function () {
-            /* this method will handle all collision events */
-            this.collideEverything();
-            if (swapGravity) {
-                this.flipHero();
-                heroJumped = true;
-                jumpLocation = this.hero.body.x;
-                this.hero.body.gravity.y = -this.hero.body.gravity.y;
-                first = false;
-            }
-            if (this.enemyChase.body.x >= jumpLocation && heroJumped && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
-                if (floorEnemy != floor) {
-                    this.flipEnemy();
-                    this.enemyChase.body.gravity.y = this.enemyChase.body.gravity.y * -1;
+            /* When hero is alive */
+            if (heroAlive) {
+                /* this method will handle all collision events */
+                this.collideEverything();
+                if (swapGravity) {
+                    this.flipHero();
+                    heroJumped = true;
+                    jumpLocation = this.hero.body.x;
+                    this.hero.body.gravity.y = -this.hero.body.gravity.y;
+                    first = false;
                 }
-                heroJumped = false;
-            }
-            if (this.enemyChase.body.x <= this.hero.body.x - 300) {
-                this.enemyChase.body.x = this.hero.body.x - 100;
-            }
-            if (cursors.right.isDown) {
-                this.fireBullet();
-            }
-            for (var j = enemiesDead; j < enemies.length; j++) {
-                if (enemies[j].x - this.hero.x <= 575) {
-                    enemyBulletWait++;
-                    if (enemyBulletWait % 60 == 0) {
-                        this.fireEnemyBullet(enemies[j]);
+                if (this.enemyChase.body.x >= jumpLocation && heroJumped && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
+                    if (floorEnemy != floor) {
+                        this.flipEnemy();
+                        this.enemyChase.body.gravity.y = this.enemyChase.body.gravity.y * -1;
+                    }
+                    heroJumped = false;
+                }
+                if (this.enemyChase.body.x <= this.hero.body.x - 300) {
+                    this.enemyChase.body.x = this.hero.body.x - 100;
+                }
+                if (cursors.right.isDown) {
+                    this.fireBullet();
+                }
+                for (var j = enemiesDead; j < enemies.length; j++) {
+                    if (enemies[j].x - this.hero.x <= 575) {
+                        enemyBulletWait++;
+                        if (enemyBulletWait % 60 == 0) {
+                            this.fireEnemyBullet(enemies[j]);
+                        }
+                    }
+                    if (enemies[j].x < this.hero.x) {
+                        enemiesDead++;
                     }
                 }
-                if (enemies[j].x < this.hero.x) {
-                    enemiesDead++;
-                }
+                swapGravity = false;
             }
-            swapGravity = false;
         };
         Level1.prototype.attemptGravitySwap = function () {
             swapGravity = (this.hero.body.blocked.down || this.hero.body.blocked.up);
         };
         Level1.prototype.itsGameOver = function () {
             game_over = true;
-            //other stuff can happen here.
+            // this.enemies.   
         };
         Level1.prototype.timedUpdate = function () {
-            score += 10;
-            this.background.tilePosition.x -= 0.4;
+            if (!game_over) {
+                score += 10;
+                this.background.tilePosition.x--;
+            }
+        };
+        Level1.prototype.heroEnemyCollide = function (hero, enemy) {
+            this.deathBurst(hero);
+            this.deathBurst(enemy);
+            this.sound_hero_death.play();
+            enemy.kill();
+            hero.kill();
+            this.itsGameOver();
         };
         Level1.prototype.collideEverything = function () {
             this.physics.arcade.collide(this.hero, layer);
@@ -592,12 +608,13 @@ var GravityGuy;
             this.physics.arcade.collide(this.enemies, layer);
             for (var i = 0; i < enemies.length; i++) {
                 this.physics.arcade.collide(enemies[i], layer);
+                this.physics.arcade.overlap(this.hero, enemies[i], this.heroEnemyCollide, null, this);
             }
             for (var i = 0; i < enemies.length; i++) {
                 this.physics.arcade.overlap(this.bullets, enemies[i], this.heroShootsEnemy, null, this);
             }
             /* COMMENT THIS OUT TO REMOVE ENEMY BULLETS KILLING HERO. */
-            //           this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
+            //            this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
             if (!game_over && (this.hero.body.y >= 512 || this.hero.body.y <= -100)) {
                 this.hero.kill();
                 this.sound_hero_death.play();
@@ -605,24 +622,25 @@ var GravityGuy;
             }
         };
         Level1.prototype.heroShootsEnemy = function (bullet, enemy) {
+            this.deathBurst(enemy);
             bullet.kill();
             enemy.kill();
             score += 10000;
-            this.itsGameOver();
         };
         Level1.prototype.enemyShootsHero = function (enemyBullet, hero) {
-            this.shotExplosion(hero);
+            this.deathBurst(hero);
             this.sound_hero_death.play();
             enemyBullet.kill();
             hero.kill();
             this.itsGameOver();
         };
-        Level1.prototype.shotExplosion = function (entity) {
-            emitter.x = entity.x;
-            emitter.y = entity.y;
+        Level1.prototype.deathBurst = function (entity) {
+            emitter.x = entity.body.x;
+            emitter.y = entity.body.y;
             emitter.start(true, 1000, null, 10);
         };
         Level1.prototype.flipHero = function () {
+            this.sound_hero_jump.play();
             this.sound_hero_gravity.play();
             if (floor) {
                 this.hero.anchor.setTo(1, .5); //so it flips around its middle
@@ -683,6 +701,7 @@ var GravityGuy;
                 //  Grab the first bullet we can from the pool
                 enemyBullet = this.enemyBullets.getFirstExists(false);
                 if (enemyBullet) {
+                    this.sound_enemy_shoot.play();
                     enemyBullet.reset(activeEnemy.body.x + 10, activeEnemy.y + 15);
                     enemyBullet.body.velocity.x = -250;
                     enemyBulletTime = this.game.time.now + 200;
@@ -763,6 +782,8 @@ var GravityGuy;
             this.load.audio('House', ['audio/Title_TechHouse.mp3', 'audio/Title_TechHouse.ogg']);
             this.load.audio('hero_fire', ['audio/hero_fire.mp3', 'audio/hero_fire.ogg']);
             this.load.audio('hero_gravity', ['audio/hero_gravity.mp3', 'audio/hero_gravity.mp3']);
+            this.load.audio('hero_jump', ['audio/hero_jump.mp3', 'audio/hero_jump.mp3']);
+            this.load.audio('enemy_shoot', ['audio/enemy_shoot.mp3', 'audio/enemy_shoot.mp3']);
         };
         Preloader.prototype.loadImages = function () {
             this.load.image('explosion_small', 'visuals/explosion_small.png');
