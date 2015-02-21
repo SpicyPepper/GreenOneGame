@@ -38,6 +38,8 @@
     var bonusAdded = false;
     var swapGravity = false;
     var keyboard_grav;
+    var firstTimeGameOver = true;
+    var timeDelay;
 
     export class Level1 extends Phaser.State {
 
@@ -86,6 +88,7 @@
             this.sound_enemy_shoot = this.add.audio('enemy_shoot');
             this.victoryMusic = this.add.audio('victory');
             this.music.play();
+            
             
             emitter = this.game.add.emitter(0, 0, 20);
             emitter.makeParticles('explosion_small');
@@ -176,6 +179,30 @@
             this.enemyBullets.setAll('anchor.y', 0);
             this.enemyBullets.setAll('outOfBoundsKill', false);
             this.enemyBullets.setAll('checkWorldBounds', true);
+
+            levelComplete = false;
+            respawn = true;
+            game_over = false;
+            bonusAdded = false;
+            swapGravity = false;
+            firstTimeGameOver = true;
+            bullet;
+            bulletTime = 0;
+            bulletFired = false;
+            enemies;
+            enemiesTotal;
+            enemiesDead;
+            enemiesKilled = 0;
+            enemyBullet;
+            enemyBulletTime = 0;
+            enemyBulletWait = 0;
+            enemyAlive = false;
+            heroAlive = true;
+            scoreString = 'Score : ';
+            score = 0;
+            numLives = 3;
+            heroJumped = false;
+            enemyJump = false;
 
         }
 
@@ -269,7 +296,7 @@
                         enemies[i].reset(newEnemyX, 50);
                     }
                     //for (var i = 0; i < this.enemyBullets.length; i++) {
-                    //    if (this.enemyBullets[i] != undefined )
+                    //   if (this.enemyBullets[i] != undefined )
                     //        this.enemyBullets[i].kill();
                     //}
                     //var bulletTemp = this.enemyBullets.getFirstExists(false);
@@ -284,6 +311,21 @@
                     //    bullet.kill();
                     //if(enemyBullet != undefined)
                     //    enemyBullet.kill();
+                } else if (game_over && numLives == 0) {
+                    if (firstTimeGameOver) {
+                        firstTimeGameOver = false;
+                        timeDelay = (Math.floor(this.game.time.time / 1000) % 60) + 5;
+                    }
+                    //var time = (Math.floor(this.game.time.time / 1000) % 60) + 500;
+                    //var currentTime = Math.floor(this.game.time.time / 1000) % 60;
+                    if ((Math.floor(this.game.time.time / 1000) % 60) >= timeDelay) {
+                        this.music.mute = true;
+                        console.log("WOOT");
+                        //this.create();
+                        this.game.state.start('GameOver', true, false);
+                    }
+                    
+
                 }
 
             }

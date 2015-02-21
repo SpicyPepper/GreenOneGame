@@ -374,11 +374,51 @@ var GravityGuy;
             this.state.add('Preloader', GravityGuy.Preloader, false);
             this.state.add('MainMenu', GravityGuy.MainMenu, false);
             this.state.add('Level1', GravityGuy.Level1, false);
+            this.state.add('GameOver', GravityGuy.GameOver, false);
             this.state.start('Boot');
         }
         return Game;
     })(Phaser.Game);
     GravityGuy.Game = Game;
+})(GravityGuy || (GravityGuy = {}));
+var GravityGuy;
+(function (GravityGuy) {
+    var GameOver = (function (_super) {
+        __extends(GameOver, _super);
+        function GameOver() {
+            _super.apply(this, arguments);
+        }
+        GameOver.prototype.create = function () {
+            this.song = this.add.audio('title_music');
+            this.song.play();
+            this.background = this.add.sprite(0, 0, 'titlepage');
+            this.background.alpha = 0;
+            this.logo = this.add.sprite(this.world.centerX, -300, 'title_planet');
+            this.logo.anchor.setTo(0.5, 0.5);
+            this.add.tween(this.background).to({ alpha: 1 }, 2000, Phaser.Easing.Bounce.InOut, true);
+            this.add.tween(this.logo).to({ alpha: 1 }, 6000, Phaser.Easing.Back.Out, true, 2000, 0, false);
+            this.input.onDown.addOnce(this.fadeOut, this);
+        };
+        GameOver.prototype.fadeOut = function () {
+            this.song.fadeOut(2000);
+            this.add.tween(this.background).to({ alpha: 0 }, 2000, Phaser.Easing.Linear.None, true);
+            var tween = this.add.tween(this.logo).to({ y: 800 }, 2000, Phaser.Easing.Linear.None, true);
+            tween.onComplete.add(this.startGame, this);
+        };
+        GameOver.prototype.startGame = function () {
+            this.song.destroy();
+            this.game.state.start('Level1', true, false);
+        };
+        GameOver.prototype.render = function () {
+            this.game.debug.text("Game Over", 265, 200, 'white', '50px Arial');
+            this.game.debug.text("That was sad to watch...", 160, 260, 'white', '50px Arial');
+            //while (count < 10) {
+            //this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Arial');
+            this.game.debug.text("Press a Key to Restart", 180, 380, 'white', '45px Arial');
+        };
+        return GameOver;
+    })(Phaser.State);
+    GravityGuy.GameOver = GameOver;
 })(GravityGuy || (GravityGuy = {}));
 var GravityGuy;
 (function (GravityGuy) {
@@ -465,6 +505,8 @@ var GravityGuy;
     var bonusAdded = false;
     var swapGravity = false;
     var keyboard_grav;
+    var firstTimeGameOver = true;
+    var timeDelay;
     var Level1 = (function (_super) {
         __extends(Level1, _super);
         function Level1() {
@@ -559,6 +601,29 @@ var GravityGuy;
             this.enemyBullets.setAll('anchor.y', 0);
             this.enemyBullets.setAll('outOfBoundsKill', false);
             this.enemyBullets.setAll('checkWorldBounds', true);
+            levelComplete = false;
+            respawn = true;
+            game_over = false;
+            bonusAdded = false;
+            swapGravity = false;
+            firstTimeGameOver = true;
+            bullet;
+            bulletTime = 0;
+            bulletFired = false;
+            enemies;
+            enemiesTotal;
+            enemiesDead;
+            enemiesKilled = 0;
+            enemyBullet;
+            enemyBulletTime = 0;
+            enemyBulletWait = 0;
+            enemyAlive = false;
+            heroAlive = true;
+            scoreString = 'Score : ';
+            score = 0;
+            numLives = 3;
+            heroJumped = false;
+            enemyJump = false;
         };
         Level1.prototype.update = function () {
             /* When hero is alive */
@@ -637,6 +702,20 @@ var GravityGuy;
                         //enemies[i].revive();
                         newEnemyX = this.game.rnd.integerInRange(newEnemyX + 1000, newEnemyX + 1800);
                         enemies[i].reset(newEnemyX, 50);
+                    }
+                }
+                else if (game_over && numLives == 0) {
+                    if (firstTimeGameOver) {
+                        firstTimeGameOver = false;
+                        timeDelay = (Math.floor(this.game.time.time / 1000) % 60) + 5;
+                    }
+                    //var time = (Math.floor(this.game.time.time / 1000) % 60) + 500;
+                    //var currentTime = Math.floor(this.game.time.time / 1000) % 60;
+                    if ((Math.floor(this.game.time.time / 1000) % 60) >= timeDelay) {
+                        this.music.mute = true;
+                        console.log("WOOT");
+                        //this.create();
+                        this.game.state.start('GameOver', true, false);
                     }
                 }
             }
