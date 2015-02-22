@@ -497,7 +497,7 @@
                 bullet = this.bullets.getFirstExists(false);
                 
                 if (bullet) {
-                    //this.physics.arcade.collide(bullet, layer);
+                    this.physics.arcade.collide(bullet, layer);
                     this.sound_hero_fire.play();
                     if (floor) {
                         if (first)                       
@@ -528,7 +528,7 @@
                 enemyBullet = this.enemyBullets.getFirstExists(false);
 
                 if (enemyBullet) {
-                    //this.physics.arcade.collide(enemyBullet, layer);
+                    this.physics.arcade.collide(enemyBullet, layer);
                     this.sound_enemy_shoot.play();
                     enemyBullet.reset(activeEnemy.body.x + 10, activeEnemy.y + 18);
                     enemyBullet.body.velocity.x = -250;
