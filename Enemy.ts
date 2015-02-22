@@ -7,9 +7,6 @@
 
     export class Enemy extends Phaser.Sprite {
 
-
-
-
         constructor(game: Phaser.Game, x: number, y: number) {
 
             super(game, x, y, 'enemy1', 0);
@@ -26,19 +23,9 @@
             this.body.collideWorldBounds = false;
             this.body.allowRotation = true;
             this.body.gravity.y = 18000;
-
-
-
             this.anchor.setTo(0.5, 0);
            
             //this.animations.add('walk', [0, 1, 2, 3, 4], 10, true);
-
-
-            
-
-            //
-           
-
         }
 
         update() {

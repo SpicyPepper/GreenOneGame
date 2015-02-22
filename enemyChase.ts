@@ -1,10 +1,6 @@
 ﻿module GravityGuy {
     
-    
- 
     export class enemyChase extends Phaser.Sprite {
-
-   
 
         constructor(game: Phaser.Game, x: number, y: number) {
 
@@ -27,8 +23,7 @@
         }
 
         update() {
-            //
-
+            
             //console.log("Hero " + gravityButton.isDown);
             this.body.velocity.y = 0;
             this.body.velocity.x = 400;
@@ -69,12 +64,8 @@
             else {
                 this.animations.frame = 0;
             }*/
-
         }
 
-
-
-      
         //flip() {
         //    if (floor) {
 

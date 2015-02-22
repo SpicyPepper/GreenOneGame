@@ -16,7 +16,6 @@ var first;
 var jumpLocation;
 var heroJumped = false;
 
-
     function preload() {
 
 //        game.load.tilemap('level1', 'resources/level1.json', null, Phaser.Tilemap.TILED_JSON);
@@ -28,7 +27,6 @@ var heroJumped = false;
         game.load.spritesheet('enemyChase', 'visuals/megaenemy.png', 56.66, 60);
 //        game.load.audio('DnB', ['audio/Title_DnB.mp3', 'audio/Title_DnB.ogg']);
         game.load.audio('House', ['audio/Title_TechHouse.mp3', 'audio/Title_TechHouse.ogg']);
-        
     }
     
     var music;
@@ -45,7 +43,6 @@ var heroJumped = false;
         background = game.add.tileSprite(0, 0, 1024, 512, 'background');
         background.fixedToCamera = true;
         
-
         //LEVEL :D
         map = game.add.tilemap('level2');
         //set collision
@@ -205,14 +202,12 @@ function flipEnemy() {
                 }
             }
         }
-
     }
 
     function resetBullet(bullet) {
 
         //  Called if the bullet goes out of the screen
         bullet.kill();
-
     }
 
     function render() {

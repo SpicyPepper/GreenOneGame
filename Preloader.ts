@@ -12,20 +12,17 @@
             this.loadMaps();
             this.loadSpritesheets();
             this.loadImages();
-
         }
 
         create() {
 
             var tween = this.add.tween(this.preloadBar).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
             tween.onComplete.add(this.startMainMenu, this);
-
         }
 
         startMainMenu() {
 
             this.game.state.start('MainMenu', true, false);
-
         }
 
         loadAudio() {
@@ -52,10 +49,8 @@
 
         loadMaps() {
 
-            
            // this.load.tilemap('level2', 'resources/level2.json', null, Phaser.Tilemap.TILED_JSON);
             this.load.tilemap('level_test', 'resources/level_test.json', null, Phaser.Tilemap.TILED_JSON);
-
         }
 
         loadSpritesheets() {
@@ -63,8 +58,7 @@
             this.load.spritesheet('hero', 'visuals/test_runner.png', 138, 115);
             this.load.spritesheet('enemyChase', 'visuals/megaenemy.png', 56.66, 60);
             this.load.spritesheet('enemy1', 'visuals/enemy1.png', 68, 93);
+            this.load.spritesheet('alien', 'visuals/alien.png', 100, 200);
         }
-
     }
-
 } 

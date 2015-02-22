@@ -3,11 +3,7 @@
     var cursors;
     var layer;
    
-  
     export class Hero extends Phaser.Sprite {
-
-   
- 
 
         constructor(game: Phaser.Game, x: number, y: number) {
 
@@ -26,23 +22,13 @@
             this.body.allowRotation = true;
             this.body.gravity.y = 20000;
 
-            
-            
             this.anchor.setTo(0.5, 0);
            
             //this.animations.add('walk', [0, 1, 2, 3, 4], 10, true);
-
-
-            
-
-            //
-           
-
         }
 
         update() {
-            //
-
+           
             //console.log("Hero " + gravityButton.isDown);
             this.body.velocity.y = 0;
             this.body.velocity.x = 400;

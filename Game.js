@@ -15,7 +15,6 @@ var first;
 var jumpLocation;
 var heroJumped = false;
 
-
     function preload() {
 
 //        game.load.tilemap('level1', 'resources/level1.json', null, Phaser.Tilemap.TILED_JSON);
@@ -27,7 +26,6 @@ var heroJumped = false;
         game.load.spritesheet('enemyChase', 'visuals/megaenemy.png', 56.66, 60);
 //        game.load.audio('DnB', ['audio/Title_DnB.mp3', 'audio/Title_DnB.ogg']);
         game.load.audio('House', ['audio/Title_TechHouse.mp3', 'audio/Title_TechHouse.ogg']);
-        
     }
     
     var music;
@@ -44,7 +42,6 @@ var heroJumped = false;
         background = game.add.tileSprite(0, 0, 1024, 512, 'background');
         background.fixedToCamera = true;
         
-
         //LEVEL :D
         map = game.add.tilemap('level2');
         //set collision
@@ -204,14 +201,12 @@ function flipEnemy() {
                 }
             }
         }
-
     }
 
     function resetBullet(bullet) {
 
         //  Called if the bullet goes out of the screen
         bullet.kill();
-
     }
 
     function render() {
@@ -278,7 +273,6 @@ var GravityGuy;
             this.body.gravity.y = 18000;
             this.anchor.setTo(0.5, 0);
             //this.animations.add('walk', [0, 1, 2, 3, 4], 10, true);
-            //
         }
         Enemy.prototype.update = function () {
             startMoving--;
@@ -322,7 +316,6 @@ var GravityGuy;
             //this.animations.add('walk', [0, 1, 2, 3, 4], 10, true);
         }
         enemyChase.prototype.update = function () {
-            //
             //console.log("Hero " + gravityButton.isDown);
             this.body.velocity.y = 0;
             this.body.velocity.x = 400;
@@ -443,10 +436,8 @@ var GravityGuy;
             this.body.gravity.y = 20000;
             this.anchor.setTo(0.5, 0);
             //this.animations.add('walk', [0, 1, 2, 3, 4], 10, true);
-            //
         }
         Hero.prototype.update = function () {
-            //
             //console.log("Hero " + gravityButton.isDown);
             this.body.velocity.y = 0;
             this.body.velocity.x = 400;
@@ -501,6 +492,7 @@ var GravityGuy;
     var levelComplete = false;
     var respawn = true;
     var respawnButton;
+    var escapeKey;
     var game_over = false;
     var bonusAdded = false;
     var swapGravity = false;
@@ -517,6 +509,8 @@ var GravityGuy;
             keyboard_grav = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
             keyboard_grav.onDown.add(this.attemptGravitySwap, this);
             respawnButton = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
+            /* If escape is pressed, game ends */
+            escapeKey = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
             this.physics.startSystem(Phaser.Physics.ARCADE);
             this.world.setBounds(0, 0, 800, 512);
             this.background = this.add.tileSprite(0, 0, 1024, 512, 'background');
@@ -537,7 +531,7 @@ var GravityGuy;
             this.map = this.add.tilemap('level_test');
             this.map.addTilesetImage('tileset_1');
             this.map.setCollisionByExclusion([]);
-            //      layer = this.map.createLayer('layer_1');
+            //    layer = this.map.createLayer('layer_1');
             layer = this.map.createLayer('layer_1');
             layer.resizeWorld();
             this.hero = new GravityGuy.Hero(this.game, 150, 300);
@@ -569,12 +563,13 @@ var GravityGuy;
             /* ## HERE IS A CURRENT ATTEMPT AT IMPLEMENTING AN ENEMY GROUP. ##
              * ## MUST GET RID OF ENEMY[] ETC ## */
             //this.game.add.sprite(0, 0, 'enemy1');
+            //this.game.add.sprite(0, 0, 'aien');
             //this.enemies = this.game.add.group();
             //for (var i = 0; i < 12; i++) {
             //    this.enemies.create(this.game.rnd.integerInRange(i * 1200,(i + 1) * 1200), 300, 'enemy1');
             //}
             //this.enemies.enableBody = true;
-            //this.enemies.createMultiple(24, 'enemy1');
+            //this.enemies.createMultiple(12, 'alien');
             //this.enemies.setAll('anchor.x', 0.5);
             //this.enemies.setAll('anchor.y', 0);
             //this.enemies.setAll('outOfBoundsKill', true);
@@ -628,6 +623,11 @@ var GravityGuy;
         Level1.prototype.update = function () {
             /* When hero is alive */
             if (heroAlive) {
+                if (escapeKey.isDown) {
+                    game_over = true;
+                    this.music.mute = true;
+                    this.game.state.start('GameOver', true, false);
+                }
                 if (!levelComplete && this.hero.x >= 17150) {
                     this.levelComplete();
                 }
@@ -1039,6 +1039,7 @@ var GravityGuy;
             this.load.spritesheet('hero', 'visuals/test_runner.png', 138, 115);
             this.load.spritesheet('enemyChase', 'visuals/megaenemy.png', 56.66, 60);
             this.load.spritesheet('enemy1', 'visuals/enemy1.png', 68, 93);
+            this.load.spritesheet('alien', 'visuals/alien.png', 100, 200);
         };
         return Preloader;
     })(Phaser.State);
