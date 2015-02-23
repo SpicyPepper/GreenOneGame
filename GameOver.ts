@@ -47,7 +47,7 @@
             this.game.debug.text("That was sad to watch...", 160, 260, 'white', '50px Arial');
             //while (count < 10) {
             //this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Arial');
-            this.game.debug.text("Press a Key to Restart", 180, 380, 'white', '45px Arial');
+            this.game.debug.text("Click Anywhere to Restart", 160, 380, 'white', '45px Arial');
         }
            
 
