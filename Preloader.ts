@@ -2,6 +2,18 @@
 
     export class Preloader extends Phaser.State {
 
+        //  The Google WebFont Loader will look for this object, so create it before loading the script.
+        WebFontConfig = {
+
+            //  'active' means all requested fonts have finished loading
+            //active: function () { this.time.events.add(Phaser.Timer.SECOND, createText, this); },
+
+            //  The Google Fonts we want to load ( you can specify as many as you like in the array)
+            google: {
+                families: ['Revalia']
+            }
+        };
+
         preloadBar: Phaser.Sprite;
 
         preload() {
@@ -12,6 +24,9 @@
             this.loadMaps();
             this.loadSpritesheets();
             this.loadImages();
+
+            //  Load the Google WebFont Loader script - STILL WORKING ON THIS
+            this.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
         }
 
         create() {

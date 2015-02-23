@@ -500,6 +500,8 @@ var GravityGuy;
     var keyboard_grav;
     var firstTimeGameOver = true;
     var timeDelay;
+    var text = null;
+    var grd;
     var Level1 = (function (_super) {
         __extends(Level1, _super);
         function Level1() {
@@ -561,6 +563,7 @@ var GravityGuy;
             gravityButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
             cursors = this.game.input.keyboard.createCursorKeys();
             respawnButton = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
+            //text = this.add.text(this.world.centerX, game.world.centerY, "- phaser -\nrocking with\ngoogle web fonts");
             /* ## HERE IS A CURRENT ATTEMPT AT IMPLEMENTING AN ENEMY GROUP. ##
              * ## MUST GET RID OF ENEMY[] ETC ## */
             //this.game.add.sprite(0, 0, 'enemy1');
@@ -1026,6 +1029,15 @@ var GravityGuy;
         __extends(Preloader, _super);
         function Preloader() {
             _super.apply(this, arguments);
+            //  The Google WebFont Loader will look for this object, so create it before loading the script.
+            this.WebFontConfig = {
+                //  'active' means all requested fonts have finished loading
+                //active: function () { this.time.events.add(Phaser.Timer.SECOND, createText, this); },
+                //  The Google Fonts we want to load ( you can specify as many as you like in the array)
+                google: {
+                    families: ['Revalia']
+                }
+            };
         }
         Preloader.prototype.preload = function () {
             this.preloadBar = this.add.sprite(250, 470, 'preloadBar');
@@ -1034,6 +1046,8 @@ var GravityGuy;
             this.loadMaps();
             this.loadSpritesheets();
             this.loadImages();
+            //  Load the Google WebFont Loader script - STILL WORKING ON THIS
+            this.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
         };
         Preloader.prototype.create = function () {
             var tween = this.add.tween(this.preloadBar).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);

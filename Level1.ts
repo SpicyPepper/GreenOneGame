@@ -41,6 +41,8 @@
     var keyboard_grav;
     var firstTimeGameOver = true;
     var timeDelay;
+    var text = null;
+    var grd;
 
     export class Level1 extends Phaser.State {
 
@@ -140,6 +142,7 @@
             cursors = this.game.input.keyboard.createCursorKeys();
             respawnButton = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
 
+            //text = this.add.text(this.world.centerX, game.world.centerY, "- phaser -\nrocking with\ngoogle web fonts");
 
             /* ## HERE IS A CURRENT ATTEMPT AT IMPLEMENTING AN ENEMY GROUP. ##
              * ## MUST GET RID OF ENEMY[] ETC ## */
