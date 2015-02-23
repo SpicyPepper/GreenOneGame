@@ -524,6 +524,7 @@ var GravityGuy;
             this.sound_hero_jump = this.add.audio('hero_jump');
             this.sound_hero_fire = this.add.audio('hero_fire');
             this.sound_enemy_shoot = this.add.audio('enemy_shoot');
+            this.sound_hero_enemyChase_collision = this.add.audio('hero_enemyChase_collision');
             this.victoryMusic = this.add.audio('victory');
             this.music.play();
             emitter = this.game.add.emitter(0, 0, 20);
@@ -764,6 +765,7 @@ var GravityGuy;
         };
         /* Case where Megaman Catches up with Hero, death ensues */
         Level1.prototype.heroEnemyChaseCollide = function (hero, enemyChase) {
+            this.sound_hero_enemyChase_collision.play();
             this.deathBurst(hero);
             this.deathBurst(enemyChase);
             this.sound_hero_death.play();
@@ -1065,6 +1067,7 @@ var GravityGuy;
             this.load.audio('hero_jump', ['audio/hero_jump.mp3', 'audio/hero_jump.mp3']);
             this.load.audio('enemy_shoot', ['audio/enemy_shoot.mp3', 'audio/enemy_shoot.mp3']);
             this.load.audio('victory', ['audio/victory.mp3', 'audio/victory.ogg']);
+            this.load.audio('hero_enemyChase_collision', ['audio/hero_enemyChase_collision.mp3', 'audio/hero_enemyChase_collision.mp3']);
         };
         Preloader.prototype.loadImages = function () {
             this.load.image('explosion_small', 'visuals/explosion_small.png');

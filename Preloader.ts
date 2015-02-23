@@ -49,6 +49,8 @@
             this.load.audio('hero_jump', ['audio/hero_jump.mp3', 'audio/hero_jump.mp3']);
             this.load.audio('enemy_shoot', ['audio/enemy_shoot.mp3', 'audio/enemy_shoot.mp3']);
             this.load.audio('victory', ['audio/victory.mp3', 'audio/victory.ogg']);
+            this.load.audio('hero_enemyChase_collision', ['audio/hero_enemyChase_collision.mp3', 'audio/hero_enemyChase_collision.mp3']);
+
         }
 
         loadImages() {

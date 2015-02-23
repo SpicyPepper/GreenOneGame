@@ -57,6 +57,7 @@
         sound_hero_fire: Phaser.Sound
         sound_enemy_shoot: Phaser.Sound
         victoryMusic: Phaser.Sound
+        sound_hero_enemyChase_collision: Phaser.Sound
 
         bullets: Phaser.Group
         enemyBullets: Phaser.Group
@@ -90,6 +91,7 @@
             this.sound_hero_jump = this.add.audio('hero_jump');
             this.sound_hero_fire = this.add.audio('hero_fire');
             this.sound_enemy_shoot = this.add.audio('enemy_shoot');
+            this.sound_hero_enemyChase_collision = this.add.audio('hero_enemyChase_collision');
             this.victoryMusic = this.add.audio('victory');
             this.music.play();
             
@@ -378,6 +380,7 @@
 
         /* Case where Megaman Catches up with Hero, death ensues */ 
         heroEnemyChaseCollide(hero, enemyChase) {
+            this.sound_hero_enemyChase_collision.play();
             this.deathBurst(hero);
             this.deathBurst(enemyChase);
             this.sound_hero_death.play();
