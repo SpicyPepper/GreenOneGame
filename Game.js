@@ -306,7 +306,7 @@ var GravityGuy;
             //added
             //this.game = game;
             this.animations.add('run');
-            this.animations.play('run', 10, true);
+            this.animations.play('run', 15, true);
             this.game.physics.enable(this, Phaser.Physics.ARCADE);
             this.body.bounce.y = 0.2;
             this.body.collideWorldBounds = false;
@@ -1093,7 +1093,7 @@ var GravityGuy;
         };
         Preloader.prototype.loadSpritesheets = function () {
             this.load.spritesheet('hero', 'visuals/test_runner.png', 138, 115);
-            this.load.spritesheet('enemyChase', 'visuals/megaenemy.png', 56.66, 60);
+            this.load.spritesheet('enemyChase', 'visuals/mega_enemy.png', 47, 38);
             this.load.spritesheet('enemy1', 'visuals/enemy1.png', 68, 93);
             this.load.spritesheet('alien', 'visuals/alien.png', 100, 200);
         };
