@@ -435,6 +435,7 @@ var GravityGuy;
             this.body.allowRotation = true;
             this.body.gravity.y = 20000;
             this.anchor.setTo(0.5, 0);
+            //this.body.collides(enemyChase, enemyCollidesHero, this)
             //this.animations.add('walk', [0, 1, 2, 3, 4], 10, true);
         }
         Hero.prototype.update = function () {
@@ -563,7 +564,7 @@ var GravityGuy;
             /* ## HERE IS A CURRENT ATTEMPT AT IMPLEMENTING AN ENEMY GROUP. ##
              * ## MUST GET RID OF ENEMY[] ETC ## */
             //this.game.add.sprite(0, 0, 'enemy1');
-            //this.game.add.sprite(0, 0, 'aien');
+            //this.game.add.sprite(0, 0, 'alien');
             //this.enemies = this.game.add.group();
             //for (var i = 0; i < 12; i++) {
             //    this.enemies.create(this.game.rnd.integerInRange(i * 1200,(i + 1) * 1200), 300, 'enemy1');
@@ -758,6 +759,21 @@ var GravityGuy;
                 this.respawnHero();
             }
         };
+        /* Case where Megaman Catches up with Hero, death ensues */
+        Level1.prototype.heroEnemyChaseCollide = function (hero, enemyChase) {
+            this.deathBurst(hero);
+            this.deathBurst(enemyChase);
+            this.sound_hero_death.play();
+            enemyChase.kill();
+            hero.kill();
+            if (numLives == 0) {
+                this.itsGameOver();
+            }
+            else {
+                numLives -= 1;
+                this.respawnHero();
+            }
+        };
         Level1.prototype.collideEverything = function () {
             this.physics.arcade.collide(this.hero, layer);
             this.physics.arcade.collide(this.enemyChase, layer);
@@ -771,6 +787,8 @@ var GravityGuy;
             }
             /* COMMENT THIS OUT TO REMOVE ENEMY BULLETS KILLING HERO. */
             this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
+            /* Megaman chasing hero and kills hero */
+            this.physics.arcade.overlap(this.enemyChase, this.hero, this.enemyCollidesHero, null, this);
             if (!game_over && heroAlive && (this.hero.body.y >= 512 || this.hero.body.y <= -100)) {
                 this.hero.kill();
                 this.sound_hero_death.play();
@@ -786,6 +804,19 @@ var GravityGuy;
                 if (!game_over && (enemies[i].y >= 512 || enemies[i].body.y <= -100)) {
                     enemies[i].kill();
                 }
+            }
+        };
+        /* This function is to kill hero when collide with megaman*/
+        Level1.prototype.enemyCollidesHero = function (enemyChase, hero) {
+            this.deathBurst(hero);
+            this.sound_hero_death.play();
+            hero.kill();
+            if (numLives == 0) {
+                this.itsGameOver();
+            }
+            else {
+                numLives -= 1;
+                this.respawnHero();
             }
         };
         Level1.prototype.heroShootsEnemy = function (bullet, enemy) {

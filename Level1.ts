@@ -144,7 +144,7 @@
             /* ## HERE IS A CURRENT ATTEMPT AT IMPLEMENTING AN ENEMY GROUP. ##
              * ## MUST GET RID OF ENEMY[] ETC ## */
             //this.game.add.sprite(0, 0, 'enemy1');
-            //this.game.add.sprite(0, 0, 'aien');
+            //this.game.add.sprite(0, 0, 'alien');
 
             //this.enemies = this.game.add.group();
             //for (var i = 0; i < 12; i++) {
@@ -372,7 +372,22 @@
                 this.respawnHero();
             }
         }
-        
+
+        /* Case where Megaman Catches up with Hero, death ensues */ 
+        heroEnemyChaseCollide(hero, enemyChase) {
+            this.deathBurst(hero);
+            this.deathBurst(enemyChase);
+            this.sound_hero_death.play();
+            enemyChase.kill();
+            hero.kill();
+            if (numLives == 0) {
+                this.itsGameOver();
+            }
+            else {
+                numLives -= 1;
+                this.respawnHero();
+            }
+        }
         
         collideEverything() {
             this.physics.arcade.collide(this.hero, layer);
@@ -389,6 +404,9 @@
 
             /* COMMENT THIS OUT TO REMOVE ENEMY BULLETS KILLING HERO. */
             this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
+
+            /* Megaman chasing hero and kills hero */
+            this.physics.arcade.overlap(this.enemyChase, this.hero, this.enemyCollidesHero, null, this);
 
             if (!game_over && heroAlive && (this.hero.body.y >= 512 || this.hero.body.y <= -100)) {
                 this.hero.kill();
@@ -407,6 +425,22 @@
                 }
             }
         }
+
+        /* This function is to kill hero when collide with megaman*/
+        enemyCollidesHero(enemyChase, hero) {
+            this.deathBurst(hero);
+            this.sound_hero_death.play();
+            hero.kill();
+            if (numLives == 0) {
+                this.itsGameOver();
+            }
+            else {
+                numLives -= 1;
+                this.respawnHero();
+            }
+        }
+
+
         
         heroShootsEnemy(bullet, enemy) {
             this.deathBurst(enemy);

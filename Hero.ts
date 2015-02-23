@@ -23,6 +23,8 @@
             this.body.gravity.y = 20000;
 
             this.anchor.setTo(0.5, 0);
+
+            //this.body.collides(enemyChase, enemyCollidesHero, this)
            
             //this.animations.add('walk', [0, 1, 2, 3, 4], 10, true);
         }
