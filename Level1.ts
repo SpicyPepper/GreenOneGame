@@ -215,9 +215,11 @@
 
         update() {
 
+            this.collideEverything();
             /* When hero is alive */
             if (heroAlive) {
 
+                console.log("WHY: " + floor + " " + this.hero.body.gravity.y);
                 if (escapeKey.isDown) {
                     game_over = true;
                     this.music.mute = true;
@@ -228,7 +230,7 @@
                 }
                 
                 /* this method will handle all collision events */
-                this.collideEverything();
+                //this.collideEverything();
 
                 if (bulletFired && bullet.x - this.hero.x >= 400) {
                     this.resetBullet(bullet);
@@ -277,24 +279,35 @@
                 }
                 swapGravity = false;
             } else { // HERO DEAD
+                swapGravity = false;
+                
+                console.log(this.hero.body.gravity.y);
+                
+                if (this.hero.body.gravity.y < 0)
+                    this.hero.body.gravity.y = this.hero.body.gravity.y * -1;
+                if (this.enemyChase.body.gravity.y < 0)
+                    this.enemyChase.body.gravity.y = this.enemyChase.body.gravity.y * -1;
+                if (!floor) {
+                    this.flipHero();
 
-                this.collideEverything();
+                }
+                if (!floorEnemy) {
+                    this.flipEnemy();
+
+                } 
+                floor = true;
                 if (respawnButton.isDown && !respawn) {
                     this.hero.reset(150, 300);
                     this.enemyChase.reset(0, 300);
                     respawn = true;
                     score = 0;
                     heroAlive = true;
-                    if (!floor) {
-                        this.flipHero();
-                        this.hero.body.gravity.y *= -1;
-                    }
-                    if (!floorEnemy) {
-                        this.flipEnemy();
-                        this.enemyChase.body.gravity.y *= -1;
-                    }
-                    this.hero.body.gravity.y = 20000;
-                    this.enemyChase.body.gravity.y = 18000;
+                    
+                    
+                    floor = true;
+                   
+                    //this.hero.body.gravity.y = 20000;
+                    //this.enemyChase.body.gravity.y = 18000;
                     var newEnemyX = 0
                     for (var i = 0; i < enemies.length; i++) {
                         //enemies[i].revive();
@@ -444,6 +457,11 @@
                 numLives -= 1;
                 this.respawnHero();
             }
+            heroAlive = false;
+
+
+
+
         }
 
 

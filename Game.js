@@ -407,7 +407,7 @@ var GravityGuy;
             this.game.debug.text("That was sad to watch...", 160, 260, 'white', '50px Arial');
             //while (count < 10) {
             //this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Arial');
-            this.game.debug.text("Press a Key to Restart", 180, 380, 'white', '45px Arial');
+            this.game.debug.text("Click Anywhere to Restart", 160, 380, 'white', '45px Arial');
         };
         return GameOver;
     })(Phaser.State);
@@ -626,8 +626,10 @@ var GravityGuy;
             enemyJump = false;
         };
         Level1.prototype.update = function () {
+            this.collideEverything();
             /* When hero is alive */
             if (heroAlive) {
+                console.log("WHY: " + floor + " " + this.hero.body.gravity.y);
                 if (escapeKey.isDown) {
                     game_over = true;
                     this.music.mute = true;
@@ -637,7 +639,7 @@ var GravityGuy;
                     this.levelComplete();
                 }
                 /* this method will handle all collision events */
-                this.collideEverything();
+                //this.collideEverything();
                 if (bulletFired && bullet.x - this.hero.x >= 400) {
                     this.resetBullet(bullet);
                     bulletFired = false;
@@ -685,23 +687,28 @@ var GravityGuy;
                 swapGravity = false;
             }
             else {
-                this.collideEverything();
+                swapGravity = false;
+                console.log(this.hero.body.gravity.y);
+                if (this.hero.body.gravity.y < 0)
+                    this.hero.body.gravity.y = this.hero.body.gravity.y * -1;
+                if (this.enemyChase.body.gravity.y < 0)
+                    this.enemyChase.body.gravity.y = this.enemyChase.body.gravity.y * -1;
+                if (!floor) {
+                    this.flipHero();
+                }
+                if (!floorEnemy) {
+                    this.flipEnemy();
+                }
+                floor = true;
                 if (respawnButton.isDown && !respawn) {
                     this.hero.reset(150, 300);
                     this.enemyChase.reset(0, 300);
                     respawn = true;
                     score = 0;
                     heroAlive = true;
-                    if (!floor) {
-                        this.flipHero();
-                        this.hero.body.gravity.y *= -1;
-                    }
-                    if (!floorEnemy) {
-                        this.flipEnemy();
-                        this.enemyChase.body.gravity.y *= -1;
-                    }
-                    this.hero.body.gravity.y = 20000;
-                    this.enemyChase.body.gravity.y = 18000;
+                    floor = true;
+                    //this.hero.body.gravity.y = 20000;
+                    //this.enemyChase.body.gravity.y = 18000;
                     var newEnemyX = 0;
                     for (var i = 0; i < enemies.length; i++) {
                         //enemies[i].revive();
@@ -823,6 +830,7 @@ var GravityGuy;
                 numLives -= 1;
                 this.respawnHero();
             }
+            heroAlive = false;
         };
         Level1.prototype.heroShootsEnemy = function (bullet, enemy) {
             this.deathBurst(enemy);
