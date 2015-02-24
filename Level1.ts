@@ -100,8 +100,8 @@
             emitter.gravity = 200;
 
             //LEVEL :D
-           // this.map = this.add.tilemap('level2');
-            this.map = this.add.tilemap('level_test');
+             this.map = this.add.tilemap('level_test');
+          //  this.map = this.add.tilemap('joels_level'); //### HERE IS TEST MAP. SWAP TO PLAY SHITTY LEVEL. PLEASE SOMEONE MAKE A DIFFERENT ONE.
             this.map.addTilesetImage('tileset_1');
 
             this.map.setCollisionByExclusion([]);
@@ -117,7 +117,7 @@
 
             this.enemyChase = new enemyChase(this.game, 0, 300);
             this.physics.arcade.enableBody(this.enemyChase);
-            this.time.events.loop(50, this.timedUpdate, this);
+            this.time.events.loop(25, this.timedUpdate, this);
             
             enemies = [];
 
@@ -130,7 +130,7 @@
                 anotherEnemy.scale.setTo(enemy_scale, enemy_scale);
                 this.physics.arcade.enableBody(anotherEnemy);
                 enemies.push(anotherEnemy);
-                console.log('enemy created at ' + newEnemyX);
+            //    console.log('enemy created at ' + newEnemyX);
             }
 
             var spaceship = this.game.add.sprite(17080, 245, 'spaceship');
@@ -145,25 +145,6 @@
             respawnButton = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
 
             //text = this.add.text(this.world.centerX, game.world.centerY, "- phaser -\nrocking with\ngoogle web fonts");
-
-            /* ## HERE IS A CURRENT ATTEMPT AT IMPLEMENTING AN ENEMY GROUP. ##
-             * ## MUST GET RID OF ENEMY[] ETC ## */
-            //this.game.add.sprite(0, 0, 'enemy1');
-            //this.game.add.sprite(0, 0, 'alien');
-
-            //this.enemies = this.game.add.group();
-            //for (var i = 0; i < 12; i++) {
-            //    this.enemies.create(this.game.rnd.integerInRange(i * 1200,(i + 1) * 1200), 300, 'enemy1');
-            //}
-            //this.enemies.enableBody = true;
-            //this.enemies.createMultiple(12, 'alien');
-            //this.enemies.setAll('anchor.x', 0.5);
-            //this.enemies.setAll('anchor.y', 0);
-            //this.enemies.setAll('outOfBoundsKill', true);
-            //this.enemies.setAll('checkWorldBounds', true);
-            //this.enemies.setAll('gravity.y', 18000);
-            //this.enemies.callAll('animations.add', 'animations', 'walk');
-            //this.enemies.callAll('play', 8, true);
 
             //Bullets
             this.bullets = this.game.add.group();
@@ -219,7 +200,7 @@
             /* When hero is alive */
             if (heroAlive) {
 
-                console.log("WHY: " + floor + " " + this.hero.body.gravity.y);
+               // console.log("WHY: " + floor + " " + this.hero.body.gravity.y);
                 if (escapeKey.isDown) {
                     game_over = true;
                     this.music.mute = true;
@@ -281,7 +262,7 @@
             } else { // HERO DEAD
                 swapGravity = false;
                 
-                console.log(this.hero.body.gravity.y);
+             //   console.log(this.hero.body.gravity.y);
                 
                 if (this.hero.body.gravity.y < 0)
                     this.hero.body.gravity.y = this.hero.body.gravity.y * -1;
@@ -363,7 +344,7 @@
         timedUpdate() {
             if (!game_over && !levelComplete && respawn) {
                 score += 10;
-                this.background.tilePosition.x--;
+                this.background.tilePosition.x -= 4;
             }
         }
 
@@ -498,7 +479,7 @@
         }
 
         flipHero() {
-
+            score += 100;
             this.sound_hero_jump.play();
             this.sound_hero_gravity.play();
             if (floor) {                                           

@@ -26,7 +26,7 @@
             
             //console.log("Hero " + gravityButton.isDown);
             this.body.velocity.y = 0;
-            this.body.velocity.x = 400;
+            this.body.velocity.x = 450;
             //enemyChase.body.x = hero.body.x - 150;
 
             //if (gravityButton.isDown) {

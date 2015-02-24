@@ -20,7 +20,7 @@
             this.body.collideWorldBounds = false;
             this.game.camera.follow(this);
             this.body.allowRotation = true;
-            this.body.gravity.y = 20000;
+            this.body.gravity.y = 22000;
 
             this.anchor.setTo(0.5, 0);
 
@@ -33,7 +33,7 @@
            
             //console.log("Hero " + gravityButton.isDown);
             this.body.velocity.y = 0;
-            this.body.velocity.x = 400;
+            this.body.velocity.x = 450;
             //enemyChase.body.x = hero.body.x - 150;
 
             //if (gravityButton.isDown) {
