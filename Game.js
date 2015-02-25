@@ -417,6 +417,10 @@ var GravityGuy;
 (function (GravityGuy) {
     var cursors;
     var layer;
+    var oldXpos;
+    var offset;
+    var currDistance;
+    var oldDistance;
     var Hero = (function (_super) {
         __extends(Hero, _super);
         function Hero(game, x, y) {
@@ -431,27 +435,46 @@ var GravityGuy;
             this.game.physics.enable(this, Phaser.Physics.ARCADE);
             this.body.bounce.y = 0.2;
             this.body.collideWorldBounds = false;
-            this.game.camera.follow(this);
+            //this.game.camera.follow(this);
             this.body.allowRotation = true;
             this.body.gravity.y = 22000;
             this.anchor.setTo(0.5, 0);
+            oldXpos = this.x;
+            offset = 0;
+            currDistance = 0;
+            oldDistance = -5;
             //this.body.collides(enemyChase, enemyCollidesHero, this)
             //this.animations.add('walk', [0, 1, 2, 3, 4], 10, true);
         }
         Hero.prototype.update = function () {
-            //console.log("Hero " + gravityButton.isDown);
-            this.body.velocity.y = 0;
-            this.body.velocity.x = 450;
-            //enemyChase.body.x = hero.body.x - 150;
-            //if (gravityButton.isDown) {
-            //if (gravityButton.isDown && this.body.blocked.down || gravityButton.isDown && this.body.blocked.up) {
-            //    this.flipHero();
-            //    heroJumped = true;
-            //    jumpLocation = this.body.x;
-            //    this.body.gravity.y = this.body.gravity.y * -1;
-            //    //game.physics.arcade.gravity.y = game.physics.arcade.gravity.y * -1;
-            //    first = false;
-            //}
+            if (this.alive) {
+                this.body.velocity.y = 0;
+                this.body.velocity.x = 450;
+                this.game.camera.focusOnXY(this.x + offset, this.y);
+                if (Math.abs((this.x - oldXpos)) < 1) {
+                    currDistance = Math.abs((this.x - this.game.camera.x - 400));
+                    if (currDistance >= oldDistance) {
+                        offset += 6;
+                    }
+                }
+                else {
+                    if (offset >= 3) {
+                        offset -= 3;
+                    }
+                }
+                console.log(offset);
+                oldDistance = currDistance;
+                oldXpos = this.x;
+                if (this.game.camera.x >= this.x) {
+                    this.kill();
+                }
+            }
+            else {
+                offset = 0;
+                oldDistance = 0;
+                currDistance = 0;
+                oldXpos = this.x;
+            }
         };
         return Hero;
     })(Phaser.Sprite);
@@ -460,29 +483,29 @@ var GravityGuy;
 var GravityGuy;
 (function (GravityGuy) {
     var bullet;
-    var bulletTime = 0;
-    var bulletFired = false;
+    var bulletTime;
+    var bulletFired;
     var enemies;
     var enemiesTotal;
     var enemiesDead;
-    var enemiesKilled = 0;
+    var enemiesKilled;
     var enemyBullet;
-    var enemyBulletTime = 0;
-    var enemyBulletWait = 0;
-    var enemyAlive = false;
-    var heroAlive = true;
+    var enemyBulletTime;
+    var enemyBulletWait;
+    var enemyAlive;
+    var heroAlive;
     var enemyAliveCount;
-    var scoreString = 'Score : ';
+    var scoreString;
     var score_text;
-    var score = 0;
+    var score;
     var lives;
-    var numLives = 3;
+    var numLives;
     var layer;
     var gravityButton;
     var cursors;
     var jumpLocation;
-    var heroJumped = false;
-    var enemyJump = false;
+    var heroJumped;
+    var enemyJump;
     var first;
     var floor;
     var floorEnemy;
@@ -490,17 +513,17 @@ var GravityGuy;
     var hero_scale = 0.7;
     var enemy_scale = 0.8;
     var emitter;
-    var levelComplete = false;
-    var respawn = true;
+    var levelComplete;
+    var respawn;
     var respawnButton;
     var escapeKey;
-    var game_over = false;
-    var bonusAdded = false;
-    var swapGravity = false;
+    var game_over;
+    var bonusAdded;
+    var swapGravity;
     var keyboard_grav;
-    var firstTimeGameOver = true;
+    var firstTimeGameOver;
     var timeDelay;
-    var text = null;
+    var text;
     var grd;
     var Level1 = (function (_super) {
         __extends(Level1, _super);
@@ -608,6 +631,17 @@ var GravityGuy;
             enemyJump = false;
         };
         Level1.prototype.update = function () {
+            if (this.hero.alive === false && heroAlive === true) {
+                this.deathBurst(this.hero);
+                this.sound_hero_death.play();
+                if (numLives == 0) {
+                    this.itsGameOver();
+                }
+                else {
+                    numLives -= 1;
+                    this.respawnHero();
+                }
+            }
             this.collideEverything();
             /* When hero is alive */
             if (heroAlive) {
@@ -688,6 +722,7 @@ var GravityGuy;
                     respawn = true;
                     score = 0;
                     heroAlive = true;
+                    this.hero.alive = true;
                     floor = true;
                     //this.hero.body.gravity.y = 20000;
                     //this.enemyChase.body.gravity.y = 18000;

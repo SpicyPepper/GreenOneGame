@@ -1,29 +1,29 @@
 ﻿module GravityGuy {
 
     var bullet;
-    var bulletTime = 0;
-    var bulletFired = false;
+    var bulletTime;
+    var bulletFired;
     var enemies;
     var enemiesTotal;
     var enemiesDead;
-    var enemiesKilled = 0;
+    var enemiesKilled;
     var enemyBullet;
-    var enemyBulletTime = 0;
-    var enemyBulletWait = 0;
-    var enemyAlive = false;
-    var heroAlive = true;
+    var enemyBulletTime;
+    var enemyBulletWait;
+    var enemyAlive;
+    var heroAlive;
     var enemyAliveCount;
-    var scoreString = 'Score : ';
+    var scoreString;
     var score_text;
-    var score = 0;
+    var score;
     var lives;
-    var numLives = 3;
+    var numLives;
     var layer; 
     var gravityButton;
     var cursors;
     var jumpLocation;
-    var heroJumped = false;
-    var enemyJump = false;
+    var heroJumped;
+    var enemyJump;
     var first;
     var floor;
     var floorEnemy;
@@ -31,17 +31,17 @@
     var hero_scale = 0.7;
     var enemy_scale = 0.8;
     var emitter;
-    var levelComplete = false;
-    var respawn = true;  
+    var levelComplete;
+    var respawn;  
     var respawnButton;
     var escapeKey;
-    var game_over = false;
-    var bonusAdded = false;
-    var swapGravity = false;
+    var game_over;
+    var bonusAdded;
+    var swapGravity;
     var keyboard_grav;
-    var firstTimeGameOver = true;
+    var firstTimeGameOver;
     var timeDelay;
-    var text = null;
+    var text;
     var grd;
 
     export class Level1 extends Phaser.State {
@@ -196,6 +196,18 @@
 
         update() {
 
+            if (this.hero.alive === false && heroAlive === true) {
+                this.deathBurst(this.hero);
+                this.sound_hero_death.play();
+                if (numLives == 0) {
+                    this.itsGameOver();
+                }
+                else {
+                    numLives -= 1;
+                    this.respawnHero();
+                }
+
+            }
             this.collideEverything();
             /* When hero is alive */
             if (heroAlive) {
@@ -283,7 +295,7 @@
                     respawn = true;
                     score = 0;
                     heroAlive = true;
-                    
+                    this.hero.alive = true;
                     
                     floor = true;
                    

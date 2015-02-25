@@ -2,6 +2,10 @@
  
     var cursors;
     var layer;
+    var oldXpos;
+    var offset;
+    var currDistance;
+    var oldDistance;
    
     export class Hero extends Phaser.Sprite {
 
@@ -18,12 +22,15 @@
             this.game.physics.enable(this, Phaser.Physics.ARCADE);
             this.body.bounce.y = 0.2;
             this.body.collideWorldBounds = false;
-            this.game.camera.follow(this);
+            //this.game.camera.follow(this);
             this.body.allowRotation = true;
             this.body.gravity.y = 22000;
 
             this.anchor.setTo(0.5, 0);
-
+            oldXpos = this.x;
+            offset = 0;
+            currDistance = 0;
+            oldDistance = -5;
             //this.body.collides(enemyChase, enemyCollidesHero, this)
            
             //this.animations.add('walk', [0, 1, 2, 3, 4], 10, true);
@@ -31,22 +38,39 @@
 
         update() {
            
-            //console.log("Hero " + gravityButton.isDown);
-            this.body.velocity.y = 0;
-            this.body.velocity.x = 450;
-            //enemyChase.body.x = hero.body.x - 150;
+            
+            if (this.alive) {
+                this.body.velocity.y = 0;
+                this.body.velocity.x = 450;
 
-            //if (gravityButton.isDown) {
-           
-            //if (gravityButton.isDown && this.body.blocked.down || gravityButton.isDown && this.body.blocked.up) {
+                this.game.camera.focusOnXY(this.x + offset, this.y);
 
-            //    this.flipHero();
-            //    heroJumped = true;
-            //    jumpLocation = this.body.x;
-            //    this.body.gravity.y = this.body.gravity.y * -1;
-            //    //game.physics.arcade.gravity.y = game.physics.arcade.gravity.y * -1;
-            //    first = false;
-            //}
+                if (Math.abs((this.x - oldXpos)) < 1/* && count > 50*/) {
+                    currDistance = Math.abs((this.x - this.game.camera.x - 400));
+                    if (currDistance >= oldDistance) {
+                        offset += 6;
+                    }
+                }
+                else {
+                    if (offset >= 3) {
+                        offset -= 3;
+                    }
+
+                }
+                console.log(offset);
+                oldDistance = currDistance;
+
+                oldXpos = this.x;
+
+                if (this.game.camera.x >= this.x) {
+                    this.kill();
+                }
+            } else {
+                offset = 0;
+                oldDistance = 0;
+                currDistance = 0;
+                oldXpos = this.x;
+            }
 
         }
 
