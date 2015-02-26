@@ -1108,6 +1108,7 @@ var GravityGuy;
         Preloader.prototype.loadMaps = function () {
             this.load.tilemap('joels_level', 'resources/joels_level.json', null, Phaser.Tilemap.TILED_JSON);
             this.load.tilemap('level_test', 'resources/level_test.json', null, Phaser.Tilemap.TILED_JSON);
+            this.load.tilemap('Level_3', 'resources/Level_3.json', null, Phaser.Tilemap.TILED_JSON);
         };
         Preloader.prototype.loadSpritesheets = function () {
             this.load.spritesheet('hero', 'visuals/test_runner.png', 138, 115);
