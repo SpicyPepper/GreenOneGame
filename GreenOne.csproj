@@ -33,6 +33,7 @@
     <TypeScriptCompile Include="Hero.ts" />
     <TypeScriptCompile Include="IntroLevel.ts" />
     <TypeScriptCompile Include="Level1.ts" />
+    <TypeScriptCompile Include="Level2.ts" />
     <TypeScriptCompile Include="MainMenu.ts" />
     <TypeScriptCompile Include="phaser.d.ts" />
     <TypeScriptCompile Include="pixi.d.ts" />

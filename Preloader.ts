@@ -61,6 +61,7 @@
             this.load.image('bullet', 'visuals/laser.png');
             this.load.image('enemybullet', 'visuals/enemylaser.png');
             this.load.image('background', 'visuals/bkgrnd_sand.png');
+            this.load.image('background2', 'visuals/surface_macbeth.png');
             this.load.image('spaceship', 'visuals/spaceship.png');
         }
 

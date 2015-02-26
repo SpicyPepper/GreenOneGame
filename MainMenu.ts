@@ -9,7 +9,6 @@
 
         create() {
 
-
             this.song = this.add.audio('title_music');
             this.song.play();
 
@@ -39,7 +38,7 @@
         startGame() {
             this.song.destroy();
             this.game.state.start('Level1', true, false);
-
+            
         }
 
     }

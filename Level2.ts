@@ -45,7 +45,7 @@
     var text;
     var grd;
 
-    export class Level1 extends Phaser.State {
+    export class Level2 extends Phaser.State {
 
         background: Phaser.TileSprite;
 
@@ -83,7 +83,7 @@
             this.physics.startSystem(Phaser.Physics.ARCADE);
             this.world.setBounds(0, 0, 800, 512);
 
-            this.background = this.add.tileSprite(0, 0, 1024, 512, 'background');
+            this.background = this.add.tileSprite(0, 0, 1024, 512, 'background2');
             this.background.fixedToCamera = true;
 
             this.music = this.add.audio('House');
@@ -101,8 +101,8 @@
             emitter.gravity = 200;
 
             //LEVEL :D
-            this.map = this.add.tilemap('level_test');
-            //  this.map = this.add.tilemap('joels_level'); //### HERE IS TEST MAP. SWAP TO PLAY SHITTY LEVEL. PLEASE SOMEONE MAKE A DIFFERENT ONE.
+            //this.map = this.add.tilemap('level_test');
+            this.map = this.add.tilemap('joels_level'); //### HERE IS TEST MAP. SWAP TO PLAY SHITTY LEVEL. PLEASE SOMEONE MAKE A DIFFERENT ONE.
             this.map.addTilesetImage('tileset_1');
 
             this.map.setCollisionByExclusion([]);
@@ -279,7 +279,6 @@
                 }
                 console.log("OUTSIDE: " + jumpLocationList.length);
 
-
                 for (var i = 0; i < jumpLocationList.length; i++) {
                     console.log("IN");
                     if (this.enemyChase.body.x >= jumpLocationList[i] && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
@@ -297,7 +296,6 @@
                     }
                 }
                 //END NEW
-
 
                 for (var j = enemiesDead; j < enemies.length; j++) {
                     if (enemies[j].alive && enemies[j].x - this.hero.x <= 400 && enemies[j].y - this.hero.y > 25) {
@@ -423,12 +421,6 @@
             levelComplete = true;
             this.victoryMusic.play();
             this.music.stop();
-            this.input.onDown.addOnce(this.fadeOut, this);
-            // Transitions to the Second Level after completing the first level
-         //   this.game.state.start('Level2', true, false);
-        }
-        fadeOut() {
-            this.game.state.start('Level2', true, false);
         }
 
         heroEnemyCollide(hero, enemy) {
@@ -513,7 +505,13 @@
                 this.respawnHero();
             }
             heroAlive = false;
+
+
+
+
         }
+
+
 
         heroShootsEnemy(bullet, enemy) {
             this.deathBurst(enemy);
