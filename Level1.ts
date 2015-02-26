@@ -18,10 +18,11 @@
     var score;
     var lives;
     var numLives;
-    var layer; 
+    var layer;
     var gravityButton;
     var cursors;
     var jumpLocation;
+    var jumpLocationList = [];
     var heroJumped;
     var enemyJump;
     var first;
@@ -32,7 +33,7 @@
     var enemy_scale = 0.8;
     var emitter;
     var levelComplete;
-    var respawn;  
+    var respawn;
     var respawnButton;
     var escapeKey;
     var game_over;
@@ -49,7 +50,7 @@
         background: Phaser.TileSprite;
 
         map: Phaser.Tilemap
- 
+
         music: Phaser.Sound
         sound_hero_death: Phaser.Sound
         sound_hero_jump: Phaser.Sound
@@ -94,21 +95,21 @@
             this.sound_hero_enemyChase_collision = this.add.audio('hero_enemyChase_collision');
             this.victoryMusic = this.add.audio('victory');
             this.music.play();
-            
+
             emitter = this.game.add.emitter(0, 0, 20);
             emitter.makeParticles('explosion_small');
             emitter.gravity = 200;
 
             //LEVEL :D
-             this.map = this.add.tilemap('level_test');
-          //  this.map = this.add.tilemap('joels_level'); //### HERE IS TEST MAP. SWAP TO PLAY SHITTY LEVEL. PLEASE SOMEONE MAKE A DIFFERENT ONE.
+            this.map = this.add.tilemap('level_test');
+            //  this.map = this.add.tilemap('joels_level'); //### HERE IS TEST MAP. SWAP TO PLAY SHITTY LEVEL. PLEASE SOMEONE MAKE A DIFFERENT ONE.
             this.map.addTilesetImage('tileset_1');
 
             this.map.setCollisionByExclusion([]);
 
-      //    layer = this.map.createLayer('layer_1');
+            //    layer = this.map.createLayer('layer_1');
             layer = this.map.createLayer('layer_1');
-        
+
             layer.resizeWorld();
 
             this.hero = new Hero(this.game, 150, 300);
@@ -118,7 +119,7 @@
             this.enemyChase = new enemyChase(this.game, 0, 300);
             this.physics.arcade.enableBody(this.enemyChase);
             this.time.events.loop(25, this.timedUpdate, this);
-            
+
             enemies = [];
 
             enemiesTotal = 30;
@@ -130,11 +131,11 @@
                 anotherEnemy.scale.setTo(enemy_scale, enemy_scale);
                 this.physics.arcade.enableBody(anotherEnemy);
                 enemies.push(anotherEnemy);
-            //    console.log('enemy created at ' + newEnemyX);
+                //    console.log('enemy created at ' + newEnemyX);
             }
 
             var spaceship = this.game.add.sprite(17080, 245, 'spaceship');
- 
+
             first = true;
             floor = true;
             floorEnemy = true;
@@ -212,7 +213,27 @@
             /* When hero is alive */
             if (heroAlive) {
 
-               // console.log("WHY: " + floor + " " + this.hero.body.gravity.y);
+                if (this.enemyChase.x < (this.hero.x - 300) || this.enemyChase.y < (this.hero.y - 512) || this.enemyChase.y > (this.hero.y + 512)) {
+                    this.enemyChase.x = this.hero.x - 200;
+                    this.enemyChase.y = this.hero.y;
+                    if (floorEnemy != floor) {
+                        this.enemyChase.body.gravity.y = this.enemyChase.body.gravity.y * -1;
+                        this.flipEnemy();
+                    }
+                    floorEnemy = floor;
+
+                    jumpLocationList = [];
+                }
+
+                if (this.enemyChase.x > (this.hero.x)) {
+                    this.enemyChase.x = this.hero.x - 5;
+                    if (floorEnemy != floor)
+                        this.flipEnemy();
+                    floorEnemy = floor;
+                    jumpLocationList = [];
+                }
+
+                // console.log("WHY: " + floor + " " + this.hero.body.gravity.y);
                 if (escapeKey.isDown) {
                     game_over = true;
                     this.music.mute = true;
@@ -229,20 +250,55 @@
                     this.resetBullet(bullet);
                     bulletFired = false;
                 }
+                //DON'T REMOVE
+                //if (swapGravity) {
+                //    this.flipHero();
+                //    heroJumped = true;
+                //    jumpLocation = this.hero.body.x;
+                //    //jumpLocationList.push(jumpLocation);
+                //    this.hero.body.gravity.y = -this.hero.body.gravity.y;
+                //    first = false;
+                //}
+
+                //if (this.enemyChase.body.x >= jumpLocation && heroJumped && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
+                //    if (floorEnemy != floor) {
+                //        this.flipEnemy();
+                //        this.enemyChase.body.gravity.y = this.enemyChase.body.gravity.y * -1;
+                //    }
+                //    heroJumped = false;
+                //}
+                //END DON'T REMOVE
+                //NEW
                 if (swapGravity) {
                     this.flipHero();
-                    heroJumped = true;
+                    //heroJumped = true;
                     jumpLocation = this.hero.body.x;
+                    jumpLocationList.push(jumpLocation);
                     this.hero.body.gravity.y = -this.hero.body.gravity.y;
                     first = false;
                 }
-                if (this.enemyChase.body.x >= jumpLocation && heroJumped && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
-                    if (floorEnemy != floor) {
+                console.log("OUTSIDE: " + jumpLocationList.length);
+
+
+                for (var i = 0; i < jumpLocationList.length; i++) {
+                    console.log("IN");
+                    if (this.enemyChase.body.x >= jumpLocationList[i] && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
+                        // if (floorEnemy != floor) {
                         this.flipEnemy();
                         this.enemyChase.body.gravity.y = this.enemyChase.body.gravity.y * -1;
+
+                        jumpLocationList.splice(i, 1);
+                        
+                        // }
+
+                        //heroJumped = false;
+                    } else {
+                        break;
                     }
-                    heroJumped = false;
                 }
+                //END NEW
+
+
                 for (var j = enemiesDead; j < enemies.length; j++) {
                     if (enemies[j].alive && enemies[j].x - this.hero.x <= 400 && enemies[j].y - this.hero.y > 25) {
                         if (enemyJump && (enemies[j].body.blocked.down || enemies[j].body.blocked.up)) {
@@ -273,8 +329,8 @@
                 swapGravity = false;
             } else { // HERO DEAD
                 swapGravity = false;
-                
-             //   console.log(this.hero.body.gravity.y);
+                jumpLocationList = [];
+                //   console.log(this.hero.body.gravity.y);
                 
                 if (this.hero.body.gravity.y < 0)
                     this.hero.body.gravity.y = this.hero.body.gravity.y * -1;
@@ -287,7 +343,7 @@
                 if (!floorEnemy) {
                     this.flipEnemy();
 
-                } 
+                }
                 floor = true;
                 if (respawnButton.isDown && !respawn) {
                     this.hero.reset(150, 300);
@@ -296,7 +352,7 @@
                     score = 0;
                     heroAlive = true;
                     this.hero.alive = true;
-                    
+
                     floor = true;
                    
                     //this.hero.body.gravity.y = 20000;
@@ -347,7 +403,7 @@
             game_over = true;
             heroAlive = false;
             this.hero.kill()
-            this.enemyChase.kill(); 
+            this.enemyChase.kill();
             for (var i = 0; i < enemies.length; i++) {
                 enemies[i].kill();
             }
@@ -384,7 +440,7 @@
             }
         }
 
-        /* Case where Megaman Catches up with Hero, death ensues */ 
+        /* Case where Megaman Catches up with Hero, death ensues */
         heroEnemyChaseCollide(hero, enemyChase) {
             this.sound_hero_enemyChase_collision.play();
             this.deathBurst(hero);
@@ -400,7 +456,7 @@
                 this.respawnHero();
             }
         }
-        
+
         collideEverything() {
             this.physics.arcade.collide(this.hero, layer);
             this.physics.arcade.collide(this.enemyChase, layer);
@@ -458,7 +514,7 @@
         }
 
 
-        
+
         heroShootsEnemy(bullet, enemy) {
             this.deathBurst(enemy);
             bullet.kill();
@@ -494,14 +550,14 @@
             score += 100;
             this.sound_hero_jump.play();
             this.sound_hero_gravity.play();
-            if (floor) {                                           
+            if (floor) {
                 this.hero.anchor.setTo(1, .5); //so it flips around its middle
                 this.hero.scale.y = -hero_scale; //flipped
-                enemyJump = true;           
+                enemyJump = true;
             } else {
                 this.hero.anchor.setTo(1, .5); //so it flips around its middle
                 this.hero.scale.y = hero_scale; //flipped
-                enemyJump = false;           
+                enemyJump = false;
             }
             floor = !floor;
         }
@@ -510,7 +566,7 @@
             this.sound_hero_gravity.play();
             if (floorEnemy) {
                 this.enemyChase.anchor.setTo(1, .5); //so it flips around its middle
-              //  this.enemyChase.scale.y = 1; //facing default direction
+                //  this.enemyChase.scale.y = 1; //facing default direction
                 this.enemyChase.scale.y = -1; //flipped
                 floorEnemy = false;
             } else {
@@ -546,12 +602,12 @@
             if (!levelComplete && this.game.time.now > bulletTime) {
                 //  Grab the first bullet we can from the pool
                 bullet = this.bullets.getFirstExists(false);
-                
+
                 if (bullet) {
                     this.physics.arcade.collide(bullet, layer);
                     this.sound_hero_fire.play();
                     if (floor) {
-                        if (first)                       
+                        if (first)
                             bullet.reset(this.hero.body.x + 140, this.hero.y + 20);//  And fire it
                         else
                             bullet.reset(this.hero.x + 32, this.hero.y - 22);
@@ -564,7 +620,7 @@
                 }
             }
         }
-       
+
         resetBullet(bullet) {
 
             //  Called if the bullet goes out of the screen

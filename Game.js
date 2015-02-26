@@ -504,6 +504,7 @@ var GravityGuy;
     var gravityButton;
     var cursors;
     var jumpLocation;
+    var jumpLocationList = [];
     var heroJumped;
     var enemyJump;
     var first;
@@ -645,6 +646,23 @@ var GravityGuy;
             this.collideEverything();
             /* When hero is alive */
             if (heroAlive) {
+                if (this.enemyChase.x < (this.hero.x - 300) || this.enemyChase.y < (this.hero.y - 512) || this.enemyChase.y > (this.hero.y + 512)) {
+                    this.enemyChase.x = this.hero.x - 200;
+                    this.enemyChase.y = this.hero.y;
+                    if (floorEnemy != floor) {
+                        this.enemyChase.body.gravity.y = this.enemyChase.body.gravity.y * -1;
+                        this.flipEnemy();
+                    }
+                    floorEnemy = floor;
+                    jumpLocationList = [];
+                }
+                if (this.enemyChase.x > (this.hero.x)) {
+                    this.enemyChase.x = this.hero.x - 5;
+                    if (floorEnemy != floor)
+                        this.flipEnemy();
+                    floorEnemy = floor;
+                    jumpLocationList = [];
+                }
                 // console.log("WHY: " + floor + " " + this.hero.body.gravity.y);
                 if (escapeKey.isDown) {
                     game_over = true;
@@ -660,19 +678,44 @@ var GravityGuy;
                     this.resetBullet(bullet);
                     bulletFired = false;
                 }
+                //DON'T REMOVE
+                //if (swapGravity) {
+                //    this.flipHero();
+                //    heroJumped = true;
+                //    jumpLocation = this.hero.body.x;
+                //    //jumpLocationList.push(jumpLocation);
+                //    this.hero.body.gravity.y = -this.hero.body.gravity.y;
+                //    first = false;
+                //}
+                //if (this.enemyChase.body.x >= jumpLocation && heroJumped && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
+                //    if (floorEnemy != floor) {
+                //        this.flipEnemy();
+                //        this.enemyChase.body.gravity.y = this.enemyChase.body.gravity.y * -1;
+                //    }
+                //    heroJumped = false;
+                //}
+                //END DON'T REMOVE
+                //NEW
                 if (swapGravity) {
                     this.flipHero();
-                    heroJumped = true;
+                    //heroJumped = true;
                     jumpLocation = this.hero.body.x;
+                    jumpLocationList.push(jumpLocation);
                     this.hero.body.gravity.y = -this.hero.body.gravity.y;
                     first = false;
                 }
-                if (this.enemyChase.body.x >= jumpLocation && heroJumped && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
-                    if (floorEnemy != floor) {
+                console.log("OUTSIDE: " + jumpLocationList.length);
+                for (var i = 0; i < jumpLocationList.length; i++) {
+                    console.log("IN");
+                    if (this.enemyChase.body.x >= jumpLocationList[i] && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
+                        // if (floorEnemy != floor) {
                         this.flipEnemy();
                         this.enemyChase.body.gravity.y = this.enemyChase.body.gravity.y * -1;
+                        jumpLocationList.splice(i, 1);
                     }
-                    heroJumped = false;
+                    else {
+                        break;
+                    }
                 }
                 for (var j = enemiesDead; j < enemies.length; j++) {
                     if (enemies[j].alive && enemies[j].x - this.hero.x <= 400 && enemies[j].y - this.hero.y > 25) {
@@ -704,6 +747,7 @@ var GravityGuy;
             }
             else {
                 swapGravity = false;
+                jumpLocationList = [];
                 //   console.log(this.hero.body.gravity.y);
                 if (this.hero.body.gravity.y < 0)
                     this.hero.body.gravity.y = this.hero.body.gravity.y * -1;
