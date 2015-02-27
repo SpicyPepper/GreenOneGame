@@ -19,7 +19,7 @@
             //this.game = game;
          
             this.animations.add('run');
-            this.animations.play('run', 15, true);
+            this.animations.play('run', 20, true);
             this.game.physics.enable(this, Phaser.Physics.ARCADE);
             this.body.bounce.y = 0.2;
             this.body.collideWorldBounds = false;

@@ -40,7 +40,7 @@
             this.song.fadeOut(2000);
             this.add.tween(this.background).to({ alpha: 0 }, 2000, Phaser.Easing.Linear.None, true);
             var tween = this.add.tween(this.logo).to({ y: 1000 }, 2000, Phaser.Easing.Linear.None, true);
-            this.title.x = 50;
+            this.title.x = 100;
             this.title.y = 200;
             this.title.animations.add('display');
             this.title.animations.play('display', 13, false);
