@@ -6,12 +6,16 @@
     var offset;
     var currDistance;
     var oldDistance;
+    var just_landed;
    
     export class Hero extends Phaser.Sprite {
+
+        in_air;
 
         constructor(game: Phaser.Game, x: number, y: number) {
 
             super(game, x, y, 'hero', 0);
+            just_landed = false;
             //layer = layerT;
             //this.game.physics.arcade.enableBody(this);
             this.game.add.existing(this);

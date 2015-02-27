@@ -31,7 +31,8 @@
     var floorOtherEnemy;
     var hero_scale = 0.7;
     var enemy_scale = 0.8;
-    var emitter;
+    var explode_emit;
+    var dust_cloud_emit;
     var levelComplete;
     var respawn;
     var respawnButton;
@@ -59,6 +60,7 @@
         sound_enemy_shoot: Phaser.Sound
         victoryMusic: Phaser.Sound
         sound_hero_enemyChase_collision: Phaser.Sound
+        sound_landing: Phaser.Sound
 
         bullets: Phaser.Group
         enemyBullets: Phaser.Group
@@ -81,12 +83,13 @@
             escapeKey = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
 
             this.physics.startSystem(Phaser.Physics.ARCADE);
-            this.world.setBounds(0, 0, 800, 512);
+            this.world.setBounds(0, 0, 2000, 512);
 
             this.background = this.add.tileSprite(0, 0, 1024, 512, 'background');
             this.background.fixedToCamera = true;
 
             this.music = this.add.audio('House');
+            this.sound_landing = this.add.audio('landing_sound');
             this.sound_hero_gravity = this.add.audio('hero_gravity');
             this.sound_hero_death = this.add.audio('hero_death');
             this.sound_hero_jump = this.add.audio('hero_jump');
@@ -96,9 +99,18 @@
             this.victoryMusic = this.add.audio('victory');
             this.music.play();
 
-            emitter = this.game.add.emitter(0, 0, 20);
-            emitter.makeParticles('explosion_small');
-            emitter.gravity = 200;
+            explode_emit = this.game.add.emitter(0, 0, 20);
+            explode_emit.makeParticles('explosion_small');
+            explode_emit.gravity = 200;
+
+            dust_cloud_emit = this.game.add.emitter(0, 0, 10000);
+            dust_cloud_emit.makeParticles('dust_cloud');
+            dust_cloud_emit.bounce.y = 0;
+            dust_cloud_emit.setYSpeed(0, 0);
+            dust_cloud_emit.setXSpeed(0, 0);
+            dust_cloud_emit.allowGravity = false;
+            dust_cloud_emit.bounce.x = 0;
+            dust_cloud_emit.gravity = 0;
 
             //LEVEL :D
             this.map = this.add.tilemap('level_test');
@@ -233,7 +245,7 @@
                     jumpLocationList = [];
                 }
 
-                // console.log("WHY: " + floor + " " + this.hero.body.gravity.y);
+                // lose button
                 if (escapeKey.isDown) {
                     game_over = true;
                     this.music.mute = true;
@@ -242,9 +254,6 @@
                 if (!levelComplete && this.hero.x >= 17150) {
                     this.levelComplete();
                 }
-                
-                /* this method will handle all collision events */
-                //this.collideEverything();
 
                 if (bulletFired && bullet.x - this.hero.x >= 400) {
                     this.resetBullet(bullet);
@@ -270,18 +279,19 @@
                 //END DON'T REMOVE
                 //NEW
                 if (swapGravity) {
-                    this.flipHero();
+                    
                     //heroJumped = true;
                     jumpLocation = this.hero.body.x;
                     jumpLocationList.push(jumpLocation);
+                    this.flipHero();
                     this.hero.body.gravity.y = -this.hero.body.gravity.y;
                     first = false;
                 }
-                console.log("OUTSIDE: " + jumpLocationList.length);
+              //  console.log("OUTSIDE: " + jumpLocationList.length);
 
 
                 for (var i = 0; i < jumpLocationList.length; i++) {
-                    console.log("IN");
+                 //   console.log("IN");
                     if (this.enemyChase.body.x >= jumpLocationList[i] && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
                         // if (floorEnemy != floor) {
                         this.flipEnemy();
@@ -465,6 +475,10 @@
 
         collideEverything() {
             this.physics.arcade.collide(this.hero, layer);
+            if (this.hero.body.blocked.down && this.hero.in_air) {
+                this.hero.in_air = false;
+                this.sound_landing.play();
+            }
             this.physics.arcade.collide(this.enemyChase, layer);
             this.physics.arcade.collide(this.enemies, layer);
 
@@ -539,14 +553,31 @@
             }
         }
 
-        deathBurst(entity) {
-            emitter.x = entity.body.x;
-            emitter.y = entity.body.y;
+        dustBurst(entity) {
+            //explode_emit.x = entity.body.x;
+            //explode_emit.y = entity.body.y;
 
-            emitter.start(true, 1000, null, 10);
+            //explode_emit.start(true, 1000, null, 10);
+            dust_cloud_emit.x = entity.body.x + entity.body.halfWidth;
+            if (entity.scale.y < 0) { //upside down
+                dust_cloud_emit.y = entity.body.y;
+            } else {
+                dust_cloud_emit.y = entity.body.y + entity.body.height;
+            }
+
+            console.log("HEY!");
+            dust_cloud_emit.start(true, 800, null, 1);
+        }
+
+        deathBurst(entity) {
+            explode_emit.x = entity.body.x;
+            explode_emit.y = entity.body.y;
+
+            explode_emit.start(true, 1000, null, 10);
         }
 
         flipHero() {
+            this.dustBurst(this.hero);
             score += 100;
             this.sound_hero_jump.play();
             this.sound_hero_gravity.play();
@@ -564,6 +595,7 @@
 
         flipEnemy() {
             this.sound_hero_gravity.play();
+            this.dustBurst(this.enemyChase);
             if (floorEnemy) {
                 this.enemyChase.anchor.setTo(1, .5); //so it flips around its middle
                 //  this.enemyChase.scale.y = 1; //facing default direction

@@ -41,7 +41,7 @@
         }
 
         loadAudio() {
-            this.load.audio('space_slam', 'audio.space_slam.mp3');
+            this.load.audio('space_slam', 'audio/space_slam.mp3');
             this.load.audio('hero_death', ['audio/hero_death.mp3', 'audio/hero_death.mp3']);
             this.load.audio('title_music', ['audio/title_music.mp3', 'audio/title_music.ogg']);
             this.load.audio('House', ['audio/Title_TechHouse.mp3', 'audio/Title_TechHouse.ogg']);
@@ -51,11 +51,13 @@
             this.load.audio('enemy_shoot', ['audio/enemy_shoot.mp3', 'audio/enemy_shoot.mp3']);
             this.load.audio('victory', ['audio/victory.mp3', 'audio/victory.ogg']);
             this.load.audio('hero_enemyChase_collision', ['audio/hero_enemyChase_collision.mp3', 'audio/hero_enemyChase_collision.mp3']);
+            this.load.audio('landing_sound', ['audio/landing_sound.mp3', 'audio/landing_sound.ogg']);
 
         }
 
         loadImages() {
             this.load.image('explosion_small', 'visuals/explosion_small.png');
+            this.load.image('dust_cloud', 'visuals/dust_cloud.png');
             this.load.image('titlepage', 'visuals/title_background_scaled.png');
             this.load.image('title_planet', 'visuals/title_planet.png');
             this.load.image('tileset_1', 'resources/tileset_1.png');
