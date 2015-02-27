@@ -17,6 +17,7 @@
             this.game.add.existing(this);
             //added
             //this.game = game;
+         
             this.animations.add('run');
             this.animations.play('run', 15, true);
             this.game.physics.enable(this, Phaser.Physics.ARCADE);
