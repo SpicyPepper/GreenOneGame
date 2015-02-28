@@ -136,7 +136,7 @@
 
             enemiesTotal = 15;
             enemiesDead = 0;
-            
+
             for (var i = 0; i < enemiesTotal; i++) {
                 if (i == 0) {
                     var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(450, 815), 373);
@@ -233,7 +233,6 @@
             numLives = 3;
             heroJumped = false;
             enemyJump = false;
-
         }
 
         update() {
@@ -243,12 +242,10 @@
                 this.sound_hero_death.play();
                 if (numLives == 0) {
                     this.itsGameOver();
-                }
-                else {
+                } else {
                     numLives -= 1;
                     this.respawnHero();
                 }
-
             }
             this.collideEverything();
             /* When hero is alive */
@@ -262,7 +259,6 @@
                         this.flipEnemy();
                     }
                     floorEnemy = floor;
-
                     jumpLocationList = [];
                 }
 
@@ -316,28 +312,22 @@
                     this.hero.body.gravity.y = -this.hero.body.gravity.y;
                     first = false;
                 }
-              //  console.log("OUTSIDE: " + jumpLocationList.length);
-
-
+                //  console.log("OUTSIDE: " + jumpLocationList.length);
                 for (var i = 0; i < jumpLocationList.length; i++) {
-                 //   console.log("IN");
+                    //   console.log("IN");
                     if (this.enemyChase.body.x >= jumpLocationList[i] && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
                         // if (floorEnemy != floor) {
                         this.flipEnemy();
                         this.enemyChase.body.gravity.y = this.enemyChase.body.gravity.y * -1;
 
-                        jumpLocationList.splice(i, 1);
-                        
+                        jumpLocationList.splice(i, 1);            
                         // }
-
                         //heroJumped = false;
                     } else {
                         break;
                     }
                 }
                 //END NEW
-
-
                 for (var j = enemiesDead; j < enemies.length; j++) {
                     if (enemies[j].alive && enemies[j].x - this.hero.x <= 400 && enemies[j].y - this.hero.y > 25) {
                         if (enemyJump && (enemies[j].body.blocked.down || enemies[j].body.blocked.up)) {
@@ -369,19 +359,16 @@
             } else { // HERO DEAD
                 swapGravity = false;
                 jumpLocationList = [];
-                //   console.log(this.hero.body.gravity.y);
-                
+                //   console.log(this.hero.body.gravity.y);            
                 if (this.hero.body.gravity.y < 0)
                     this.hero.body.gravity.y = this.hero.body.gravity.y * -1;
                 if (this.enemyChase.body.gravity.y < 0)
                     this.enemyChase.body.gravity.y = this.enemyChase.body.gravity.y * -1;
                 if (!floor) {
                     this.flipHero();
-
                 }
                 if (!floorEnemy) {
                     this.flipEnemy();
-
                 }
                 floor = true;
                 if (respawnButton.isDown && !respawn) {
@@ -393,11 +380,10 @@
                     this.hero.alive = true;
 
                     floor = true;
-                   
+
                     for (var i = 0; i < enemiesTotal; i++) {
                         enemies[i].kill();
                     }
-
                     //this.hero.body.gravity.y = 20000;
                     //this.enemyChase.body.gravity.y = 18000;
                     for (var i = 0; i < enemiesTotal; i++) {
@@ -491,7 +477,7 @@
         }
 
         levelComplete() {
-            this.hero.kill();
+            //this.hero.kill();
             this.enemyChase.kill();
             this.deathBurst(this.enemyChase);
             levelComplete = true;
@@ -499,7 +485,7 @@
             this.music.stop();
             this.input.onDown.addOnce(this.fadeOut, this);
             // Transitions to the Second Level after completing the first level
-         //   this.game.state.start('Level2', true, false);
+            // this.game.state.start('Level2', true, false);
         }
         fadeOut() {
             this.game.state.start('Level2', true, false);
@@ -522,6 +508,7 @@
 
         /* Case where Megaman Catches up with Hero, death ensues */
         heroEnemyChaseCollide(hero, enemyChase) {
+
             this.sound_hero_enemyChase_collision.play();
             this.deathBurst(hero);
             this.deathBurst(enemyChase);
@@ -535,6 +522,7 @@
                 numLives -= 1;
                 this.respawnHero();
             }
+
         }
 
         collideEverything() {
@@ -585,8 +573,7 @@
             hero.kill();
             if (numLives == 0) {
                 this.itsGameOver();
-            }
-            else {
+            } else {
                 numLives -= 1;
                 this.respawnHero();
             }
@@ -785,7 +772,7 @@
                 this.game.debug.text("That was sad to watch...", 160, 260, 'white', '50px Arial');
                 //while (count < 10) {
                 this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Arial');
-                this.game.debug.text("That all you got? LOL", 180, 380, 'white', '45px Arial');
+                this.game.debug.text("That all you got?", 180, 380, 'white', '45px Arial');
             }
         }
     }

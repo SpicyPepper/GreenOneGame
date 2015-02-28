@@ -799,7 +799,7 @@ var GravityGuy;
             else {
                 swapGravity = false;
                 jumpLocationList = [];
-                //   console.log(this.hero.body.gravity.y);
+                //   console.log(this.hero.body.gravity.y);            
                 if (this.hero.body.gravity.y < 0)
                     this.hero.body.gravity.y = this.hero.body.gravity.y * -1;
                 if (this.enemyChase.body.gravity.y < 0)
@@ -906,7 +906,7 @@ var GravityGuy;
             }
         };
         Level1.prototype.levelComplete = function () {
-            this.hero.kill();
+            //this.hero.kill();
             this.enemyChase.kill();
             this.deathBurst(this.enemyChase);
             levelComplete = true;
@@ -914,7 +914,7 @@ var GravityGuy;
             this.music.stop();
             this.input.onDown.addOnce(this.fadeOut, this);
             // Transitions to the Second Level after completing the first level
-            //   this.game.state.start('Level2', true, false);
+            // this.game.state.start('Level2', true, false);
         };
         Level1.prototype.fadeOut = function () {
             this.game.state.start('Level2', true, false);
@@ -1178,7 +1178,7 @@ var GravityGuy;
                 this.game.debug.text("That was sad to watch...", 160, 260, 'white', '50px Arial');
                 //while (count < 10) {
                 this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Arial');
-                this.game.debug.text("That all you got? LOL", 180, 380, 'white', '45px Arial');
+                this.game.debug.text("That all you got?", 180, 380, 'white', '45px Arial');
             }
         };
         return Level1;
