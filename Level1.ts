@@ -49,7 +49,7 @@
     var timeDelay;
     var text;
     var grd;
-    var enemyLocationsX; 
+    var enemyLocationsX;
     var enemyLocationsY;
 
     export class Level1 extends Phaser.State {
@@ -70,7 +70,7 @@
 
         bullets: Phaser.Group
         enemyBullets: Phaser.Group
-     //   enemies: Phaser.Group
+        //   enemies: Phaser.Group
 
         //player: GravityGuy.Player;
         hero: GravityGuy.Hero
@@ -272,7 +272,7 @@
         }
 
         update() {
-
+            console.log(this.hero.x);
             if (!this.hero.alive && heroAlive) {
                 this.deathBurst(this.hero);
                 this.sound_hero_death.play();
@@ -352,7 +352,7 @@
                 //  console.log("OUTSIDE: " + jumpLocationList.length);
                 for (var i = 0; i < jumpLocationList.length; i++) {
                     //   console.log("IN");
-                    if (this.enemyChase.body.x >= jumpLocationList[i] && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
+                    if (this.enemyChase.body.x >= jumpLocationList[i] - 7.5 && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
                         // if (floorEnemy != floor) {
                         this.flipEnemy();
                         this.enemyChase.body.gravity.y = this.enemyChase.body.gravity.y * -1;
@@ -415,7 +415,6 @@
                 }
                 floor = true;
                 if (respawnButton.isDown && !respawn) {
-                    
                     this.hero.reset(150, 300);
                     this.enemyChase.reset(0, 300);
                     respawn = true;
@@ -425,15 +424,15 @@
                     this.enemyChase.animations.play('run');
                     this.hero.alive = true;
                     enemiesKilled = 0;
-                   // console.log("WTF")
-                   // this.game.camera.x = 0;
+
+
                     floor = true;
 
                     //for (var i = 0; i < enemiesTotal; i++) {
                     //    enemies[i].kill();
                     //    console.log("hi " + i);
                     //}
-                   // enemies.
+                    // enemies.
                     totalBullets = 50;
 
                     for (var i = 0; i < enemyBulletsFired; i++) {
@@ -503,7 +502,6 @@
                     //if(enemyBullet != undefined)
                     //    enemyBullet.kill();
                 } else if (game_over && numLives == 0) {
-                    //this.game.camera.x = this.hero.x;
                     if (firstTimeGameOver) {
                         firstTimeGameOver = false;
                         timeDelay = (Math.floor(this.game.time.time / 1000) % 60) + 5;
@@ -542,9 +540,11 @@
 
         levelComplete() {
             this.hero.kill();
+           
+            heroAlive = false;
             this.hero.body.y = - 200;
             this.enemyChase.kill();
-            this.deathBurst(this.enemyChase);
+            //this.deathBurst(this.enemyChase);
             levelComplete = true;
             this.victoryMusic.play();
             this.music.stop();
@@ -583,8 +583,8 @@
             this.deathBurst(hero);
             this.deathBurst(enemyChase);
             this.sound_hero_death.play();
-            this.enemyChase.kill();
-            this.hero.kill();
+            enemyChase.kill();
+            hero.kill();
             if (numLives == 0) {
                 this.itsGameOver();
             }
@@ -602,7 +602,7 @@
                 this.sound_landing.play();
             }
             this.physics.arcade.collide(this.enemyChase, layer);
-          //  this.physics.arcade.collide(this.enemies, layer);
+            //  this.physics.arcade.collide(this.enemies, layer);
 
             for (var i = 0; i < bulletsFired; i++) {
                 // this.physics.arcade.collide(bulletList[i], layer);
@@ -659,7 +659,6 @@
                 this.endRound();
             }
             heroAlive = false;
-           
         }
 
         heroShootsEnemy(bullet, enemy) {
@@ -814,7 +813,6 @@
         endRound() {
             respawn = false;
             heroAlive = false;
-           
         }
 
         resetEnemyBullet(enemyBullet) {

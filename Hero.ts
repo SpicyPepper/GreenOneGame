@@ -50,7 +50,6 @@
 
                 if (offset === 0) {
                     this.game.camera.follow(this);
-                    console.log("ENTERED");
                 } else {
                     this.game.camera.follow(null);
                     

@@ -359,45 +359,6 @@ var GravityGuy;
 })(GravityGuy || (GravityGuy = {}));
 var GravityGuy;
 (function (GravityGuy) {
-    var GameWon = (function (_super) {
-        __extends(GameWon, _super);
-        function GameWon() {
-            _super.apply(this, arguments);
-        }
-        GameWon.prototype.create = function () {
-            this.song = this.add.audio('game_won_song');
-            this.song.play();
-            this.background = this.add.sprite(0, 0, 'game_won_background');
-            this.background.alpha = 0;
-            this.add.tween(this.background).to({ alpha: 1 }, 2000, Phaser.Easing.Bounce.InOut, true);
-            //     this.logo = this.add.sprite(this.world.centerX, -300, 'title_planet');
-            //      this.logo.anchor.setTo(0.5, 0.5);
-            this.title = this.add.sprite(50, -200, 'title_text');
-            this.title.scale.setTo(1.2, 1.2);
-            this.game.add.existing(this.title);
-            this.game.time.events.add(Phaser.Timer.SECOND * 4, this.addInput, this);
-        };
-        GameWon.prototype.firstLevel = function () {
-            this.song.destroy();
-            this.game.state.start('Level1', true, false);
-        };
-        GameWon.prototype.restartGame = function () {
-            this.title.x = 100;
-            this.title.y = 200;
-            this.title.animations.add('display');
-            this.title.animations.play('display', 13, false);
-            this.game.time.events.add(Phaser.Timer.SECOND * 4, this.firstLevel, this);
-        };
-        GameWon.prototype.addInput = function () {
-            this.input.onDown.addOnce(this.restartGame, this);
-            //  tween.onComplete.add(this.startGame, this);
-        };
-        return GameWon;
-    })(Phaser.State);
-    GravityGuy.GameWon = GameWon;
-})(GravityGuy || (GravityGuy = {}));
-var GravityGuy;
-(function (GravityGuy) {
     var Game = (function (_super) {
         __extends(Game, _super);
         function Game() {
@@ -457,6 +418,45 @@ var GravityGuy;
 })(GravityGuy || (GravityGuy = {}));
 var GravityGuy;
 (function (GravityGuy) {
+    var GameWon = (function (_super) {
+        __extends(GameWon, _super);
+        function GameWon() {
+            _super.apply(this, arguments);
+        }
+        GameWon.prototype.create = function () {
+            this.song = this.add.audio('game_won_song');
+            this.song.play();
+            this.background = this.add.sprite(0, 0, 'game_won_background');
+            this.background.alpha = 0;
+            this.add.tween(this.background).to({ alpha: 1 }, 2000, Phaser.Easing.Bounce.InOut, true);
+            //     this.logo = this.add.sprite(this.world.centerX, -300, 'title_planet');
+            //      this.logo.anchor.setTo(0.5, 0.5);
+            this.title = this.add.sprite(50, -200, 'title_text');
+            this.title.scale.setTo(1.2, 1.2);
+            this.game.add.existing(this.title);
+            this.game.time.events.add(Phaser.Timer.SECOND * 4, this.addInput, this);
+        };
+        GameWon.prototype.firstLevel = function () {
+            this.song.destroy();
+            this.game.state.start('Level1', true, false);
+        };
+        GameWon.prototype.restartGame = function () {
+            this.title.x = 100;
+            this.title.y = 200;
+            this.title.animations.add('display');
+            this.title.animations.play('display', 13, false);
+            this.game.time.events.add(Phaser.Timer.SECOND * 4, this.firstLevel, this);
+        };
+        GameWon.prototype.addInput = function () {
+            this.input.onDown.addOnce(this.restartGame, this);
+            //  tween.onComplete.add(this.startGame, this);
+        };
+        return GameWon;
+    })(Phaser.State);
+    GravityGuy.GameWon = GameWon;
+})(GravityGuy || (GravityGuy = {}));
+var GravityGuy;
+(function (GravityGuy) {
     var cursors;
     var layer;
     var oldXpos;
@@ -496,7 +496,6 @@ var GravityGuy;
                 this.body.velocity.x = 450;
                 if (offset === 0) {
                     this.game.camera.follow(this);
-                    console.log("ENTERED");
                 }
                 else {
                     this.game.camera.follow(null);
@@ -749,6 +748,7 @@ var GravityGuy;
             }
         };
         Level1.prototype.update = function () {
+            console.log(this.hero.x);
             if (!this.hero.alive && heroAlive) {
                 this.deathBurst(this.hero);
                 this.sound_hero_death.play();
@@ -823,7 +823,7 @@ var GravityGuy;
                 }
                 for (var i = 0; i < jumpLocationList.length; i++) {
                     //   console.log("IN");
-                    if (this.enemyChase.body.x >= jumpLocationList[i] && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
+                    if (this.enemyChase.body.x >= jumpLocationList[i] - 7.5 && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
                         // if (floorEnemy != floor) {
                         this.flipEnemy();
                         this.enemyChase.body.gravity.y = this.enemyChase.body.gravity.y * -1;
@@ -891,8 +891,6 @@ var GravityGuy;
                     this.enemyChase.animations.play('run');
                     this.hero.alive = true;
                     enemiesKilled = 0;
-                    // console.log("WTF")
-                    // this.game.camera.x = 0;
                     floor = true;
                     //for (var i = 0; i < enemiesTotal; i++) {
                     //    enemies[i].kill();
@@ -912,7 +910,6 @@ var GravityGuy;
                     this.createEnemies();
                 }
                 else if (game_over && numLives == 0) {
-                    //this.game.camera.x = this.hero.x;
                     if (firstTimeGameOver) {
                         firstTimeGameOver = false;
                         timeDelay = (Math.floor(this.game.time.time / 1000) % 60) + 5;
@@ -946,9 +943,10 @@ var GravityGuy;
         };
         Level1.prototype.levelComplete = function () {
             this.hero.kill();
+            heroAlive = false;
             this.hero.body.y = -200;
             this.enemyChase.kill();
-            this.deathBurst(this.enemyChase);
+            //this.deathBurst(this.enemyChase);
             levelComplete = true;
             this.victoryMusic.play();
             this.music.stop();
@@ -983,8 +981,8 @@ var GravityGuy;
             this.deathBurst(hero);
             this.deathBurst(enemyChase);
             this.sound_hero_death.play();
-            this.enemyChase.kill();
-            this.hero.kill();
+            enemyChase.kill();
+            hero.kill();
             if (numLives == 0) {
                 this.itsGameOver();
             }
@@ -1018,7 +1016,7 @@ var GravityGuy;
             /* COMMENT THIS OUT TO REMOVE ENEMY BULLETS KILLING HERO. */
             this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
             /* Megaman chasing hero and kills hero */
-            //this.physics.arcade.overlap(this.enemyChase, this.hero, this.enemyCollidesHero, null, this);
+            this.physics.arcade.overlap(this.enemyChase, this.hero, this.enemyCollidesHero, null, this);
             if (!game_over && heroAlive && (this.hero.body.y >= 512 || this.hero.body.y <= -100)) {
                 this.hero.kill();
                 this.sound_hero_death.play();
@@ -1534,7 +1532,7 @@ var GravityGuy;
                 }
                 for (var i = 0; i < jumpLocationList.length; i++) {
                     //   console.log("IN");
-                    if (this.enemyChase.body.x >= jumpLocationList[i] && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
+                    if (this.enemyChase.body.x >= jumpLocationList[i] - 7.5 && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
                         // if (floorEnemy != floor) {
                         this.flipEnemy();
                         this.enemyChase.body.gravity.y = this.enemyChase.body.gravity.y * -1;
@@ -1696,8 +1694,10 @@ var GravityGuy;
         Level2.prototype.levelComplete = function () {
             this.hero.kill();
             this.hero.body.y = -200;
+            //game_over = true;
+            heroAlive = false;
             this.enemyChase.kill();
-            this.deathBurst(this.enemyChase);
+            // this.deathBurst(this.enemyChase);
             levelComplete = true;
             this.victoryMusic.play();
             this.music.stop();
@@ -1716,8 +1716,8 @@ var GravityGuy;
             this.deathBurst(hero);
             this.deathBurst(enemy);
             this.sound_hero_death.play();
-            enemy.kill();
-            hero.kill();
+            this.enemy.kill();
+            this.hero.kill();
             if (numLives == 0) {
                 this.itsGameOver();
             }
@@ -1732,8 +1732,8 @@ var GravityGuy;
             this.deathBurst(hero);
             this.deathBurst(enemyChase);
             this.sound_hero_death.play();
-            enemyChase.kill();
-            hero.kill();
+            this.enemyChase.kill();
+            this.hero.kill();
             if (numLives == 0) {
                 this.itsGameOver();
             }

@@ -326,7 +326,7 @@
                 //  console.log("OUTSIDE: " + jumpLocationList.length);
                 for (var i = 0; i < jumpLocationList.length; i++) {
                     //   console.log("IN");
-                    if (this.enemyChase.body.x >= jumpLocationList[i] && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
+                    if (this.enemyChase.body.x >= jumpLocationList[i] - 7.5 && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
                         // if (floorEnemy != floor) {
                         this.flipEnemy();
                         this.enemyChase.body.gravity.y = this.enemyChase.body.gravity.y * -1;
@@ -505,8 +505,10 @@
         levelComplete() {
             this.hero.kill();
             this.hero.body.y = - 200;
+            //game_over = true;
+            heroAlive = false;
             this.enemyChase.kill();
-            this.deathBurst(this.enemyChase);
+           // this.deathBurst(this.enemyChase);
             levelComplete = true;
             this.victoryMusic.play();
             this.music.stop();
@@ -527,8 +529,8 @@
             this.deathBurst(hero);
             this.deathBurst(enemy);
             this.sound_hero_death.play();
-            enemy.kill();
-            hero.kill();
+            this.enemy.kill();
+            this.hero.kill();
             if (numLives == 0) {
                 this.itsGameOver();
             }
@@ -545,8 +547,8 @@
             this.deathBurst(hero);
             this.deathBurst(enemyChase);
             this.sound_hero_death.play();
-            enemyChase.kill();
-            hero.kill();
+            this.enemyChase.kill();
+            this.hero.kill();
             if (numLives == 0) {
                 this.itsGameOver();
             }
