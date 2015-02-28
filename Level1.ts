@@ -415,6 +415,7 @@
                 }
                 floor = true;
                 if (respawnButton.isDown && !respawn) {
+                    
                     this.hero.reset(150, 300);
                     this.enemyChase.reset(0, 300);
                     respawn = true;
@@ -424,8 +425,8 @@
                     this.enemyChase.animations.play('run');
                     this.hero.alive = true;
                     enemiesKilled = 0;
-
-
+                   // console.log("WTF")
+                   // this.game.camera.x = 0;
                     floor = true;
 
                     //for (var i = 0; i < enemiesTotal; i++) {
@@ -502,6 +503,7 @@
                     //if(enemyBullet != undefined)
                     //    enemyBullet.kill();
                 } else if (game_over && numLives == 0) {
+                    //this.game.camera.x = this.hero.x;
                     if (firstTimeGameOver) {
                         firstTimeGameOver = false;
                         timeDelay = (Math.floor(this.game.time.time / 1000) % 60) + 5;
@@ -581,8 +583,8 @@
             this.deathBurst(hero);
             this.deathBurst(enemyChase);
             this.sound_hero_death.play();
-            enemyChase.kill();
-            hero.kill();
+            this.enemyChase.kill();
+            this.hero.kill();
             if (numLives == 0) {
                 this.itsGameOver();
             }
@@ -657,6 +659,7 @@
                 this.endRound();
             }
             heroAlive = false;
+           
         }
 
         heroShootsEnemy(bullet, enemy) {
@@ -811,6 +814,7 @@
         endRound() {
             respawn = false;
             heroAlive = false;
+           
         }
 
         resetEnemyBullet(enemyBullet) {
@@ -863,7 +867,7 @@
                 this.game.debug.text("That was sad to watch...", 160, 260, 'white', '50px Arial');
                 //while (count < 10) {
                 this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Arial');
-                this.game.debug.text("That all you got?", 180, 380, 'white', '45px Arial');
+                this.game.debug.text("That all you got?", 210, 380, 'white', '45px Arial');
             }
         }
     }

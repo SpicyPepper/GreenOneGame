@@ -48,7 +48,14 @@
                 this.body.velocity.y = 0;
                 this.body.velocity.x = 450;
 
-                this.game.camera.focusOnXY(this.x + offset, this.y);
+                if (offset === 0) {
+                    this.game.camera.follow(this);
+                    console.log("ENTERED");
+                } else {
+                    this.game.camera.follow(null);
+                    
+                    this.game.camera.focusOnXY(this.x + offset, this.y);
+                }
 
                 if (Math.abs((this.x - oldXpos)) < 1/* && count > 50*/) {
                     currDistance = Math.abs((this.x - this.game.camera.x - 400));
@@ -67,10 +74,14 @@
 
                 oldXpos = this.x;
 
-                if (this.game.camera.x >= this.x) {
+                if (this.game.camera.x >= this.x && offset >= 12) {
+                 
+                   
                     this.kill();
                 }
             } else {
+            
+                
                 offset = 0;
                 oldDistance = 0;
                 currDistance = 0;

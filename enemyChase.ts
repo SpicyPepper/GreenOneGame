@@ -20,7 +20,7 @@
             this.body.bounce.y = 0.2;
             this.body.collideWorldBounds = false;
             this.body.allowRotation = true;
-            this.body.gravity.y = 18000;
+            this.body.gravity.y = 22000;
             this.anchor.setTo(0.5, 0);
             this.body.velocity.x = 450;
             //this.animations.add('walk', [0, 1, 2, 3, 4], 10, true);

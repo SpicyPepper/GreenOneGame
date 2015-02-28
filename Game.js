@@ -311,7 +311,7 @@ var GravityGuy;
             this.body.bounce.y = 0.2;
             this.body.collideWorldBounds = false;
             this.body.allowRotation = true;
-            this.body.gravity.y = 18000;
+            this.body.gravity.y = 22000;
             this.anchor.setTo(0.5, 0);
             this.body.velocity.x = 450;
             //this.animations.add('walk', [0, 1, 2, 3, 4], 10, true);
@@ -356,6 +356,45 @@ var GravityGuy;
         return enemyChase;
     })(Phaser.Sprite);
     GravityGuy.enemyChase = enemyChase;
+})(GravityGuy || (GravityGuy = {}));
+var GravityGuy;
+(function (GravityGuy) {
+    var GameWon = (function (_super) {
+        __extends(GameWon, _super);
+        function GameWon() {
+            _super.apply(this, arguments);
+        }
+        GameWon.prototype.create = function () {
+            this.song = this.add.audio('game_won_song');
+            this.song.play();
+            this.background = this.add.sprite(0, 0, 'game_won_background');
+            this.background.alpha = 0;
+            this.add.tween(this.background).to({ alpha: 1 }, 2000, Phaser.Easing.Bounce.InOut, true);
+            //     this.logo = this.add.sprite(this.world.centerX, -300, 'title_planet');
+            //      this.logo.anchor.setTo(0.5, 0.5);
+            this.title = this.add.sprite(50, -200, 'title_text');
+            this.title.scale.setTo(1.2, 1.2);
+            this.game.add.existing(this.title);
+            this.game.time.events.add(Phaser.Timer.SECOND * 4, this.addInput, this);
+        };
+        GameWon.prototype.firstLevel = function () {
+            this.song.destroy();
+            this.game.state.start('Level1', true, false);
+        };
+        GameWon.prototype.restartGame = function () {
+            this.title.x = 100;
+            this.title.y = 200;
+            this.title.animations.add('display');
+            this.title.animations.play('display', 13, false);
+            this.game.time.events.add(Phaser.Timer.SECOND * 4, this.firstLevel, this);
+        };
+        GameWon.prototype.addInput = function () {
+            this.input.onDown.addOnce(this.restartGame, this);
+            //  tween.onComplete.add(this.startGame, this);
+        };
+        return GameWon;
+    })(Phaser.State);
+    GravityGuy.GameWon = GameWon;
 })(GravityGuy || (GravityGuy = {}));
 var GravityGuy;
 (function (GravityGuy) {
@@ -418,45 +457,6 @@ var GravityGuy;
 })(GravityGuy || (GravityGuy = {}));
 var GravityGuy;
 (function (GravityGuy) {
-    var GameWon = (function (_super) {
-        __extends(GameWon, _super);
-        function GameWon() {
-            _super.apply(this, arguments);
-        }
-        GameWon.prototype.create = function () {
-            this.song = this.add.audio('game_won_song');
-            this.song.play();
-            this.background = this.add.sprite(0, 0, 'game_won_background');
-            this.background.alpha = 0;
-            this.add.tween(this.background).to({ alpha: 1 }, 2000, Phaser.Easing.Bounce.InOut, true);
-            //     this.logo = this.add.sprite(this.world.centerX, -300, 'title_planet');
-            //      this.logo.anchor.setTo(0.5, 0.5);
-            this.title = this.add.sprite(50, -200, 'title_text');
-            this.title.scale.setTo(1.2, 1.2);
-            this.game.add.existing(this.title);
-            this.game.time.events.add(Phaser.Timer.SECOND * 4, this.addInput, this);
-        };
-        GameWon.prototype.firstLevel = function () {
-            this.song.destroy();
-            this.game.state.start('Level1', true, false);
-        };
-        GameWon.prototype.restartGame = function () {
-            this.title.x = 100;
-            this.title.y = 200;
-            this.title.animations.add('display');
-            this.title.animations.play('display', 13, false);
-            this.game.time.events.add(Phaser.Timer.SECOND * 4, this.firstLevel, this);
-        };
-        GameWon.prototype.addInput = function () {
-            this.input.onDown.addOnce(this.restartGame, this);
-            //  tween.onComplete.add(this.startGame, this);
-        };
-        return GameWon;
-    })(Phaser.State);
-    GravityGuy.GameWon = GameWon;
-})(GravityGuy || (GravityGuy = {}));
-var GravityGuy;
-(function (GravityGuy) {
     var cursors;
     var layer;
     var oldXpos;
@@ -494,7 +494,14 @@ var GravityGuy;
             if (this.alive) {
                 this.body.velocity.y = 0;
                 this.body.velocity.x = 450;
-                this.game.camera.focusOnXY(this.x + offset, this.y);
+                if (offset === 0) {
+                    this.game.camera.follow(this);
+                    console.log("ENTERED");
+                }
+                else {
+                    this.game.camera.follow(null);
+                    this.game.camera.focusOnXY(this.x + offset, this.y);
+                }
                 if (Math.abs((this.x - oldXpos)) < 1) {
                     currDistance = Math.abs((this.x - this.game.camera.x - 400));
                     if (currDistance >= oldDistance) {
@@ -508,7 +515,7 @@ var GravityGuy;
                 }
                 oldDistance = currDistance;
                 oldXpos = this.x;
-                if (this.game.camera.x >= this.x) {
+                if (this.game.camera.x >= this.x && offset >= 12) {
                     this.kill();
                 }
             }
@@ -884,6 +891,8 @@ var GravityGuy;
                     this.enemyChase.animations.play('run');
                     this.hero.alive = true;
                     enemiesKilled = 0;
+                    // console.log("WTF")
+                    // this.game.camera.x = 0;
                     floor = true;
                     //for (var i = 0; i < enemiesTotal; i++) {
                     //    enemies[i].kill();
@@ -903,6 +912,7 @@ var GravityGuy;
                     this.createEnemies();
                 }
                 else if (game_over && numLives == 0) {
+                    //this.game.camera.x = this.hero.x;
                     if (firstTimeGameOver) {
                         firstTimeGameOver = false;
                         timeDelay = (Math.floor(this.game.time.time / 1000) % 60) + 5;
@@ -973,8 +983,8 @@ var GravityGuy;
             this.deathBurst(hero);
             this.deathBurst(enemyChase);
             this.sound_hero_death.play();
-            enemyChase.kill();
-            hero.kill();
+            this.enemyChase.kill();
+            this.hero.kill();
             if (numLives == 0) {
                 this.itsGameOver();
             }
@@ -1008,7 +1018,7 @@ var GravityGuy;
             /* COMMENT THIS OUT TO REMOVE ENEMY BULLETS KILLING HERO. */
             this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
             /* Megaman chasing hero and kills hero */
-            this.physics.arcade.overlap(this.enemyChase, this.hero, this.enemyCollidesHero, null, this);
+            //this.physics.arcade.overlap(this.enemyChase, this.hero, this.enemyCollidesHero, null, this);
             if (!game_over && heroAlive && (this.hero.body.y >= 512 || this.hero.body.y <= -100)) {
                 this.hero.kill();
                 this.sound_hero_death.play();
@@ -1231,7 +1241,7 @@ var GravityGuy;
                 this.game.debug.text("That was sad to watch...", 160, 260, 'white', '50px Arial');
                 //while (count < 10) {
                 this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Arial');
-                this.game.debug.text("That all you got?", 180, 380, 'white', '45px Arial');
+                this.game.debug.text("That all you got?", 210, 380, 'white', '45px Arial');
             }
         };
         return Level1;
