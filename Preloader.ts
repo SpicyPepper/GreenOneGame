@@ -82,7 +82,7 @@
 
             this.load.spritesheet('title_text', 'visuals/title_text.png', 474, 117);
             this.load.spritesheet('hero', 'visuals/test_runner.png', 138, 115);
-            this.load.spritesheet('enemyChase', 'visuals/mega_enemy.png', 50, 38);
+            this.load.spritesheet('enemyChase', 'visuals/mega_enemy_sprite.png', 50, 40);
             this.load.spritesheet('enemy1', 'visuals/enemy1.png', 68, 93);
             this.load.spritesheet('alien', 'visuals/alien.png', 100, 200);
             

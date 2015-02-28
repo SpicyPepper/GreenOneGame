@@ -5,6 +5,7 @@
     var bulletFired;
     var bulletsFired;
     var totalBullets;
+    var enemyChaseBlockedAfterDeath;
     var enemies;
     var enemiesTotal;
     var enemiesDead;
@@ -135,6 +136,7 @@
             this.physics.arcade.enableBody(this.enemyChase);
             this.time.events.loop(25, this.timedUpdate, this);
 
+
             bulletList = [];
             enemyBulletList = [];
 
@@ -244,20 +246,20 @@
 
         update() {
 
-            if (this.hero.alive === false && heroAlive === true) {
+            if (!this.hero.alive && heroAlive) {
                 this.deathBurst(this.hero);
                 this.sound_hero_death.play();
                 if (numLives == 0) {
                     this.itsGameOver();
                 } else {
                     numLives -= 1;
-                    this.respawnHero();
+                    this.endRound();
                 }
             }
             this.collideEverything();
             /* When hero is alive */
             if (heroAlive) {
-
+                this.enemyChase.body.velocity.x = 450;
                 if (this.enemyChase.x < (this.hero.x - 300) || this.enemyChase.y < (this.hero.y - 512) || this.enemyChase.y > (this.hero.y + 512)) {
                     this.enemyChase.x = this.hero.x - 200;
                     this.enemyChase.y = this.hero.y;
@@ -365,6 +367,12 @@
                 }
                 swapGravity = false;
             } else { // HERO DEAD
+                if (!this.enemyChase.blocked_after_end && (this.enemyChase.body.blocked.right || this.enemyChase.body.blocked.down)) {
+                    this.enemyChase.blocked_after_end = true;
+
+                    this.enemyChase.play('idle', 4, true);
+                    this.enemyChase.body.velocity.x = 0;
+                }
                 swapGravity = false;
                 jumpLocationList = [];
                 //   console.log(this.hero.body.gravity.y);            
@@ -385,6 +393,8 @@
                     respawn = true;
                     score = 0;
                     heroAlive = true;
+                    this.enemyChase.blocked_after_end = false;
+                    this.enemyChase.animations.play('run');
                     this.hero.alive = true;
                     enemiesKilled = 0;
 
@@ -523,7 +533,7 @@
             }
             else {
                 numLives -= 1;
-                this.respawnHero();
+                this.endRound();
             }
         }
 
@@ -541,7 +551,7 @@
             }
             else {
                 numLives -= 1;
-                this.respawnHero();
+                this.endRound();
             }
 
         }
@@ -588,7 +598,7 @@
                 }
                 else {
                     numLives -= 1;
-                    this.respawnHero();
+                    this.endRound();
                 }
             }
             for (var i = 0; i < enemies.length; i++) {
@@ -607,7 +617,7 @@
                 this.itsGameOver();
             } else {
                 numLives -= 1;
-                this.respawnHero();
+                this.endRound();
             }
             heroAlive = false;
         }
@@ -632,7 +642,7 @@
             }
             else {
                 numLives -= 1;
-                this.respawnHero();
+                this.endRound();
             }
         }
 
@@ -648,7 +658,6 @@
                 dust_cloud_emit.y = entity.body.y + entity.body.height;
             }
 
-            console.log("HEY!");
             dust_cloud_emit.start(true, 800, null, 1);
         }
 
@@ -762,7 +771,7 @@
             }
         }
 
-        respawnHero() {
+        endRound() {
             respawn = false;
             heroAlive = false;
         }

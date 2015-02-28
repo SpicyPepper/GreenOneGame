@@ -300,23 +300,25 @@ var GravityGuy;
             _super.call(this, game, x, y, 'enemyChase', 0);
             //layer = layerT;
             //this.game.physics.arcade.enableBody(this);
+            this.blocked_after_end = false;
             this.game.add.existing(this);
             //added
             //this.game = game;
-            this.animations.add('run');
-            this.animations.play('run', 17, true);
+            this.animations.add('run', [8, 9, 10, 11, 12, 13, 14, 15, 16, 17], 17, true);
+            this.animations.add('idle', [0, 1, 0, 1, 0, 1, 2, 3, 2, 3, 4, 5, 6, 7, 0, 1, 0, 1, 0, 1, 2, 3, 2, 1, 2, 3, 4, 5, 5, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7]);
+            this.animations.play('run');
             this.game.physics.enable(this, Phaser.Physics.ARCADE);
             this.body.bounce.y = 0.2;
             this.body.collideWorldBounds = false;
             this.body.allowRotation = true;
             this.body.gravity.y = 18000;
             this.anchor.setTo(0.5, 0);
+            this.body.velocity.x = 450;
             //this.animations.add('walk', [0, 1, 2, 3, 4], 10, true);
         }
         enemyChase.prototype.update = function () {
             //console.log("Hero " + gravityButton.isDown);
             this.body.velocity.y = 0;
-            this.body.velocity.x = 450;
             //enemyChase.body.x = hero.body.x - 150;
             //if (gravityButton.isDown) {
             //if (gravityButton.isDown && this.body.blocked.down || gravityButton.isDown && this.body.blocked.up) {
@@ -464,7 +466,6 @@ var GravityGuy;
                         offset -= 3;
                     }
                 }
-                console.log(offset);
                 oldDistance = currDistance;
                 oldXpos = this.x;
                 if (this.game.camera.x >= this.x) {
@@ -489,6 +490,7 @@ var GravityGuy;
     var bulletFired;
     var bulletsFired;
     var totalBullets;
+    var enemyChaseBlockedAfterDeath;
     var enemies;
     var enemiesTotal;
     var enemiesDead;
@@ -692,7 +694,7 @@ var GravityGuy;
             totalBullets = 50;
         };
         Level1.prototype.update = function () {
-            if (this.hero.alive === false && heroAlive === true) {
+            if (!this.hero.alive && heroAlive) {
                 this.deathBurst(this.hero);
                 this.sound_hero_death.play();
                 if (numLives == 0) {
@@ -700,12 +702,13 @@ var GravityGuy;
                 }
                 else {
                     numLives -= 1;
-                    this.respawnHero();
+                    this.endRound();
                 }
             }
             this.collideEverything();
             /* When hero is alive */
             if (heroAlive) {
+                this.enemyChase.body.velocity.x = 450;
                 if (this.enemyChase.x < (this.hero.x - 300) || this.enemyChase.y < (this.hero.y - 512) || this.enemyChase.y > (this.hero.y + 512)) {
                     this.enemyChase.x = this.hero.x - 200;
                     this.enemyChase.y = this.hero.y;
@@ -804,6 +807,11 @@ var GravityGuy;
                 swapGravity = false;
             }
             else {
+                if (!this.enemyChase.blocked_after_end && (this.enemyChase.body.blocked.right || this.enemyChase.body.blocked.down)) {
+                    this.enemyChase.blocked_after_end = true;
+                    this.enemyChase.play('idle', 4, true);
+                    this.enemyChase.body.velocity.x = 0;
+                }
                 swapGravity = false;
                 jumpLocationList = [];
                 //   console.log(this.hero.body.gravity.y);            
@@ -824,6 +832,8 @@ var GravityGuy;
                     respawn = true;
                     score = 0;
                     heroAlive = true;
+                    this.enemyChase.blocked_after_end = false;
+                    this.enemyChase.animations.play('run');
                     this.hero.alive = true;
                     enemiesKilled = 0;
                     floor = true;
@@ -947,7 +957,7 @@ var GravityGuy;
             }
             else {
                 numLives -= 1;
-                this.respawnHero();
+                this.endRound();
             }
         };
         /* Case where Megaman Catches up with Hero, death ensues */
@@ -963,7 +973,7 @@ var GravityGuy;
             }
             else {
                 numLives -= 1;
-                this.respawnHero();
+                this.endRound();
             }
         };
         Level1.prototype.collideEverything = function () {
@@ -1002,7 +1012,7 @@ var GravityGuy;
                 }
                 else {
                     numLives -= 1;
-                    this.respawnHero();
+                    this.endRound();
                 }
             }
             for (var i = 0; i < enemies.length; i++) {
@@ -1021,7 +1031,7 @@ var GravityGuy;
             }
             else {
                 numLives -= 1;
-                this.respawnHero();
+                this.endRound();
             }
             heroAlive = false;
         };
@@ -1044,7 +1054,7 @@ var GravityGuy;
             }
             else {
                 numLives -= 1;
-                this.respawnHero();
+                this.endRound();
             }
         };
         Level1.prototype.dustBurst = function (entity) {
@@ -1058,7 +1068,6 @@ var GravityGuy;
             else {
                 dust_cloud_emit.y = entity.body.y + entity.body.height;
             }
-            console.log("HEY!");
             dust_cloud_emit.start(true, 800, null, 1);
         };
         Level1.prototype.deathBurst = function (entity) {
@@ -1163,7 +1172,7 @@ var GravityGuy;
                 }
             }
         };
-        Level1.prototype.respawnHero = function () {
+        Level1.prototype.endRound = function () {
             respawn = false;
             heroAlive = false;
         };
@@ -1915,7 +1924,7 @@ var GravityGuy;
         Preloader.prototype.loadSpritesheets = function () {
             this.load.spritesheet('title_text', 'visuals/title_text.png', 474, 117);
             this.load.spritesheet('hero', 'visuals/test_runner.png', 138, 115);
-            this.load.spritesheet('enemyChase', 'visuals/mega_enemy.png', 50, 38);
+            this.load.spritesheet('enemyChase', 'visuals/mega_enemy_sprite.png', 50, 40);
             this.load.spritesheet('enemy1', 'visuals/enemy1.png', 68, 93);
             this.load.spritesheet('alien', 'visuals/alien.png', 100, 200);
         };
