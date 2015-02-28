@@ -134,12 +134,41 @@
 
             enemies = [];
 
-            enemiesTotal = 30;
+            enemiesTotal = 15;
             enemiesDead = 0;
-            var newEnemyX = 0;
+            
             for (var i = 0; i < enemiesTotal; i++) {
-                newEnemyX = this.game.rnd.integerInRange(newEnemyX + 1000, newEnemyX + 1800);
-                var anotherEnemy = new Enemy(this.game, newEnemyX, 50);
+                if (i == 0) {
+                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(450, 815), 373);
+                } else if (i == 1) {
+                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(1215, 1840), 373);
+                } else if (i == 2) {
+                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(3119, 3518), 129);
+                } else if (i == 3) {
+                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(3519, 3729), 373);
+                } else if (i == 4) {
+                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(3730, 4047), 208);
+                } else if (i == 5) {
+                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(6447, 7000), 192);
+                } else if (i == 6) {
+                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(7001, 7790), 192);
+                } else if (i == 7) {
+                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(7791, 8368), 96);
+                } else if (i == 8) {
+                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(8369, 8752), 34);
+                } else if (i == 9) {
+                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(11600, 12100), 192);
+                } else if (i == 10) {
+                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(12101, 12600), 192);
+                } else if (i == 11) {
+                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(12601, 13100), 192);
+                } else if (i == 12) {
+                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(13101, 13965), 192);
+                } else if (i == 13) {
+                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(15700, 16150), 208);
+                } else if (i == 14) {
+                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(16151, 16560), 208);
+                }
                 anotherEnemy.scale.setTo(enemy_scale, enemy_scale);
                 this.physics.arcade.enableBody(anotherEnemy);
                 enemies.push(anotherEnemy);
@@ -251,7 +280,7 @@
                     this.music.mute = true;
                     this.game.state.start('GameOver', true, false);
                 }
-                if (!levelComplete && this.hero.x >= 17150) {
+                if (!levelComplete && this.hero.x >= 17100) {
                     this.levelComplete();
                 }
 
@@ -365,13 +394,48 @@
 
                     floor = true;
                    
+                    for (var i = 0; i < enemiesTotal; i++) {
+                        enemies[i].kill();
+                    }
+
                     //this.hero.body.gravity.y = 20000;
                     //this.enemyChase.body.gravity.y = 18000;
-                    var newEnemyX = 0
-                    for (var i = 0; i < enemies.length; i++) {
-                        //enemies[i].revive();
-                        newEnemyX = this.game.rnd.integerInRange(newEnemyX + 1000, newEnemyX + 1800);
-                        enemies[i].reset(newEnemyX, 50);
+                    for (var i = 0; i < enemiesTotal; i++) {
+                        if (i == 0) {
+                            var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(450, 815), 373);
+                        } else if (i == 1) {
+                            var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(1215, 1840), 373);
+                        } else if (i == 2) {
+                            var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(3119, 3518), 129);
+                        } else if (i == 3) {
+                            var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(3519, 3729), 373);
+                        } else if (i == 4) {
+                            var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(3730, 4047), 208);
+                        } else if (i == 5) {
+                            var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(6447, 7000), 192);
+                        } else if (i == 6) {
+                            var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(7001, 7790), 192);
+                        } else if (i == 7) {
+                            var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(7791, 8368), 96);
+                        } else if (i == 8) {
+                            var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(8369, 8752), 34);
+                        } else if (i == 9) {
+                            var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(11600, 12100), 192);
+                        } else if (i == 10) {
+                            var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(12101, 12600), 192);
+                        } else if (i == 11) {
+                            var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(12601, 13100), 192);
+                        } else if (i == 12) {
+                            var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(13101, 13965), 192);
+                        } else if (i == 13) {
+                            var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(15700, 16150), 208);
+                        } else if (i == 14) {
+                            var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(16151, 16560), 208);
+                        }
+                        anotherEnemy.scale.setTo(enemy_scale, enemy_scale);
+                        this.physics.arcade.enableBody(anotherEnemy);
+                        enemies.push(anotherEnemy);
+                        //    console.log('enemy created at ' + newEnemyX);
                     }
                     //for (var i = 0; i < this.enemyBullets.length; i++) {
                     //   if (this.enemyBullets[i] != undefined )
