@@ -723,7 +723,7 @@ var GravityGuy;
                     this.music.mute = true;
                     this.game.state.start('GameOver', true, false);
                 }
-                if (!levelComplete && this.hero.x >= 17100) {
+                if (!levelComplete && this.hero.x >= 17150) {
                     this.levelComplete();
                 }
                 if (bulletFired && bullet.x - this.hero.x >= 400) {
@@ -907,6 +907,7 @@ var GravityGuy;
         };
         Level1.prototype.levelComplete = function () {
             //this.hero.kill();
+            this.hero.body.y = -200;
             this.enemyChase.kill();
             this.deathBurst(this.enemyChase);
             levelComplete = true;
@@ -917,6 +918,7 @@ var GravityGuy;
             // this.game.state.start('Level2', true, false);
         };
         Level1.prototype.fadeOut = function () {
+            this.victoryMusic.stop();
             this.game.state.start('Level2', true, false);
         };
         Level1.prototype.heroEnemyCollide = function (hero, enemy) {
@@ -971,6 +973,7 @@ var GravityGuy;
             if (!game_over && heroAlive && (this.hero.body.y >= 512 || this.hero.body.y <= -100)) {
                 this.hero.kill();
                 this.sound_hero_death.play();
+                this.deathBurst(this.hero);
                 if (numLives == 0) {
                     this.itsGameOver();
                 }
