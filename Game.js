@@ -534,6 +534,8 @@ var GravityGuy;
     var timeDelay;
     var text;
     var grd;
+    var enemyLocationsX;
+    var enemyLocationsY;
     var Level1 = (function (_super) {
         __extends(Level1, _super);
         function Level1() {
@@ -585,62 +587,52 @@ var GravityGuy;
             this.enemyChase = new GravityGuy.enemyChase(this.game, 0, 300);
             this.physics.arcade.enableBody(this.enemyChase);
             this.time.events.loop(25, this.timedUpdate, this);
+            enemiesTotal = 15;
+            enemiesDead = 0;
             bulletList = [];
             enemyBulletList = [];
             enemies = [];
-            enemiesTotal = 15;
-            enemiesDead = 0;
-            for (var i = 0; i < enemiesTotal; i++) {
-                console.log("created");
-                if (i == 0) {
-                    var anotherEnemy = new GravityGuy.Enemy(this.game, this.game.rnd.integerInRange(450, 815), 373);
-                }
-                else if (i == 1) {
-                    var anotherEnemy = new GravityGuy.Enemy(this.game, this.game.rnd.integerInRange(1215, 1840), 373);
-                }
-                else if (i == 2) {
-                    var anotherEnemy = new GravityGuy.Enemy(this.game, this.game.rnd.integerInRange(3119, 3518), 129);
-                }
-                else if (i == 3) {
-                    var anotherEnemy = new GravityGuy.Enemy(this.game, this.game.rnd.integerInRange(3519, 3729), 373);
-                }
-                else if (i == 4) {
-                    var anotherEnemy = new GravityGuy.Enemy(this.game, this.game.rnd.integerInRange(3730, 4047), 208);
-                }
-                else if (i == 5) {
-                    var anotherEnemy = new GravityGuy.Enemy(this.game, this.game.rnd.integerInRange(6447, 7000), 192);
-                }
-                else if (i == 6) {
-                    var anotherEnemy = new GravityGuy.Enemy(this.game, this.game.rnd.integerInRange(7001, 7790), 192);
-                }
-                else if (i == 7) {
-                    var anotherEnemy = new GravityGuy.Enemy(this.game, this.game.rnd.integerInRange(7791, 8368), 96);
-                }
-                else if (i == 8) {
-                    var anotherEnemy = new GravityGuy.Enemy(this.game, this.game.rnd.integerInRange(8369, 8752), 34);
-                }
-                else if (i == 9) {
-                    var anotherEnemy = new GravityGuy.Enemy(this.game, this.game.rnd.integerInRange(11600, 12100), 192);
-                }
-                else if (i == 10) {
-                    var anotherEnemy = new GravityGuy.Enemy(this.game, this.game.rnd.integerInRange(12101, 12600), 192);
-                }
-                else if (i == 11) {
-                    var anotherEnemy = new GravityGuy.Enemy(this.game, this.game.rnd.integerInRange(12601, 13100), 192);
-                }
-                else if (i == 12) {
-                    var anotherEnemy = new GravityGuy.Enemy(this.game, this.game.rnd.integerInRange(13101, 13965), 192);
-                }
-                else if (i == 13) {
-                    var anotherEnemy = new GravityGuy.Enemy(this.game, this.game.rnd.integerInRange(15700, 16150), 208);
-                }
-                else if (i == 14) {
-                    var anotherEnemy = new GravityGuy.Enemy(this.game, this.game.rnd.integerInRange(16151, 16560), 208);
-                }
-                anotherEnemy.scale.setTo(enemy_scale, enemy_scale);
-                this.physics.arcade.enableBody(anotherEnemy);
-                enemies.push(anotherEnemy);
-            }
+            enemyLocationsX = [this.game.rnd.integerInRange(450, 815), this.game.rnd.integerInRange(1215, 1840), this.game.rnd.integerInRange(3119, 3518), this.game.rnd.integerInRange(3519, 3729), this.game.rnd.integerInRange(3730, 4047), this.game.rnd.integerInRange(6447, 7000), this.game.rnd.integerInRange(7001, 7790), this.game.rnd.integerInRange(7791, 8368), this.game.rnd.integerInRange(8369, 8752), this.game.rnd.integerInRange(11600, 12100), this.game.rnd.integerInRange(12101, 12600), this.game.rnd.integerInRange(12601, 13100), this.game.rnd.integerInRange(13101, 13965), this.game.rnd.integerInRange(15700, 16150), this.game.rnd.integerInRange(16151, 16560)];
+            enemyLocationsY = [373, 373, 129, 373, 208, 192, 192, 96, 32, 192, 192, 192, 192, 208, 208];
+            this.createEnemies();
+            //for (var i = 0; i < enemiesTotal; i++) {
+            //    console.log("created");
+            //    if (i == 0) {
+            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(450, 815), 373);
+            //    } else if (i == 1) {
+            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(1215, 1840), 373);
+            //    } else if (i == 2) {
+            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(3119, 3518), 129);
+            //    } else if (i == 3) {
+            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(3519, 3729), 373);
+            //    } else if (i == 4) {
+            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(3730, 4047), 208);
+            //    } else if (i == 5) {
+            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(6447, 7000), 192);
+            //    } else if (i == 6) {
+            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(7001, 7790), 192);
+            //    } else if (i == 7) {
+            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(7791, 8368), 96);
+            //    } else if (i == 8) {
+            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(8369, 8752), 34);
+            //    } else if (i == 9) {
+            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(11600, 12100), 192);
+            //    } else if (i == 10) {
+            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(12101, 12600), 192);
+            //    } else if (i == 11) {
+            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(12601, 13100), 192);
+            //    } else if (i == 12) {
+            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(13101, 13965), 192);
+            //    } else if (i == 13) {
+            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(15700, 16150), 208);
+            //    } else if (i == 14) {
+            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(16151, 16560), 208);
+            //    }
+            //    anotherEnemy.scale.setTo(enemy_scale, enemy_scale);
+            //    this.physics.arcade.enableBody(anotherEnemy);
+            //    enemies.push(anotherEnemy);
+            //    //    console.log('enemy created at ' + newEnemyX);
+            //}
             var spaceship = this.game.add.sprite(17080, 245, 'spaceship');
             first = true;
             floor = true;
@@ -693,6 +685,21 @@ var GravityGuy;
             heroJumped = false;
             enemyJump = false;
             totalBullets = 50;
+        };
+        Level1.prototype.removeEnemies = function () {
+            for (var i = 0; i < enemiesTotal; i++) {
+                enemies[i].destroy();
+            }
+            enemies = [];
+        };
+        Level1.prototype.createEnemies = function () {
+            enemies = [];
+            for (var i = 0; i < enemiesTotal; i++) {
+                var anotherEnemy = new GravityGuy.Enemy(this.game, enemyLocationsX[i], enemyLocationsY[i]);
+                anotherEnemy.scale.setTo(enemy_scale, enemy_scale);
+                this.physics.arcade.enableBody(anotherEnemy);
+                enemies.push(anotherEnemy);
+            }
         };
         Level1.prototype.update = function () {
             if (!this.hero.alive && heroAlive) {
@@ -838,20 +845,22 @@ var GravityGuy;
                     this.hero.alive = true;
                     enemiesKilled = 0;
                     floor = true;
-                    for (var i = 0; i < enemiesTotal; i++) {
-                        enemies[i].kill();
-                        console.log("hi " + i);
-                    }
-                    enemiesTotal = 0;
+                    //for (var i = 0; i < enemiesTotal; i++) {
+                    //    enemies[i].kill();
+                    //    console.log("hi " + i);
+                    //}
+                    // enemies.
                     totalBullets = 50;
                     for (var i = 0; i < enemyBulletsFired; i++) {
                         enemyBulletList[i].kill();
                     }
-                    enemiesTotal = 15;
-                    for (var i = 0; i < enemiesTotal; i++) {
-                        //  if (i === 0) {
-                        enemies[i].reset((this.game.rnd.integerInRange(450, 815), 373));
-                    }
+                    //for (var i = 0; i < enemiesTotal; i++) {
+                    //    enemies[i].revive();
+                    //}
+                    //this.hero.body.gravity.y = 20000;
+                    //this.enemyChase.body.gravity.y = 18000;
+                    this.removeEnemies();
+                    this.createEnemies();
                 }
                 else if (game_over && numLives == 0) {
                     if (firstTimeGameOver) {
@@ -941,7 +950,6 @@ var GravityGuy;
                 this.sound_landing.play();
             }
             this.physics.arcade.collide(this.enemyChase, layer);
-            this.physics.arcade.collide(this.enemies, layer);
             for (var i = 0; i < bulletsFired; i++) {
                 // this.physics.arcade.collide(bulletList[i], layer);
                 this.physics.arcade.overlap(bulletList, layer, this.bulletWallCollide, null, this);
