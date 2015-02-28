@@ -399,20 +399,27 @@
                     this.hero.alive = true;
                     enemiesKilled = 0;
 
+
                     floor = true;
 
                     for (var i = 0; i < enemiesTotal; i++) {
                         enemies[i].kill();
+                        console.log("hi " + i);
                     }
-
+                    enemiesTotal = 0;
                     totalBullets = 50;
 
                     for (var i = 0; i < enemyBulletsFired; i++) {
                         enemyBulletList[i].kill();
                     }
+                    enemiesTotal = 15;
                     //this.hero.body.gravity.y = 20000;
                     //this.enemyChase.body.gravity.y = 18000;
+
                     for (var i = 0; i < enemiesTotal; i++) {
+                       /* THE PROBLEM COMES FROM CREATING 15 NEW ENEMIES AND PUSHING THEM TO THE LIST OF ENEMIES THAT ALREADY EXIST.*/
+                        if (i === 0) {
+                            enemies[i].reset((this.game.rnd.integerInRange(450, 815), 373);
                         if (i == 0) {
                             var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(450, 815), 373);
                         } else if (i == 1) {
