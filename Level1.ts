@@ -142,10 +142,11 @@
 
             enemies = [];
 
-            enemiesTotal = 0;
+            enemiesTotal = 15;
             enemiesDead = 0;
 
             for (var i = 0; i < enemiesTotal; i++) {
+                console.log("created");
                 if (i == 0) {
                     var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(450, 815), 373);
                 } else if (i == 1) {
