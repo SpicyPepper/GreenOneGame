@@ -28,6 +28,7 @@
     <TypeScriptCompile Include="Boot.ts" />
     <TypeScriptCompile Include="Enemy.ts" />
     <TypeScriptCompile Include="enemyChase.ts" />
+    <TypeScriptCompile Include="GameWon.ts" />
     <TypeScriptCompile Include="Game.ts" />
     <TypeScriptCompile Include="GameOver.ts" />
     <TypeScriptCompile Include="Hero.ts" />

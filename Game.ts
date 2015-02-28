@@ -13,7 +13,7 @@
 
             // This is the second level, test mode
             this.state.add('Level2', Level2, false);
-
+            this.state.add('GameWon', GameWon, false);
             this.state.add('GameOver', GameOver, false);
 
             this.state.start('Boot');

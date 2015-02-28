@@ -369,6 +369,7 @@ var GravityGuy;
             this.state.add('Level1', GravityGuy.Level1, false);
             // This is the second level, test mode
             this.state.add('Level2', GravityGuy.Level2, false);
+            this.state.add('GameWon', GravityGuy.GameWon, false);
             this.state.add('GameOver', GravityGuy.GameOver, false);
             this.state.start('Boot');
         }
@@ -414,6 +415,45 @@ var GravityGuy;
         return GameOver;
     })(Phaser.State);
     GravityGuy.GameOver = GameOver;
+})(GravityGuy || (GravityGuy = {}));
+var GravityGuy;
+(function (GravityGuy) {
+    var GameWon = (function (_super) {
+        __extends(GameWon, _super);
+        function GameWon() {
+            _super.apply(this, arguments);
+        }
+        GameWon.prototype.create = function () {
+            this.song = this.add.audio('game_won_song');
+            this.song.play();
+            this.background = this.add.sprite(0, 0, 'game_won_background');
+            this.background.alpha = 0;
+            this.add.tween(this.background).to({ alpha: 1 }, 2000, Phaser.Easing.Bounce.InOut, true);
+            //     this.logo = this.add.sprite(this.world.centerX, -300, 'title_planet');
+            //      this.logo.anchor.setTo(0.5, 0.5);
+            this.title = this.add.sprite(50, -200, 'title_text');
+            this.title.scale.setTo(1.2, 1.2);
+            this.game.add.existing(this.title);
+            this.game.time.events.add(Phaser.Timer.SECOND * 4, this.addInput, this);
+        };
+        GameWon.prototype.firstLevel = function () {
+            this.song.destroy();
+            this.game.state.start('Level1', true, false);
+        };
+        GameWon.prototype.restartGame = function () {
+            this.title.x = 100;
+            this.title.y = 200;
+            this.title.animations.add('display');
+            this.title.animations.play('display', 13, false);
+            this.game.time.events.add(Phaser.Timer.SECOND * 4, this.firstLevel, this);
+        };
+        GameWon.prototype.addInput = function () {
+            this.input.onDown.addOnce(this.restartGame, this);
+            //  tween.onComplete.add(this.startGame, this);
+        };
+        return GameWon;
+    })(Phaser.State);
+    GravityGuy.GameWon = GameWon;
 })(GravityGuy || (GravityGuy = {}));
 var GravityGuy;
 (function (GravityGuy) {
@@ -1356,7 +1396,7 @@ var GravityGuy;
                 this.physics.arcade.enableBody(anotherEnemy);
                 enemies.push(anotherEnemy);
             }
-            var spaceship = this.game.add.sprite(17080, 245, 'spaceship');
+            var spaceship = this.game.add.sprite(13870, 195, 'spaceship');
             first = true;
             floor = true;
             floorEnemy = true;
@@ -1448,7 +1488,7 @@ var GravityGuy;
                     this.music.mute = true;
                     this.game.state.start('GameOver', true, false);
                 }
-                if (!levelComplete && this.hero.x >= 17150) {
+                if (!levelComplete && this.hero.x >= 13870) {
                     this.levelComplete();
                 }
                 for (var i = 0; i < bulletsFired; i++) {
@@ -1657,7 +1697,7 @@ var GravityGuy;
         };
         Level2.prototype.fadeOut = function () {
             this.victoryMusic.stop();
-            this.game.state.start('Level2', true, false);
+            this.game.state.start('GameWon', true, false);
         };
         Level2.prototype.bulletWallCollide = function (bullet, layer) {
             bullet.kill();
@@ -1903,7 +1943,7 @@ var GravityGuy;
             this.game.debug.text('Bullets : ' + totalBullets, 345, 35, 'white', '34px Arial');
             this.game.debug.text('Lives : ' + numLives, 660, 35, 'white', '34px Arial');
             if (levelComplete) {
-                this.game.debug.text('Level 1 Complete', 200, 200, 'white', '50px Arial');
+                this.game.debug.text('Level 2 Complete', 200, 200, 'white', '50px Arial');
                 this.game.debug.text('Score: ' + score, 265, 260, 'white', '45px Arial');
                 this.game.debug.text('Enemies Killed: ' + enemiesKilled, 240, 325, 'white', '35px Arial');
                 this.game.debug.text('Bullets Left: ' + totalBullets, 260, 370, 'white', '35px Arial');
@@ -2030,12 +2070,13 @@ var GravityGuy;
             this.load.audio('title_music', ['audio/title_music.mp3', 'audio/title_music.ogg']);
             this.load.audio('House', ['audio/Title_TechHouse.mp3', 'audio/Title_TechHouse.ogg']);
             this.load.audio('hero_fire', ['audio/hero_fire.mp3', 'audio/hero_fire.ogg']);
-            this.load.audio('hero_gravity', ['audio/hero_gravity.mp3', 'audio/hero_gravity.mp3']);
-            this.load.audio('hero_jump', ['audio/hero_jump.mp3', 'audio/hero_jump.mp3']);
-            this.load.audio('enemy_shoot', ['audio/enemy_shoot.mp3', 'audio/enemy_shoot.mp3']);
+            this.load.audio('hero_gravity', ['audio/hero_gravity.mp3', 'audio/hero_gravity.ogg']);
+            this.load.audio('hero_jump', ['audio/hero_jump.mp3', 'audio/hero_jump.ogg']);
+            this.load.audio('enemy_shoot', ['audio/enemy_shoot.mp3', 'audio/enemy_shoot.ogg']);
             this.load.audio('victory', ['audio/victory.mp3', 'audio/victory.ogg']);
             this.load.audio('hero_enemyChase_collision', ['audio/hero_enemyChase_collision.mp3', 'audio/hero_enemyChase_collision.mp3']);
             this.load.audio('landing_sound', ['audio/landing_sound.mp3', 'audio/landing_sound.ogg']);
+            this.load.audio('game_won_song', ['audio/game_won_song.mp3', 'audio/game_won_song.ogg']);
         };
         Preloader.prototype.loadImages = function () {
             this.load.image('explosion_small', 'visuals/explosion_small.png');
@@ -2048,6 +2089,7 @@ var GravityGuy;
             this.load.image('background', 'visuals/bkgrnd_sand.png');
             this.load.image('background2', 'visuals/surface_macbeth.png');
             this.load.image('spaceship', 'visuals/spaceship.png');
+            this.load.image('game_won_background', 'visuals/game_won.png');
         };
         Preloader.prototype.loadMaps = function () {
             this.load.tilemap('joels_level', 'resources/joels_level.json', null, Phaser.Tilemap.TILED_JSON);

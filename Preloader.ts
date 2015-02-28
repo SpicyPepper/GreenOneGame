@@ -42,16 +42,17 @@
 
         loadAudio() {
             this.load.audio('space_slam', 'audio/space_slam.mp3');
-            this.load.audio('hero_death', ['audio/hero_death.mp3', 'audio/hero_death.mp3']);
-            this.load.audio('title_music', ['audio/title_music.mp3', 'audio/title_music.ogg']);
-            this.load.audio('House', ['audio/Title_TechHouse.mp3', 'audio/Title_TechHouse.ogg']);
-            this.load.audio('hero_fire', ['audio/hero_fire.mp3', 'audio/hero_fire.ogg']);
-            this.load.audio('hero_gravity', ['audio/hero_gravity.mp3', 'audio/hero_gravity.mp3']);
-            this.load.audio('hero_jump', ['audio/hero_jump.mp3', 'audio/hero_jump.mp3']);
-            this.load.audio('enemy_shoot', ['audio/enemy_shoot.mp3', 'audio/enemy_shoot.mp3']);
-            this.load.audio('victory', ['audio/victory.mp3', 'audio/victory.ogg']);
+            this.load.audio('hero_death', ['audio/hero_death.mp3',      'audio/hero_death.mp3']);
+            this.load.audio('title_music', ['audio/title_music.mp3',    'audio/title_music.ogg']);
+            this.load.audio('House', ['audio/Title_TechHouse.mp3',      'audio/Title_TechHouse.ogg']);
+            this.load.audio('hero_fire', ['audio/hero_fire.mp3',        'audio/hero_fire.ogg']);
+            this.load.audio('hero_gravity', ['audio/hero_gravity.mp3',  'audio/hero_gravity.ogg']);
+            this.load.audio('hero_jump', ['audio/hero_jump.mp3',        'audio/hero_jump.ogg']);
+            this.load.audio('enemy_shoot', ['audio/enemy_shoot.mp3',    'audio/enemy_shoot.ogg']);
+            this.load.audio('victory', ['audio/victory.mp3',            'audio/victory.ogg']);
             this.load.audio('hero_enemyChase_collision', ['audio/hero_enemyChase_collision.mp3', 'audio/hero_enemyChase_collision.mp3']);
             this.load.audio('landing_sound', ['audio/landing_sound.mp3', 'audio/landing_sound.ogg']);
+            this.load.audio('game_won_song', ['audio/game_won_song.mp3', 'audio/game_won_song.ogg']);
 
         }
 
@@ -66,6 +67,7 @@
             this.load.image('background', 'visuals/bkgrnd_sand.png');
             this.load.image('background2', 'visuals/surface_macbeth.png');
             this.load.image('spaceship', 'visuals/spaceship.png');
+            this.load.image('game_won_background', 'visuals/game_won.png');
         }
 
         loadMaps() {

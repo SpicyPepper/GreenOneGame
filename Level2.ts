@@ -184,7 +184,7 @@
                 //    console.log('enemy created at ' + newEnemyX);
             }
 
-            var spaceship = this.game.add.sprite(17080, 245, 'spaceship');
+            var spaceship = this.game.add.sprite(13870, 195, 'spaceship');
 
             first = true;
             floor = true;
@@ -286,7 +286,7 @@
                     this.music.mute = true;
                     this.game.state.start('GameOver', true, false);
                 }
-                if (!levelComplete && this.hero.x >= 17150) {
+                if (!levelComplete && this.hero.x >= 13870) {
                     this.levelComplete();
                 }
 
@@ -516,7 +516,7 @@
         }
         fadeOut() {
             this.victoryMusic.stop();
-            this.game.state.start('Level2', true, false);
+            this.game.state.start('GameWon', true, false);
         }
 
         bulletWallCollide(bullet, layer) {
@@ -790,7 +790,7 @@
             this.game.debug.text('Bullets : ' + totalBullets, 345, 35, 'white', '34px Arial');
             this.game.debug.text('Lives : ' + numLives, 660, 35, 'white', '34px Arial');
             if (levelComplete) {
-                this.game.debug.text('Level 1 Complete', 200, 200, 'white', '50px Arial');
+                this.game.debug.text('Level 2 Complete', 200, 200, 'white', '50px Arial');
                 this.game.debug.text('Score: ' + score, 265, 260, 'white', '45px Arial');
                 this.game.debug.text('Enemies Killed: ' + enemiesKilled, 240, 325, 'white', '35px Arial');
                 this.game.debug.text('Bullets Left: ' + totalBullets, 260, 370, 'white', '35px Arial');
