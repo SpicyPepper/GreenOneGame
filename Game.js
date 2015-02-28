@@ -586,7 +586,7 @@ var GravityGuy;
             bulletList = [];
             enemyBulletList = [];
             enemies = [];
-            enemiesTotal = 15;
+            enemiesTotal = 0;
             enemiesDead = 0;
             for (var i = 0; i < enemiesTotal; i++) {
                 if (i == 0) {
@@ -825,6 +825,7 @@ var GravityGuy;
                     score = 0;
                     heroAlive = true;
                     this.hero.alive = true;
+                    enemiesKilled = 0;
                     floor = true;
                     for (var i = 0; i < enemiesTotal; i++) {
                         enemies[i].kill();
@@ -1174,15 +1175,23 @@ var GravityGuy;
             //  The score
             this.game.debug.text(scoreString + score, 10, 35, 'white', '34px Arial');
             // this.game.debug.spriteCoords(this.hero, 300, 300);
-            this.game.debug.text('Bullets : ' + totalBullets, 329, 35, 'white', '34px Arial');
-            this.game.debug.text('Lives : ' + numLives, 648, 35, 'white', '34px Arial');
+            this.game.debug.text('Bullets : ' + totalBullets, 345, 35, 'white', '34px Arial');
+            this.game.debug.text('Lives : ' + numLives, 660, 35, 'white', '34px Arial');
             if (levelComplete) {
                 this.game.debug.text('Level 1 Complete', 200, 200, 'white', '50px Arial');
                 this.game.debug.text('Score: ' + score, 265, 260, 'white', '45px Arial');
-                this.game.debug.text('Enemies Killed: ' + enemiesKilled, 240, 350, 'white', '40px Arial');
-                this.game.debug.text('Bonus: ' + enemiesKilled * 5000, 285, 400, 'white', '40px Arial');
+                this.game.debug.text('Enemies Killed: ' + enemiesKilled, 240, 325, 'white', '35px Arial');
+                this.game.debug.text('Bullets Left: ' + totalBullets, 260, 370, 'white', '35px Arial');
+                this.game.debug.text('Lives Left: ' + numLives, 285, 415, 'white', '35px Arial');
+                this.game.debug.text('Bonus: ' + (enemiesKilled * 1000 + totalBullets * 100 + numLives * 5000), 280, 475, 'white', '40px Arial');
                 if (!bonusAdded) {
-                    for (var i = 0; i < enemiesKilled * 5000; i++) {
+                    for (var i = 0; i < enemiesKilled * 1000; i++) {
+                        score++;
+                    }
+                    for (var i = 0; i < totalBullets * 100; i++) {
+                        score++;
+                    }
+                    for (var i = 0; i < numLives * 5000; i++) {
                         score++;
                     }
                     bonusAdded = true;
