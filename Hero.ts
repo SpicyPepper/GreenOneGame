@@ -7,18 +7,19 @@
     var currDistance;
     var oldDistance;
     var just_landed;
-   
+    var state
     export class Hero extends Phaser.Sprite {
 
         in_air;
 
-        constructor(game: Phaser.Game, x: number, y: number) {
+        constructor(game: Phaser.Game, x: number, y: number, aState: number) {
 
             super(game, x, y, 'hero', 0);
             just_landed = false;
             //layer = layerT;
             //this.game.physics.arcade.enableBody(this);
             this.game.add.existing(this);
+            state = aState;
             //added
             //this.game = game;
          
@@ -43,48 +44,52 @@
 
         update() {
            
-            
-            if (this.alive) {
+            if (state === 3) {
                 this.body.velocity.y = 0;
-                this.body.velocity.x = 450;
-
-                if (offset === 0) {
-                    this.game.camera.follow(this);
-                } else {
-                    this.game.camera.follow(null);
-                    
-                    this.game.camera.focusOnXY(this.x + offset, this.y);
-                }
-
-                if (Math.abs((this.x - oldXpos)) < 1/* && count > 50*/) {
-                    currDistance = Math.abs((this.x - this.game.camera.x - 400));
-                    if (currDistance >= oldDistance) {
-                        offset += 6;
-                    }
-                }
-                else {
-                    if (offset >= 3) {
-                        offset -= 3;
-                    }
-
-                }
-                
-                oldDistance = currDistance;
-
-                oldXpos = this.x;
-
-                if (this.game.camera.x >= this.x && offset >= 12) {
-                 
-                   
-                    this.kill();
-                }
+                //this.body.velocity.x = 450;
             } else {
-            
-                
-                offset = 0;
-                oldDistance = 0;
-                currDistance = 0;
-                oldXpos = this.x;
+                if (this.alive) {
+                    this.body.velocity.y = 0;
+                    this.body.velocity.x = 450;
+
+                    if (offset === 0) {
+                        this.game.camera.follow(this);
+                    } else {
+                        this.game.camera.follow(null);
+
+                        this.game.camera.focusOnXY(this.x + offset, this.y);
+                    }
+
+                    if (Math.abs((this.x - oldXpos)) < 1/* && count > 50*/) {
+                        currDistance = Math.abs((this.x - this.game.camera.x - 400));
+                        if (currDistance >= oldDistance) {
+                            offset += 6;
+                        }
+                    }
+                    else {
+                        if (offset >= 3) {
+                            offset -= 3;
+                        }
+
+                    }
+
+                    oldDistance = currDistance;
+
+                    oldXpos = this.x;
+
+                    if (this.game.camera.x >= this.x && offset >= 12) {
+
+
+                        this.kill();
+                    }
+                } else {
+
+
+                    offset = 0;
+                    oldDistance = 0;
+                    currDistance = 0;
+                    oldXpos = this.x;
+                }
             }
 
         }

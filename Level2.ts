@@ -128,7 +128,7 @@
 
             layer.resizeWorld();
 
-            this.hero = new Hero(this.game, 150, 300);
+            this.hero = new Hero(this.game, 150, 300, 2);
             this.hero.scale.setTo(hero_scale, hero_scale);
             this.physics.arcade.enableBody(this.hero);
 
@@ -326,7 +326,8 @@
                 //  console.log("OUTSIDE: " + jumpLocationList.length);
                 for (var i = 0; i < jumpLocationList.length; i++) {
                     //   console.log("IN");
-                    if (this.enemyChase.body.x >= jumpLocationList[i] - 7.5 && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
+                    if (this.enemyChase.body.x >= jumpLocationList[i] && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
+                       
                         // if (floorEnemy != floor) {
                         this.flipEnemy();
                         this.enemyChase.body.gravity.y = this.enemyChase.body.gravity.y * -1;
@@ -389,6 +390,7 @@
                 }
                 floor = true;
                 if (respawnButton.isDown && !respawn) {
+                    this.deleteReferences();
                     this.hero.reset(150, 300);
                     this.enemyChase.reset(0, 300);
                     respawn = true;
@@ -831,6 +833,19 @@
                 this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Arial');
                 this.game.debug.text("That all you got?", 180, 380, 'white', '45px Arial');
             }
+        }
+
+        deleteReferences() {
+            delete bulletList.regex;
+            delete totalBullets.regex;
+            delete enemies.regex;
+            delete enemiesTotal.regex;
+            delete enemiesDead.regex;
+            delete enemiesKilled.regex;
+            delete enemyBulletList.regex;
+            delete jumpLocationList['regex'];
+            //delete enemyLocationsX.regex;
+            //delete enemyLocationsY.regex;
         }
     }
 }  

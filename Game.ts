@@ -13,6 +13,8 @@
 
             // This is the second level, test mode
             this.state.add('Level2', Level2, false);
+            // Boss map
+            this.state.add('Level3', Level3, false);
             this.state.add('GameWon', GameWon, false);
             this.state.add('GameOver', GameOver, false);
 

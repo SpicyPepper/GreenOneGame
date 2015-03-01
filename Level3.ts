@@ -34,7 +34,7 @@
     var floorEnemy;
     var floorOtherEnemy;
     var hero_scale = 0.7;
-    var enemyChase_scale = 4;
+    var enemyChase_scale = 4.3;
     var enemy_scale = 0.8;
     var explode_emit;
     var dust_cloud_emit;
@@ -52,8 +52,10 @@
     var grd;
     var enemyLocationsX;
     var enemyLocationsY;
+    var moveRightButton;
+    var moveLeftButton;
 
-    export class Level1 extends Phaser.State {
+    export class Level3 extends Phaser.State {
 
         background: Phaser.TileSprite;
 
@@ -79,14 +81,14 @@
         enemy: GravityGuy.Enemy
 
         create() {
-            //FPS
-            this.game.time.advancedTiming = true;
 
             /*Working on key binding*/
             keyboard_grav = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
             keyboard_grav.onDown.add(this.attemptGravitySwap, this);
 
             respawnButton = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
+            moveRightButton = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
+            moveLeftButton = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
 
             /* If escape is pressed, game ends */
             escapeKey = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
@@ -133,12 +135,12 @@
 
             layer.resizeWorld();
 
-            this.hero = new Hero(this.game, 150, 300, 1);
+            this.hero = new Hero(this.game, 150, 300, 3);
             this.hero.scale.setTo(hero_scale, hero_scale);
             this.physics.arcade.enableBody(this.hero);
 
             this.enemyChase = new enemyChase(this.game, 0, 300);
-            
+            this.enemyChase.scale.setTo(enemyChase_scale, enemyChase_scale);
             this.physics.arcade.enableBody(this.enemyChase);
             this.time.events.loop(25, this.timedUpdate, this);
 
@@ -151,13 +153,7 @@
 
             enemies = [];
 
-            enemyLocationsX = [this.game.rnd.integerInRange(450, 815), this.game.rnd.integerInRange(1215, 1840), this.game.rnd.integerInRange(3119, 3518), this.game.rnd.integerInRange(3519, 3729),
-                this.game.rnd.integerInRange(3730, 4047), this.game.rnd.integerInRange(6447, 7000), this.game.rnd.integerInRange(7001, 7790), this.game.rnd.integerInRange(7791, 8368),
-                this.game.rnd.integerInRange(8369, 8752), this.game.rnd.integerInRange(11600, 12100), this.game.rnd.integerInRange(12101, 12600), this.game.rnd.integerInRange(12601, 13100),
-                this.game.rnd.integerInRange(13101, 13965), this.game.rnd.integerInRange(15700, 16150), this.game.rnd.integerInRange(16151, 16560)];
-            enemyLocationsY = [373, 373, 129, 373, 208, 192, 192, 96, 32, 192, 192, 192, 192, 208, 208];
-
-            this.createEnemies();
+          
             //for (var i = 0; i < enemiesTotal; i++) {
             //    console.log("created");
             //    if (i == 0) {
@@ -206,7 +202,7 @@
 
             gravityButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
             cursors = this.game.input.keyboard.createCursorKeys();
-            respawnButton = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
+            //respawnButton = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
 
             //text = this.add.text(this.world.centerX, game.world.centerY, "- phaser -\nrocking with\ngoogle web fonts");
 
@@ -222,16 +218,7 @@
 
             //end added 
 
-            //Enemy Bullets
-            this.enemyBullets = this.game.add.group();
-            this.enemyBullets.enableBody = true;
-            this.enemyBullets.physicsBodyType = Phaser.Physics.ARCADE;
-            this.enemyBullets.createMultiple(30, 'enemybullet');
-            this.enemyBullets.setAll('anchor.x', 1);
-            this.enemyBullets.setAll('anchor.y', 0);
-            this.enemyBullets.setAll('outOfBoundsKill', false);
-            this.enemyBullets.setAll('checkWorldBounds', true);
-
+          
             levelComplete = false;
             respawn = true;
             game_over = false;
@@ -258,40 +245,40 @@
             totalBullets = 50;
         }
 
-        removeEnemies() {
-            for (var i = 0; i < enemiesTotal; i++) {
-                enemies[i].destroy();
-            }
-            enemies = [];
-        }
+        
 
-        createEnemies() {
-            enemies = [];
-            for (var i = 0; i < enemiesTotal; i++) {
-                var anotherEnemy = new Enemy(this.game, enemyLocationsX[i], enemyLocationsY[i]);
-                anotherEnemy.scale.setTo(enemy_scale, enemy_scale);
-                this.physics.arcade.enableBody(anotherEnemy);
-                enemies.push(anotherEnemy);
-            }
-        }
-
-        update() {
-            console.log(this.hero.x);
-            if (!this.hero.alive && heroAlive) {
-                this.deathBurst(this.hero);
-                this.sound_hero_death.play();
-                if (numLives == 0) {
-                    this.itsGameOver();
-                } else {
-                    numLives -= 1;
-                    this.endRound();
-                }
-            }
-            //this.collideEverything();
+        update() {  
+            
+            this.game.camera.x = 0;
+            //console.log(this.hero.x);
+            //if (!this.hero.alive && heroAlive) {
+            //    this.deathBurst(this.hero);
+            //    this.sound_hero_death.play();
+            //    if (numLives == 0) {
+            //        this.itsGameOver();
+            //    } else {
+            //        numLives -= 1;
+            //        this.endRound();
+            //    }
+            //}
+            this.collideEverything();
             /* When hero is alive */
-            if (heroAlive) {
-                this.enemyChase.body.velocity.x = 450;
-                if (this.enemyChase.x < (this.hero.x - 300) || this.enemyChase.y < (this.hero.y - 512) || this.enemyChase.y > (this.hero.y + 512)) {
+            //if (heroAlive) {
+            if (moveRightButton.isDown) {
+                this.hero.x += 5;
+            }
+            if (moveLeftButton.isDown) {
+                this.hero.x -= 5;
+            }
+                if (this.hero.x > 800) {
+                    this.hero.x = 100;
+
+                }
+                if (this.enemyChase.x > 800) {
+                    this.enemyChase.x = 100;
+
+                }
+               /* if (this.enemyChase.x < (this.hero.x - 300) || this.enemyChase.y < (this.hero.y - 512) || this.enemyChase.y > (this.hero.y + 512)) {
                     this.enemyChase.x = this.hero.x - 200;
                     this.enemyChase.y = this.hero.y;
                     if (floorEnemy != floor) {
@@ -356,7 +343,7 @@
                 //  console.log("OUTSIDE: " + jumpLocationList.length);
                 for (var i = 0; i < jumpLocationList.length; i++) {
                     //   console.log("IN");
-                    if (this.enemyChase.body.x >= jumpLocationList[i] && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
+                    if (this.enemyChase.body.x >= jumpLocationList[i] - 7.5 && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
                         // if (floorEnemy != floor) {
                         this.flipEnemy();
                         this.enemyChase.body.gravity.y = this.enemyChase.body.gravity.y * -1;
@@ -419,7 +406,6 @@
                 }
                 floor = true;
                 if (respawnButton.isDown && !respawn) {
-                    this.deleteReferences();
                     this.hero.reset(150, 300);
                     this.enemyChase.reset(0, 300);
                     respawn = true;
@@ -448,10 +434,10 @@
                     //}
                     //this.hero.body.gravity.y = 20000;
                     //this.enemyChase.body.gravity.y = 18000;
-                    this.removeEnemies();
-                    this.createEnemies();
+                    //this.removeEnemies();
+                    //this.createEnemies();
                     //for (var i = 0; i < enemiesTotal; i++) {
-                    //   /* THE PROBLEM COMES F*/
+                    //   THE PROBLEM COMES F
                     //    if (i === 0) {
                     //        enemies[i].reset((this.game.rnd.integerInRange(450, 815), 373);
                     //    if (i == 0) {
@@ -517,8 +503,8 @@
                         this.music.mute = true;
                         this.game.state.start('GameOver', true, false);
                     }
-                }
-            }
+                }*/
+            //}
         }
 
         attemptGravitySwap() {
@@ -539,13 +525,13 @@
         timedUpdate() {
             if (!game_over && !levelComplete && respawn) {
                 score += 10;
-                this.background.tilePosition.x -= 4;
+                //this.background.tilePosition.x -= 4;
             }
         }
 
         levelComplete() {
             this.hero.kill();
-           
+
             heroAlive = false;
             this.hero.body.y = - 200;
             this.enemyChase.kill();
@@ -559,7 +545,7 @@
         }
         fadeOut() {
             this.victoryMusic.stop();
-            this.game.state.start('Level2', true, false);
+            this.game.state.start('GameWon', true, false);
         }
 
         bulletWallCollide(bullet, layer) {
@@ -631,7 +617,7 @@
             this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
 
             /* Megaman chasing hero and kills hero */
-            this.physics.arcade.overlap(this.enemyChase, this.hero, this.enemyCollidesHero, null, this);
+            //this.physics.arcade.overlap(this.enemyChase, this.hero, this.enemyCollidesHero, null, this);
 
             if (!game_over && heroAlive && (this.hero.body.y >= 512 || this.hero.body.y <= -100)) {
                 this.hero.kill();
@@ -829,7 +815,6 @@
         render() {
             //  The score
             this.game.debug.text(scoreString + score, 10, 35, 'white', '34px Arial');
-            this.game.debug.text(this.game.time.fps + '' || '--', 2, 60, "#00ff00");  
             // this.game.debug.spriteCoords(this.hero, 300, 300);
             this.game.debug.text('Bullets : ' + totalBullets, 345, 35, 'white', '34px Arial');
             this.game.debug.text('Lives : ' + numLives, 660, 35, 'white', '34px Arial');
@@ -873,19 +858,6 @@
                 this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Arial');
                 this.game.debug.text("That all you got?", 210, 380, 'white', '45px Arial');
             }
-        }
-
-        deleteReferences() {
-            delete bulletList.regex;
-            delete totalBullets.regex;
-            delete enemies.regex;
-            delete enemiesTotal.regex;
-            delete enemiesDead.regex;
-            delete enemiesKilled.regex;
-            delete enemyBulletList.regex;
-            delete jumpLocationList['regex'];
-            delete enemyLocationsX.regex;
-            delete enemyLocationsY.regex;
         }
     }
 }  
