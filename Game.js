@@ -772,7 +772,7 @@ var GravityGuy;
                     this.endRound();
                 }
             }
-            //this.collideEverything();
+            this.collideEverything();
             /* When hero is alive */
             if (heroAlive) {
                 this.enemyChase.body.velocity.x = 450;
