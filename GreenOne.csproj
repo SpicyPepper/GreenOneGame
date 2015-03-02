@@ -33,6 +33,7 @@
     <TypeScriptCompile Include="GameOver.ts" />
     <TypeScriptCompile Include="Hero.ts" />
     <TypeScriptCompile Include="IntroLevel.ts" />
+    <TypeScriptCompile Include="Level0.ts" />
     <TypeScriptCompile Include="Level1.ts" />
     <TypeScriptCompile Include="Level2.ts" />
     <TypeScriptCompile Include="Level3.ts" />
