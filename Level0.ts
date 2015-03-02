@@ -52,10 +52,12 @@
     var grd;
     var enemyLocationsX;
     var enemyLocationsY;
+    var background;
+    var level;
 
     export class Level0 extends Phaser.State {
 
-        background: Phaser.TileSprite;
+        //
 
         map: Phaser.Tilemap
 
@@ -94,8 +96,7 @@
             this.physics.startSystem(Phaser.Physics.ARCADE);
             this.world.setBounds(0, 0, 2000, 512);
 
-            this.background = this.add.tileSprite(0, 0, 1024, 512, 'background');
-            this.background.fixedToCamera = true;
+           
 
             this.music = this.add.audio('House');
             this.sound_landing = this.add.audio('landing_sound');
@@ -221,7 +222,7 @@
         }
 
         update() {
-            console.log(this.hero.x);
+           
             if (!this.hero.alive && heroAlive) {
                 this.deathBurst(this.hero);
                 this.sound_hero_death.play();
@@ -479,7 +480,7 @@
         timedUpdate() {
             if (!game_over && !levelComplete && respawn) {
                 score += 10;
-                this.background.tilePosition.x -= 4;
+                background.tilePosition.x -= 4;
             }
         }
 
@@ -771,7 +772,7 @@
             this.game.debug.text('Bullets : ' + totalBullets, 345, 35, 'white', '34px Arial');
             this.game.debug.text('Lives : ' + numLives, 660, 35, 'white', '34px Arial');
             if (levelComplete) {
-                this.game.debug.text('Level 1 Complete', 200, 200, 'white', '50px Arial');
+                this.game.debug.text('Level ' + level + ' Complete', 200, 200, 'white', '50px Arial');
                 this.game.debug.text('Score: ' + score, 265, 260, 'white', '45px Arial');
                 this.game.debug.text('Enemies Killed: ' + enemiesKilled, 240, 325, 'white', '35px Arial');
                 this.game.debug.text('Bullets Left: ' + totalBullets, 260, 370, 'white', '35px Arial');
@@ -836,6 +837,14 @@
         setEnemyLocations(anEnemyLocationsX, anEnemyLocationsY) {
             enemyLocationsX = anEnemyLocationsX;
             enemyLocationsY = anEnemyLocationsY;
+        }
+
+        setBackground(aBackground) {
+            background = aBackground;
+        }
+
+        setLevel(aLevel) {
+            level = aLevel;
         }
     }
 }  

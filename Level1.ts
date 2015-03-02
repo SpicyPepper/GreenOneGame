@@ -7,14 +7,25 @@
     var enemyLocationsY;
     var levelComplete;
     export class Level1 extends Level0 {
+        background: Phaser.TileSprite;
         create() {
-            
+
+            //has to be above super.ceate
+            this.background = this.add.tileSprite(0, 0, 1024, 512, 'background');
+            this.background.fixedToCamera = true;
+            super.setBackground(this.background);
+            //end
             super.create();
+            super.setLevel(1);
+
             //LEVEL :D
             this.map = this.add.tilemap('level_test');
             this.map.addTilesetImage('tileset_1');
-
+            
             this.map.setCollisionByExclusion([]);
+
+            
+
             layer = this.map.createLayer('layer_1');
             layer.resizeWorld();
             super.setLayer(layer);
