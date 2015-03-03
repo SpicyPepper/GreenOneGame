@@ -1,6 +1,6 @@
 ﻿module GravityGuy {
 
-    var bulletList;
+    var bullet;
     var bulletTime;
     var bulletFired;
     var bulletsFired;
@@ -135,7 +135,6 @@
        
             enemiesDead = 0;
 
-            bulletList = [];
             enemyBulletList = [];
 
             enemies = [];
@@ -184,6 +183,7 @@
             bonusAdded = false;
             swapGravity = false;
             firstTimeGameOver = true;
+            bullet;
             bulletTime = 0;
             bulletFired = false;
             bulletsFired = 0;
@@ -261,10 +261,9 @@
                 //    this.levelComplete();
                 //}
 
-                for (var i = 0; i < bulletsFired; i++) {
-                    if (bulletList[i].x - this.hero.x >= 400) {
-                        this.resetBullet(bulletList[i]);
-                    }
+                if (bulletFired && bullet.x - this.hero.x >= 400) {
+                    this.resetBullet(bullet);
+                    bulletFired = false;
                 }
                 //DON'T REMOVE
                 //if (swapGravity) {
@@ -547,11 +546,6 @@
             this.physics.arcade.collide(this.enemyChase, layer);
             //  this.physics.arcade.collide(this.enemies, layer);
 
-            for (var i = 0; i < bulletsFired; i++) {
-                // this.physics.arcade.collide(bulletList[i], layer);
-                this.physics.arcade.overlap(bulletList, layer, this.bulletWallCollide, null, this);
-            }
-
             for (var i = 0; i < enemyBulletsFired; i++) {
                 // this.physics.arcade.collide(enemyBulletList[i], layer);
                 this.physics.arcade.overlap(enemyBulletList, layer, this.bulletWallCollide, null, this);
@@ -707,21 +701,20 @@
             //  To avoid them being allowed to fire too fast we set a time limit
             if (totalBullets > 0 && !levelComplete && this.game.time.now > bulletTime) {
                 //  Grab the first bullet we can from the pool
-                bulletList.push(this.bullets.getFirstExists(false));
-                bulletsFired++;
+                bullet = this.bullets.getFirstExists(false);
 
-                if (bulletsFired > 0) {
-                    this.physics.arcade.collide(bulletList[bulletsFired - 1], layer);
+                if (bullet) {
+                    this.physics.arcade.collide(bullet, layer);
                     this.sound_hero_fire.play();
                     if (floor) {
                         if (first)
-                            bulletList[bulletsFired - 1].reset(this.hero.body.x + 140, this.hero.y + 20);//  And fire it
+                            bullet.reset(this.hero.body.x + 140, this.hero.y + 20);//  And fire it
                         else
-                            bulletList[bulletsFired - 1].reset(this.hero.x + 32, this.hero.y - 22);
+                            bullet.reset(this.hero.x + 32, this.hero.y - 22);
                     } else {
-                        bulletList[bulletsFired - 1].reset(this.hero.x + 35, this.hero.y);
+                        bullet.reset(this.hero.x + 35, this.hero.y);
                     }
-                    bulletList[bulletsFired - 1].body.velocity.x = 5000;
+                    bullet.body.velocity.x = 5000;
                     bulletTime = this.game.time.now + 200;
                     bulletFired = true;
                     totalBullets--;
@@ -814,7 +807,6 @@
         }
 
         deleteReferences() {
-            delete bulletList.regex;
             delete totalBullets.regex;
             delete enemies.regex;
             delete enemiesTotal.regex;
