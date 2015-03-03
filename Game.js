@@ -359,6 +359,45 @@ var GravityGuy;
 })(GravityGuy || (GravityGuy = {}));
 var GravityGuy;
 (function (GravityGuy) {
+    var GameWon = (function (_super) {
+        __extends(GameWon, _super);
+        function GameWon() {
+            _super.apply(this, arguments);
+        }
+        GameWon.prototype.create = function () {
+            this.song = this.add.audio('game_won_song');
+            this.song.play();
+            this.background = this.add.sprite(0, 0, 'game_won_background');
+            this.background.alpha = 0;
+            this.add.tween(this.background).to({ alpha: 1 }, 2000, Phaser.Easing.Bounce.InOut, true);
+            //     this.logo = this.add.sprite(this.world.centerX, -300, 'title_planet');
+            //      this.logo.anchor.setTo(0.5, 0.5);
+            this.title = this.add.sprite(50, -200, 'title_text');
+            this.title.scale.setTo(1.2, 1.2);
+            this.game.add.existing(this.title);
+            this.game.time.events.add(Phaser.Timer.SECOND * 4, this.addInput, this);
+        };
+        GameWon.prototype.firstLevel = function () {
+            this.song.destroy();
+            this.game.state.start('Level1', true, false);
+        };
+        GameWon.prototype.restartGame = function () {
+            this.title.x = 100;
+            this.title.y = 200;
+            this.title.animations.add('display');
+            this.title.animations.play('display', 13, false);
+            this.game.time.events.add(Phaser.Timer.SECOND * 4, this.firstLevel, this);
+        };
+        GameWon.prototype.addInput = function () {
+            this.input.onDown.addOnce(this.restartGame, this);
+            //  tween.onComplete.add(this.startGame, this);
+        };
+        return GameWon;
+    })(Phaser.State);
+    GravityGuy.GameWon = GameWon;
+})(GravityGuy || (GravityGuy = {}));
+var GravityGuy;
+(function (GravityGuy) {
     var Game = (function (_super) {
         __extends(Game, _super);
         function Game() {
@@ -418,45 +457,6 @@ var GravityGuy;
         return GameOver;
     })(Phaser.State);
     GravityGuy.GameOver = GameOver;
-})(GravityGuy || (GravityGuy = {}));
-var GravityGuy;
-(function (GravityGuy) {
-    var GameWon = (function (_super) {
-        __extends(GameWon, _super);
-        function GameWon() {
-            _super.apply(this, arguments);
-        }
-        GameWon.prototype.create = function () {
-            this.song = this.add.audio('game_won_song');
-            this.song.play();
-            this.background = this.add.sprite(0, 0, 'game_won_background');
-            this.background.alpha = 0;
-            this.add.tween(this.background).to({ alpha: 1 }, 2000, Phaser.Easing.Bounce.InOut, true);
-            //     this.logo = this.add.sprite(this.world.centerX, -300, 'title_planet');
-            //      this.logo.anchor.setTo(0.5, 0.5);
-            this.title = this.add.sprite(50, -200, 'title_text');
-            this.title.scale.setTo(1.2, 1.2);
-            this.game.add.existing(this.title);
-            this.game.time.events.add(Phaser.Timer.SECOND * 4, this.addInput, this);
-        };
-        GameWon.prototype.firstLevel = function () {
-            this.song.destroy();
-            this.game.state.start('Level1', true, false);
-        };
-        GameWon.prototype.restartGame = function () {
-            this.title.x = 100;
-            this.title.y = 200;
-            this.title.animations.add('display');
-            this.title.animations.play('display', 13, false);
-            this.game.time.events.add(Phaser.Timer.SECOND * 4, this.firstLevel, this);
-        };
-        GameWon.prototype.addInput = function () {
-            this.input.onDown.addOnce(this.restartGame, this);
-            //  tween.onComplete.add(this.startGame, this);
-        };
-        return GameWon;
-    })(Phaser.State);
-    GravityGuy.GameWon = GameWon;
 })(GravityGuy || (GravityGuy = {}));
 var GravityGuy;
 (function (GravityGuy) {
@@ -1152,7 +1152,7 @@ var GravityGuy;
             this.game.debug.text('Bullets : ' + totalBullets, 345, 35, 'white', '34px Arial');
             this.game.debug.text('Lives : ' + numLives, 660, 35, 'white', '34px Arial');
             if (levelComplete) {
-                this.game.debug.text('Level ' + level + ' Complete', 200, 200, 'white', '50px Arial');
+                this.game.debug.text('Level ' + level + ' Complete, Click to Continue', 10, 200, 'white', '50px Arial');
                 this.game.debug.text('Score: ' + score, 265, 260, 'white', '45px Arial');
                 this.game.debug.text('Enemies Killed: ' + enemiesKilled, 240, 325, 'white', '35px Arial');
                 this.game.debug.text('Bullets Left: ' + totalBullets, 260, 370, 'white', '35px Arial');
