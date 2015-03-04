@@ -62,6 +62,7 @@
         map: Phaser.Tilemap
 
         music: Phaser.Sound
+        sound_enemy_death: Phaser.Sound
         sound_hero_death: Phaser.Sound
         sound_hero_jump: Phaser.Sound
         sound_hero_gravity: Phaser.Sound
@@ -98,29 +99,10 @@
 
            
 
-            this.music = this.add.audio('House');
-            this.sound_landing = this.add.audio('landing_sound');
-            this.sound_hero_gravity = this.add.audio('hero_gravity');
-            this.sound_hero_death = this.add.audio('hero_death');
-            this.sound_hero_jump = this.add.audio('hero_jump');
-            this.sound_hero_fire = this.add.audio('hero_fire');
-            this.sound_enemy_shoot = this.add.audio('enemy_shoot');
-            this.sound_hero_enemyChase_collision = this.add.audio('hero_enemyChase_collision');
-            this.victoryMusic = this.add.audio('victory');
-            this.music.play();
 
-            explode_emit = this.game.add.emitter(0, 0, 20);
-            explode_emit.makeParticles('explosion_small');
-            explode_emit.gravity = 200;
 
-            dust_cloud_emit = this.game.add.emitter(0, 0, 10000);
-            dust_cloud_emit.makeParticles('dust_cloud');
-            dust_cloud_emit.bounce.y = 0;
-            dust_cloud_emit.setYSpeed(0, 0);
-            dust_cloud_emit.setXSpeed(0, 0);
-            dust_cloud_emit.allowGravity = false;
-            dust_cloud_emit.bounce.x = 0;
-            dust_cloud_emit.gravity = 0;
+            this.init_sounds();
+            this.init_emitters();
 
          
             this.hero = new Hero(this.game, 150, 300, 1);
@@ -144,18 +126,91 @@
 
             
 
-            first = true;
-            floor = true;
-            floorEnemy = true;
-            floorOtherEnemy = true;
 
-            gravityButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-            cursors = this.game.input.keyboard.createCursorKeys();
-            respawnButton = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
+
+
 
             //text = this.add.text(this.world.centerX, game.world.centerY, "- phaser -\nrocking with\ngoogle web fonts");
 
             //Bullets
+
+            this.init_vars();
+            //end added 
+            this. init_bullets();
+            //Enemy Bullets
+
+
+
+            
+        }
+        init_emitters() {
+
+            explode_emit = this.game.add.emitter(0, 0, 20);
+            explode_emit.makeParticles('explosion_small');
+            explode_emit.gravity = 200;
+
+            dust_cloud_emit = this.game.add.emitter(0, 0, 10000);
+            dust_cloud_emit.makeParticles('dust_cloud');
+            dust_cloud_emit.bounce.y = 0;
+            dust_cloud_emit.setYSpeed(0, 0);
+            dust_cloud_emit.setXSpeed(0, 0);
+            dust_cloud_emit.allowGravity = false;
+            dust_cloud_emit.bounce.x = 0;
+            dust_cloud_emit.gravity = 0;
+        }
+
+        init_sounds() {
+            this.music = this.add.audio('House');
+            this.sound_enemy_death = this.add.audio('enemy_death');
+          //  this.sound_landing = this.add.audio('landing_sound');
+            this.sound_hero_gravity = this.add.audio('hero_gravity');
+            this.sound_hero_death = this.add.audio('hero_death');
+            this.sound_hero_jump = this.add.audio('hero_jump');
+            this.sound_hero_fire = this.add.audio('hero_fire');
+            this.sound_enemy_shoot = this.add.audio('enemy_shoot');
+            this.sound_hero_enemyChase_collision = this.add.audio('hero_enemyChase_collision');
+            this.victoryMusic = this.add.audio('victory');
+            this.music.play();
+        }
+
+        init_vars() {
+            gravityButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+            cursors = this.game.input.keyboard.createCursorKeys();
+            respawnButton = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
+
+            bonusAdded = false;
+            bullet;
+            bulletFired = false;
+            bulletsFired = 0;
+            bulletTime = 0;
+            first = true;
+            firstTimeGameOver = true;
+            floor = true;
+            floorEnemy = true;
+            floorOtherEnemy = true;   
+            enemies;
+            enemiesTotal;
+            enemiesDead;
+            enemiesKilled = 0;
+            enemyBulletTime = 0;
+            enemyBulletWait = 0;
+            enemyBulletsFired = 0;
+            enemyAlive = false;
+            game_over = false;
+            levelComplete = false;
+            respawn = true;
+            swapGravity = false;    
+            heroAlive = true;
+            scoreString = 'Score : ';
+            score = 0;
+            numLives = 3;
+            heroJumped = false;
+            enemyJump = false;
+            totalBullets = 50;
+        }
+
+        init_bullets() {
+
             this.bullets = this.game.add.group();
             this.bullets.enableBody = true;
             this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
@@ -165,9 +220,7 @@
             this.bullets.setAll('outOfBoundsKill', true);
             this.bullets.setAll('checkWorldBounds', true);
 
-            //end added 
 
-            //Enemy Bullets
             this.enemyBullets = this.game.add.group();
             this.enemyBullets.enableBody = true;
             this.enemyBullets.physicsBodyType = Phaser.Physics.ARCADE;
@@ -176,32 +229,6 @@
             this.enemyBullets.setAll('anchor.y', 0);
             this.enemyBullets.setAll('outOfBoundsKill', false);
             this.enemyBullets.setAll('checkWorldBounds', true);
-
-            levelComplete = false;
-            respawn = true;
-            game_over = false;
-            bonusAdded = false;
-            swapGravity = false;
-            firstTimeGameOver = true;
-            bullet;
-            bulletTime = 0;
-            bulletFired = false;
-            bulletsFired = 0;
-            enemies;
-            enemiesTotal;
-            enemiesDead;
-            enemiesKilled = 0;
-            enemyBulletTime = 0;
-            enemyBulletWait = 0;
-            enemyBulletsFired = 0;
-            enemyAlive = false;
-            heroAlive = true;
-            scoreString = 'Score : ';
-            score = 0;
-            numLives = 3;
-            heroJumped = false;
-            enemyJump = false;
-            totalBullets = 50;
         }
 
         removeEnemies() {
@@ -539,10 +566,7 @@
 
         collideEverything() {
             this.physics.arcade.collide(this.hero, layer);
-            if (this.hero.body.blocked.down && this.hero.in_air) {
-                this.hero.in_air = false;
-                this.sound_landing.play();
-            }
+
             this.physics.arcade.collide(this.enemyChase, layer);
             //  this.physics.arcade.collide(this.enemies, layer);
 
@@ -601,6 +625,7 @@
         heroShootsEnemy(bullet, enemy) {
             this.deathBurst(enemy);
             bullet.kill();
+            this.sound_enemy_death.play();
             enemy.kill();
             for (var i = 0; i < enemyBulletsFired; i++) {
                 enemyBulletList[i].kill();
@@ -759,18 +784,18 @@
 
         render() {
             //  The score
-            this.game.debug.text(scoreString + score, 10, 35, 'white', '34px Arial');
+            this.game.debug.text(scoreString + score, 10, 35, 'white', '34px Lucida Sans Unicode');
             this.game.debug.text(this.game.time.fps + '' || '--', 2, 60, "#00ff00");  
             // this.game.debug.spriteCoords(this.hero, 300, 300);
-            this.game.debug.text('Bullets : ' + totalBullets, 345, 35, 'white', '34px Arial');
-            this.game.debug.text('Lives : ' + numLives, 660, 35, 'white', '34px Arial');
+            this.game.debug.text('Bullets : ' + totalBullets, 345, 35, 'white', '34px Lucida Sans Unicode');
+            this.game.debug.text('Lives : ' + numLives, 660, 35, 'white', '34px Lucida Sans Unicode');
             if (levelComplete) {
-                this.game.debug.text('Level ' + level + ' Complete, Click to Continue', 10, 200, 'white', '50px Arial');
-                this.game.debug.text('Score: ' + score, 265, 260, 'white', '45px Arial');
-                this.game.debug.text('Enemies Killed: ' + enemiesKilled, 240, 325, 'white', '35px Arial');
-                this.game.debug.text('Bullets Left: ' + totalBullets, 260, 370, 'white', '35px Arial');
-                this.game.debug.text('Lives Left: ' + numLives, 285, 415, 'white', '35px Arial');
-                this.game.debug.text('Bonus: ' + (enemiesKilled * 1000 + totalBullets * 100 + numLives * 5000), 280, 475, 'white', '40px Arial');
+                this.game.debug.text('Level ' + level + ' Complete, Click to Continue', 10, 200, 'white', '50px Lucida Sans Unicode');
+                this.game.debug.text('Score: ' + score, 265, 260, 'white', '45px Lucida Sans Unicode');
+                this.game.debug.text('Enemies Killed: ' + enemiesKilled, 240, 325, 'white', '35px Lucida Sans Unicode');
+                this.game.debug.text('Bullets Left: ' + totalBullets, 260, 370, 'white', '35px Lucida Sans Unicode');
+                this.game.debug.text('Lives Left: ' + numLives, 285, 415, 'white', '35px Lucida Sans Unicode');
+                this.game.debug.text('Bonus: ' + (enemiesKilled * 1000 + totalBullets * 100 + numLives * 5000), 280, 475, 'white', '40px Lucida Sans Unicode');
                 if (!bonusAdded) {
                     for (var i = 0; i < enemiesKilled * 1000; i++) {
                         score++;
@@ -785,24 +810,24 @@
                     bonusAdded = true;
                 }
             } else if (!respawn) {
-                this.game.debug.text("You Have Died......", 180, 200, 'white', '50px Arial');
-                this.game.debug.text("(you're bad, loser)", 180, 260, 'white', '50px Arial');
+                this.game.debug.text("You Have Died......", 180, 200, 'white', '50px Lucida Sans Unicode');
+                this.game.debug.text("(you're bad, loser)", 180, 260, 'white', '50px Lucida Sans Unicode');
                 var count = 0;
                 //while (count < 10) {
-                this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Arial');
+                this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Lucida Sans Unicode');
                 //score -= 1;
                 //count++;
                 //if (score <= 0) {
                 //    score = 0;
                 //}
                 //}
-                this.game.debug.text("Press 'R' to Respawn Baddie", 120, 420, 'white', '40px Arial');
+                this.game.debug.text("Press 'R' to Respawn Baddie", 120, 420, 'white', '40px Lucida Sans Unicode');
             } else if (game_over) {
-                this.game.debug.text("Game Over", 265, 200, 'white', '50px Arial');
-                this.game.debug.text("That was sad to watch...", 160, 260, 'white', '50px Arial');
+                this.game.debug.text("Game Over", 265, 200, 'white', '50px Lucida Sans Unicode');
+                this.game.debug.text("That was sad to watch...", 160, 260, 'white', '50px Lucida Sans Unicode');
                 //while (count < 10) {
-                this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Arial');
-                this.game.debug.text("That all you got?", 210, 380, 'white', '45px Arial');
+                this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Lucida Sans Unicode');
+                this.game.debug.text("That all you got?", 210, 380, 'white', '45px Lucida Sans Unicode');
             }
         }
 

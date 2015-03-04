@@ -12,6 +12,9 @@
 
         in_air;
 
+        sound_footstep: Phaser.Sound;
+        sound_landing: Phaser.Sound;
+
         constructor(game: Phaser.Game, x: number, y: number, aState: number) {
 
             super(game, x, y, 'hero', 0);
@@ -22,7 +25,9 @@
             state = aState;
             //added
             //this.game = game;
-         
+            game.time.events.loop(200, this.running, this);
+            this.sound_footstep = game.add.audio('footstep');
+            this.sound_landing = game.add.audio('footstep');
             this.animations.add('run');
             this.animations.play('run', 20, true);
             this.game.physics.enable(this, Phaser.Physics.ARCADE);
@@ -42,13 +47,34 @@
             //this.animations.add('walk', [0, 1, 2, 3, 4], 10, true);
         }
 
+        running() {
+            if (!this.in_air && this.alive) {
+                this.sound_footstep.play();
+            }
+        }
+
         update() {
            
-            if (state === 3) {
+            if (state === 3) { /* We should probably create another Hero object for the differences in updating. */
                 this.body.velocity.y = 0;
                 //this.body.velocity.x = 450;
             } else {
                 if (this.alive) {
+
+                    /* For the purpose of knowing whether Hero is in air of on ground.*/
+                    if (this.in_air) {
+                        if (this.body.blocked.down || this.body.blocked.up) {
+                            this.in_air = false;
+                           // console.log("blocked");
+                            this.sound_landing.play();
+                        }
+                    } else {
+                        if (!this.body.blocked.down && !this.body.blocked.up) {
+                            this.in_air = true;
+                          //  console.log("air");
+                        }
+                    }
+
                     this.body.velocity.y = 0;
                     this.body.velocity.x = 450;
 
@@ -78,35 +104,17 @@
                     oldXpos = this.x;
 
                     if (this.game.camera.x >= this.x && offset >= 12) {
-
-
                         this.kill();
                     }
                 } else {
-
 
                     offset = 0;
                     oldDistance = 0;
                     currDistance = 0;
                     oldXpos = this.x;
+
                 }
             }
-
         }
-
-        //flipHero() {
-        //    if (floor) {
-
-        //        this.anchor.setTo(1, .5); //so it flips around its middle
-        //        this.scale.y = 1; //facing default direction
-        //        this.scale.y = -1; //flipped
-        //        floor = false;
-        //    } else {
-        //        this.anchor.setTo(1, .5); //so it flips around its middle
-        //        this.scale.y = -1; //facing default direction
-        //        this.scale.y = 1; //flipped
-        //        floor = true;
-        //    }
-        //}
     }
 }

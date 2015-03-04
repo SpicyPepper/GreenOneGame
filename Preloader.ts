@@ -41,6 +41,7 @@
         }
 
         loadAudio() {
+            /* http://www.online-convert.com/ */
             this.load.audio('space_slam', 'audio/space_slam.mp3');
             this.load.audio('hero_death', ['audio/hero_death.mp3',      'audio/hero_death.mp3']);
             this.load.audio('title_music', ['audio/title_music.mp3',    'audio/title_music.ogg']);
@@ -51,8 +52,9 @@
             this.load.audio('enemy_shoot', ['audio/enemy_shoot.mp3',    'audio/enemy_shoot.ogg']);
             this.load.audio('victory', ['audio/victory.mp3',            'audio/victory.ogg']);
             this.load.audio('hero_enemyChase_collision', ['audio/hero_enemyChase_collision.mp3', 'audio/hero_enemyChase_collision.mp3']);
-            this.load.audio('landing_sound', ['audio/landing_sound.mp3', 'audio/landing_sound.ogg']);
+            this.load.audio('footstep', ['audio/landing_sound.mp3', 'audio/landing_sound.ogg']);
             this.load.audio('game_won_song', ['audio/game_won_song.mp3', 'audio/game_won_song.ogg']);
+            this.load.audio('enemy_death', ['audio/enemy_death.mp3', 'audio/enemy_death.ogg']);
 
         }
 
