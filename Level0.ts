@@ -109,7 +109,7 @@
             this.hero.scale.setTo(hero_scale, hero_scale);
             this.physics.arcade.enableBody(this.hero);
 
-            this.enemyChase = new enemyChase(this.game, 0, 300);
+            this.enemyChase = new enemyChase(this.game, 0, 300, 1);
 
             this.physics.arcade.enableBody(this.enemyChase);
             this.time.events.loop(25, this.timedUpdate, this);

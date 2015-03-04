@@ -1,16 +1,16 @@
 ﻿module GravityGuy {
-    
+    var state;
     export class enemyChase extends Phaser.Sprite {
 
         blocked_after_end;
         in_air;
 
-        constructor(game: Phaser.Game, x: number, y: number) {
+        constructor(game: Phaser.Game, x: number, y: number, aState: number) {
 
             super(game, x, y, 'enemyChase', 0);
 
             this.blocked_after_end = false;
-
+            state = aState;
             this.game.add.existing(this);
 
             this.animations.add('run', [8, 9, 10, 11, 12, 13, 14, 15, 16, 17], 17, true);
@@ -27,19 +27,23 @@
         }
 
         update() {
-
-            this.body.velocity.y = 0;
-          
-            /* For the general purpose of knowing if the enemyChase is on the ground or in the air. */
-            if (this.in_air) {
-                if (this.body.blocked.down || this.body.blocked.up) {
-                    this.in_air = false;
-                    // console.log("blocked");
-                }
+            if (state === 3) {
+                this.body.velocity.x = 0;
+                this.animations.play('idle');
             } else {
-                if (!this.body.blocked.down && !this.body.blocked.up) {
-                    this.in_air = true;
-                    //  console.log("air");
+                this.body.velocity.y = 0;
+          
+                /* For the general purpose of knowing if the enemyChase is on the ground or in the air. */
+                if (this.in_air) {
+                    if (this.body.blocked.down || this.body.blocked.up) {
+                        this.in_air = false;
+                        // console.log("blocked");
+                    }
+                } else {
+                    if (!this.body.blocked.down && !this.body.blocked.up) {
+                        this.in_air = true;
+                        //  console.log("air");
+                    }
                 }
             }
         }

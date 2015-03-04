@@ -56,6 +56,7 @@
     var moveLeftButton;
     var facingRight;
     var counterToKill;
+    var shootingRight;
 
 
     export class Level3 extends Phaser.State {
@@ -138,11 +139,11 @@
 
             layer.resizeWorld();
 
-            this.hero = new Hero(this.game, 150, 300, 3);
+            this.hero = new Hero(this.game, 250, 300, 3);
             this.hero.scale.setTo(hero_scale, hero_scale);
             this.physics.arcade.enableBody(this.hero);
 
-            this.enemyChase = new enemyChase(this.game, 0, 300);
+            this.enemyChase = new enemyChase(this.game, 100, 300, 3);
             this.enemyChase.scale.setTo(enemyChase_scale, enemyChase_scale);
             this.physics.arcade.enableBody(this.enemyChase);
             this.time.events.loop(25, this.timedUpdate, this);
@@ -206,6 +207,7 @@
             enemyJump = false;
             totalBullets = 500;
             facingRight = true;
+            shootingRight = true;
             counterToKill = 0;
         }
 
@@ -214,6 +216,7 @@
         update() {
 
             this.game.camera.x = 0;
+            this.hero.body.velocity.x = 0;
             //console.log(this.hero.x);
             //if (!this.hero.alive && heroAlive) {
             //    this.deathBurst(this.hero);
@@ -227,31 +230,53 @@
             //}
             this.collideEverything();
             /* When hero is alive */
-            //if (heroAlive) {
+
             if (moveRightButton.isDown) {
-                var offset = 0;
-                if (this.hero.scale.x < 0) {
-                    this.hero.anchor.setTo(1, .5); //so it flips around its middle
-                    this.hero.scale.x = hero_scale; //flipped
-                    offset = this.hero.body.halfWidth + 10;
-                }
+                // var offset = 0;
+                console.log("Hey");
+                this.hero.animations.play('walk');
+                this.hero.body.velocity.x = 250;
+                this.flipRight();
+                //if (this.hero.scale.x < 0) {
+                //    this.hero.anchor.setTo(1, .5); //so it flips around its middle
+                //    this.hero.scale.x = hero_scale; //flipped
+                //    offset = this.hero.body.halfWidth + 15;
+                //}
                 facingRight = true;
-                this.hero.x += (5 + offset);
-            }
-            if (moveLeftButton.isDown) {
-                var offset = 0;
-                if (first) {
-                    first = false;
-                }
-                if (this.hero.scale.x > 0) {
-                    this.hero.anchor.setTo(1, .5); //so it flips around its middle
-                    this.hero.scale.x = -hero_scale;
-                    offset = this.hero.body.halfWidth + 10;
-                }
+                //this.hero.x += offset;
+            } else if (moveLeftButton.isDown) {
+                this.hero.animations.play('walk');
+                this.hero.body.velocity.x = -250;
+                //var offset = 0;
+                
+                this.flipLeft();
+                //if (this.hero.scale.x > 0) {
+                //    this.hero.anchor.setTo(1, .5); //so it flips around its middle
+                //    this.hero.scale.x = -hero_scale;
+                //    offset = this.hero.body.halfWidth + 15;
+                //}
                 //first = true;
                 facingRight = false;
-                this.hero.x -= (5 + offset);
+                //this.hero.x -= offset;
+            } else {
+                this.hero.animations.frame = 0;
             }
+
+            if (cursors.right.isDown) {
+                shootingRight = true;
+                this.flipRight();
+                this.fireBullet();
+            }
+
+            if (cursors.left.isDown) {
+                shootingRight = false;
+                this.flipLeft();
+                this.fireBullet();
+            }
+
+
+
+
             if (this.hero.x > 800) {
                 this.hero.x = 100;
 
@@ -292,9 +317,7 @@
                     first = false;
                 }
 
-                if (cursors.right.isDown) {
-                    this.fireBullet();
-                }
+
                 for (var j = enemiesDead; j < enemies.length; j++) {
                     if (enemies[j].alive && enemies[j].x - this.hero.x <= 575) {
                         enemyBulletWait++;
@@ -361,6 +384,32 @@
                 }
             }
         }
+
+        flipRight() {
+            var offset = 0;
+            if (this.hero.scale.x < 0) {
+                this.hero.anchor.setTo(1, .5); //so it flips around its middle
+                this.hero.scale.x = hero_scale; //flipped
+                offset = this.hero.body.halfWidth + 15;
+            }
+            this.hero.x += offset;
+
+        }
+
+        flipLeft() {
+            var offset = 0;
+            if (first) {
+                first = false;
+            }
+            if (this.hero.scale.x > 0) {
+                this.hero.anchor.setTo(1, .5); //so it flips around its middle
+                this.hero.scale.x = -hero_scale;
+                offset = this.hero.body.halfWidth + 15;
+            }
+            this.hero.x -= offset;
+        }
+
+
 
         attemptGravitySwap() {
 
@@ -526,13 +575,14 @@
             }
         }
 
-        heroShootsEnemyChase(bullet, enemyChase) {
+        heroShootsEnemyChase(enemyChase, bullet) {
             console.log(counterToKill);
+            //if(bullet.body === undefined)
             bullet.kill();
 
             //console.log("SHOT");
             counterToKill++;
-            if (counterToKill > 40 * 3) {
+            if (counterToKill > 40) {
                 console.log("Inside");
                 enemyChase.kill();
             }
@@ -621,7 +671,7 @@
                 //  Grab the first bullet we can from the pool
                 bullet = this.bullets.getFirstExists(false);
 
-                if (bullet) {
+                if (bullet && shootingRight) {
                     this.physics.arcade.collide(bullet, layer);
                     this.sound_hero_fire.play();
                     if (floor) {
@@ -636,6 +686,22 @@
                     bulletTime = this.game.time.now + 200;
                     bulletFired = true;
                     totalBullets--;
+                } else if (bullet) {
+                    this.physics.arcade.collide(bullet, layer);
+                    this.sound_hero_fire.play();
+                    if (floor) {
+                        if (first)
+                            bullet.reset(this.hero.body.x - 140, this.hero.y + 20);//  And fire it
+                        else
+                            bullet.reset(this.hero.x - 32, this.hero.y - 22);
+                    } else {
+                        bullet.reset(this.hero.x - 35, this.hero.y);
+                    }
+                    bullet.body.velocity.x = -5000;
+                    bulletTime = this.game.time.now + 200;
+                    bulletFired = true;
+                    totalBullets--;
+
                 }
             }
         }

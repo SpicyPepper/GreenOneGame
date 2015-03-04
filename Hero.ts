@@ -7,7 +7,7 @@
     var currDistance;
     var oldDistance;
     var just_landed;
-    var state
+    var state;
     export class Hero extends Phaser.Sprite {
 
         in_air;
@@ -25,11 +25,16 @@
             state = aState;
             //added
             //this.game = game;
-            game.time.events.loop(200, this.running, this);
-            this.sound_footstep = game.add.audio('footstep');
-            this.sound_landing = game.add.audio('footstep');
-            this.animations.add('run');
-            this.animations.play('run', 20, true);
+           
+            if (state === 3) {
+                this.animations.add('walk', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 10, true);
+            } else {
+                game.time.events.loop(200, this.running, this);
+                this.sound_footstep = game.add.audio('footstep');
+                this.sound_landing = game.add.audio('footstep');
+                this.animations.add('run');
+                this.animations.play('run', 20, true);
+            }
             this.game.physics.enable(this, Phaser.Physics.ARCADE);
             this.body.bounce.y = 0.2;
             this.body.collideWorldBounds = false;
@@ -57,7 +62,7 @@
            
             if (state === 3) { /* We should probably create another Hero object for the differences in updating. */
                 this.body.velocity.y = 0;
-                //this.body.velocity.x = 450;
+              
             } else {
                 if (this.alive) {
 
