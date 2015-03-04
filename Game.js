@@ -359,6 +359,45 @@ var GravityGuy;
 })(GravityGuy || (GravityGuy = {}));
 var GravityGuy;
 (function (GravityGuy) {
+    var GameWon = (function (_super) {
+        __extends(GameWon, _super);
+        function GameWon() {
+            _super.apply(this, arguments);
+        }
+        GameWon.prototype.create = function () {
+            this.song = this.add.audio('game_won_song');
+            this.song.play();
+            this.background = this.add.sprite(0, 0, 'game_won_background');
+            this.background.alpha = 0;
+            this.add.tween(this.background).to({ alpha: 1 }, 2000, Phaser.Easing.Bounce.InOut, true);
+            //     this.logo = this.add.sprite(this.world.centerX, -300, 'title_planet');
+            //      this.logo.anchor.setTo(0.5, 0.5);
+            this.title = this.add.sprite(50, -200, 'title_text');
+            this.title.scale.setTo(1.2, 1.2);
+            this.game.add.existing(this.title);
+            this.game.time.events.add(Phaser.Timer.SECOND * 4, this.addInput, this);
+        };
+        GameWon.prototype.firstLevel = function () {
+            this.song.destroy();
+            this.game.state.start('Level1', true, false);
+        };
+        GameWon.prototype.restartGame = function () {
+            this.title.x = 100;
+            this.title.y = 200;
+            this.title.animations.add('display');
+            this.title.animations.play('display', 13, false);
+            this.game.time.events.add(Phaser.Timer.SECOND * 4, this.firstLevel, this);
+        };
+        GameWon.prototype.addInput = function () {
+            this.input.onDown.addOnce(this.restartGame, this);
+            //  tween.onComplete.add(this.startGame, this);
+        };
+        return GameWon;
+    })(Phaser.State);
+    GravityGuy.GameWon = GameWon;
+})(GravityGuy || (GravityGuy = {}));
+var GravityGuy;
+(function (GravityGuy) {
     var Game = (function (_super) {
         __extends(Game, _super);
         function Game() {
@@ -418,45 +457,6 @@ var GravityGuy;
         return GameOver;
     })(Phaser.State);
     GravityGuy.GameOver = GameOver;
-})(GravityGuy || (GravityGuy = {}));
-var GravityGuy;
-(function (GravityGuy) {
-    var GameWon = (function (_super) {
-        __extends(GameWon, _super);
-        function GameWon() {
-            _super.apply(this, arguments);
-        }
-        GameWon.prototype.create = function () {
-            this.song = this.add.audio('game_won_song');
-            this.song.play();
-            this.background = this.add.sprite(0, 0, 'game_won_background');
-            this.background.alpha = 0;
-            this.add.tween(this.background).to({ alpha: 1 }, 2000, Phaser.Easing.Bounce.InOut, true);
-            //     this.logo = this.add.sprite(this.world.centerX, -300, 'title_planet');
-            //      this.logo.anchor.setTo(0.5, 0.5);
-            this.title = this.add.sprite(50, -200, 'title_text');
-            this.title.scale.setTo(1.2, 1.2);
-            this.game.add.existing(this.title);
-            this.game.time.events.add(Phaser.Timer.SECOND * 4, this.addInput, this);
-        };
-        GameWon.prototype.firstLevel = function () {
-            this.song.destroy();
-            this.game.state.start('Level1', true, false);
-        };
-        GameWon.prototype.restartGame = function () {
-            this.title.x = 100;
-            this.title.y = 200;
-            this.title.animations.add('display');
-            this.title.animations.play('display', 13, false);
-            this.game.time.events.add(Phaser.Timer.SECOND * 4, this.firstLevel, this);
-        };
-        GameWon.prototype.addInput = function () {
-            this.input.onDown.addOnce(this.restartGame, this);
-            //  tween.onComplete.add(this.startGame, this);
-        };
-        return GameWon;
-    })(Phaser.State);
-    GravityGuy.GameWon = GameWon;
 })(GravityGuy || (GravityGuy = {}));
 var GravityGuy;
 (function (GravityGuy) {
@@ -1409,7 +1409,7 @@ var GravityGuy;
 })(GravityGuy || (GravityGuy = {}));
 var GravityGuy;
 (function (GravityGuy) {
-    var bulletList;
+    var bullet;
     var bulletTime;
     var bulletFired;
     var bulletsFired;
@@ -1463,6 +1463,8 @@ var GravityGuy;
     var enemyLocationsY;
     var moveRightButton;
     var moveLeftButton;
+    var facingRight;
+    var counterToKill;
     var Level3 = (function (_super) {
         __extends(Level3, _super);
         function Level3() {
@@ -1519,48 +1521,8 @@ var GravityGuy;
             this.time.events.loop(25, this.timedUpdate, this);
             enemiesTotal = 15;
             enemiesDead = 0;
-            bulletList = [];
             enemyBulletList = [];
             enemies = [];
-            //for (var i = 0; i < enemiesTotal; i++) {
-            //    console.log("created");
-            //    if (i == 0) {
-            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(450, 815), 373);
-            //    } else if (i == 1) {
-            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(1215, 1840), 373);
-            //    } else if (i == 2) {
-            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(3119, 3518), 129);
-            //    } else if (i == 3) {
-            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(3519, 3729), 373);
-            //    } else if (i == 4) {
-            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(3730, 4047), 208);
-            //    } else if (i == 5) {
-            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(6447, 7000), 192);
-            //    } else if (i == 6) {
-            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(7001, 7790), 192);
-            //    } else if (i == 7) {
-            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(7791, 8368), 96);
-            //    } else if (i == 8) {
-            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(8369, 8752), 34);
-            //    } else if (i == 9) {
-            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(11600, 12100), 192);
-            //    } else if (i == 10) {
-            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(12101, 12600), 192);
-            //    } else if (i == 11) {
-            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(12601, 13100), 192);
-            //    } else if (i == 12) {
-            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(13101, 13965), 192);
-            //    } else if (i == 13) {
-            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(15700, 16150), 208);
-            //    } else if (i == 14) {
-            //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(16151, 16560), 208);
-            //    }
-            //    anotherEnemy.scale.setTo(enemy_scale, enemy_scale);
-            //    this.physics.arcade.enableBody(anotherEnemy);
-            //    enemies.push(anotherEnemy);
-            //    //    console.log('enemy created at ' + newEnemyX);
-            //}
-            var spaceship = this.game.add.sprite(17080, 245, 'spaceship');
             first = true;
             floor = true;
             floorEnemy = true;
@@ -1602,7 +1564,9 @@ var GravityGuy;
             numLives = 3;
             heroJumped = false;
             enemyJump = false;
-            totalBullets = 50;
+            totalBullets = 500;
+            facingRight = true;
+            counterToKill = 0;
         };
         Level3.prototype.update = function () {
             this.game.camera.x = 0;
@@ -1621,10 +1585,28 @@ var GravityGuy;
             /* When hero is alive */
             //if (heroAlive) {
             if (moveRightButton.isDown) {
-                this.hero.x += 5;
+                var offset = 0;
+                if (this.hero.scale.x < 0) {
+                    this.hero.anchor.setTo(1, .5); //so it flips around its middle
+                    this.hero.scale.x = hero_scale; //flipped
+                    offset = this.hero.body.halfWidth + 10;
+                }
+                facingRight = true;
+                this.hero.x += (5 + offset);
             }
             if (moveLeftButton.isDown) {
-                this.hero.x -= 5;
+                var offset = 0;
+                if (first) {
+                    first = false;
+                }
+                if (this.hero.scale.x > 0) {
+                    this.hero.anchor.setTo(1, .5); //so it flips around its middle
+                    this.hero.scale.x = -hero_scale;
+                    offset = this.hero.body.halfWidth + 10;
+                }
+                //first = true;
+                facingRight = false;
+                this.hero.x -= (5 + offset);
             }
             if (this.hero.x > 800) {
                 this.hero.x = 100;
@@ -1632,233 +1614,91 @@ var GravityGuy;
             if (this.enemyChase.x > 800) {
                 this.enemyChase.x = 100;
             }
-            /* if (this.enemyChase.x < (this.hero.x - 300) || this.enemyChase.y < (this.hero.y - 512) || this.enemyChase.y > (this.hero.y + 512)) {
-                 this.enemyChase.x = this.hero.x - 200;
-                 this.enemyChase.y = this.hero.y;
-                 if (floorEnemy != floor) {
-                     this.enemyChase.body.gravity.y = this.enemyChase.body.gravity.y * -1;
-                     this.flipEnemy();
-                 }
-                 floorEnemy = floor;
-                 jumpLocationList = [];
-             }
-
-             if (this.enemyChase.x > (this.hero.x)) {
-                 this.enemyChase.x = this.hero.x - 5;
-                 if (floorEnemy != floor)
-                     this.flipEnemy();
-                 floorEnemy = floor;
-                 jumpLocationList = [];
-             }
-
-             // lose button
-             if (escapeKey.isDown) {
-                 game_over = true;
-                 this.music.mute = true;
-                 this.game.state.start('GameOver', true, false);
-             }
-             if (!levelComplete && this.hero.x >= 17150) {
-                 this.levelComplete();
-             }
-
-             for (var i = 0; i < bulletsFired; i++) {
-                 if (bulletList[i].x - this.hero.x >= 400) {
-                     this.resetBullet(bulletList[i]);
-                 }
-             }
-             //DON'T REMOVE
-             //if (swapGravity) {
-             //    this.flipHero();
-             //    heroJumped = true;
-             //    jumpLocation = this.hero.body.x;
-             //    //jumpLocationList.push(jumpLocation);
-             //    this.hero.body.gravity.y = -this.hero.body.gravity.y;
-             //    first = false;
-             //}
-
-             //if (this.enemyChase.body.x >= jumpLocation && heroJumped && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
-             //    if (floorEnemy != floor) {
-             //        this.flipEnemy();
-             //        this.enemyChase.body.gravity.y = this.enemyChase.body.gravity.y * -1;
-             //    }
-             //    heroJumped = false;
-             //}
-             //END DON'T REMOVE
-             //NEW
-             if (swapGravity) {
-                 
-                 //heroJumped = true;
-                 jumpLocation = this.hero.body.x;
-                 jumpLocationList.push(jumpLocation);
-                 this.flipHero();
-                 this.hero.body.gravity.y = -this.hero.body.gravity.y;
-                 first = false;
-             }
-             //  console.log("OUTSIDE: " + jumpLocationList.length);
-             for (var i = 0; i < jumpLocationList.length; i++) {
-                 //   console.log("IN");
-                 if (this.enemyChase.body.x >= jumpLocationList[i] - 7.5 && (this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
-                     // if (floorEnemy != floor) {
-                     this.flipEnemy();
-                     this.enemyChase.body.gravity.y = this.enemyChase.body.gravity.y * -1;
-
-                     jumpLocationList.splice(i, 1);
-                     // }
-                     //heroJumped = false;
-                 } else {
-                     break;
-                 }
-             }
-             //END NEW
-             for (var j = enemiesDead; j < enemies.length; j++) {
-                 if (enemies[j].alive && enemies[j].x - this.hero.x <= 400 && enemies[j].y - this.hero.y > 25) {
-                     if (enemyJump && (enemies[j].body.blocked.down || enemies[j].body.blocked.up)) {
-                         this.flipOtherEnemy(enemies[j]);
-                         enemies[j].body.gravity.y = enemies[j].body.gravity.y * -1;
-                         enemyJump = false;
-                     }
-                 }
-             }
-             if (this.enemyChase.body.x <= this.hero.body.x - 300) {
-                 this.enemyChase.body.x = this.hero.body.x - 100;
-             }
-
-             if (cursors.right.isDown) {
-                 this.fireBullet();
-             }
-             for (var j = enemiesDead; j < enemies.length; j++) {
-                 if (enemies[j].alive && enemies[j].x - this.hero.x <= 575) {
-                     enemyBulletWait++;
-                     if (enemyBulletWait % 75 == 0) {
-                         this.fireEnemyBullet(enemies[j]);
-                     }
-                 }
-                 if (enemies[j].x < this.hero.x) {
-                     enemiesDead++;
-                 }
-             }
-             swapGravity = false;
-         } else { // HERO DEAD
-             if (!this.enemyChase.blocked_after_end && (this.enemyChase.body.blocked.right || this.enemyChase.body.blocked.down)) {
-                 this.enemyChase.blocked_after_end = true;
-
-                 this.enemyChase.play('idle', 4, true);
-                 this.enemyChase.body.velocity.x = 0;
-             }
-             swapGravity = false;
-             jumpLocationList = [];
-             //   console.log(this.hero.body.gravity.y);
-             if (this.hero.body.gravity.y < 0)
-                 this.hero.body.gravity.y = this.hero.body.gravity.y * -1;
-             if (this.enemyChase.body.gravity.y < 0)
-                 this.enemyChase.body.gravity.y = this.enemyChase.body.gravity.y * -1;
-             if (!floor) {
-                 this.flipHero();
-             }
-             if (!floorEnemy) {
-                 this.flipEnemy();
-             }
-             floor = true;
-             if (respawnButton.isDown && !respawn) {
-                 this.hero.reset(150, 300);
-                 this.enemyChase.reset(0, 300);
-                 respawn = true;
-                 score = 0;
-                 heroAlive = true;
-                 this.enemyChase.blocked_after_end = false;
-                 this.enemyChase.animations.play('run');
-                 this.hero.alive = true;
-                 enemiesKilled = 0;
-
-
-                 floor = true;
-
-                 //for (var i = 0; i < enemiesTotal; i++) {
-                 //    enemies[i].kill();
-                 //    console.log("hi " + i);
-                 //}
-                 // enemies.
-                 totalBullets = 50;
-
-                 for (var i = 0; i < enemyBulletsFired; i++) {
-                     enemyBulletList[i].kill();
-                 }
-                 //for (var i = 0; i < enemiesTotal; i++) {
-                 //    enemies[i].revive();
-                 //}
-                 //this.hero.body.gravity.y = 20000;
-                 //this.enemyChase.body.gravity.y = 18000;
-                 //this.removeEnemies();
-                 //this.createEnemies();
-                 //for (var i = 0; i < enemiesTotal; i++) {
-                 //   THE PROBLEM COMES F
-                 //    if (i === 0) {
-                 //        enemies[i].reset((this.game.rnd.integerInRange(450, 815), 373);
-                 //    if (i == 0) {
-                 //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(450, 815), 373);
-                 //    } else if (i == 1) {
-                 //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(1215, 1840), 373);
-                 //    } else if (i == 2) {
-                 //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(3119, 3518), 129);
-                 //    } else if (i == 3) {
-                 //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(3519, 3729), 373);
-                 //    } else if (i == 4) {
-                 //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(3730, 4047), 208);
-                 //    } else if (i == 5) {
-                 //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(6447, 7000), 192);
-                 //    } else if (i == 6) {
-                 //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(7001, 7790), 192);
-                 //    } else if (i == 7) {
-                 //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(7791, 8368), 96);
-                 //    } else if (i == 8) {
-                 //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(8369, 8752), 34);
-                 //    } else if (i == 9) {
-                 //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(11600, 12100), 192);
-                 //    } else if (i == 10) {
-                 //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(12101, 12600), 192);
-                 //    } else if (i == 11) {
-                 //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(12601, 13100), 192);
-                 //    } else if (i == 12) {
-                 //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(13101, 13965), 192);
-                 //    } else if (i == 13) {
-                 //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(15700, 16150), 208);
-                 //    } else if (i == 14) {
-                 //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(16151, 16560), 208);
-                 //    }
-                 //    anotherEnemy.scale.setTo(enemy_scale, enemy_scale);
-                 //    this.physics.arcade.enableBody(anotherEnemy);
-                 //    enemies.push(anotherEnemy);
-                 //    //    console.log('enemy created at ' + newEnemyX);
-                 //}
-                 //for (var i = 0; i < this.enemyBullets.length; i++) {
-                 //   if (this.enemyBullets[i] != undefined )
-                 //        this.enemyBullets[i].kill();
-                 //}
-                 //var bulletTemp = this.enemyBullets.getFirstExists(false);
-                 //while (bulletTemp) {
-                 //    console.log(bulletTemp);
-                 //    bulletTemp.kill();
-                 //    bulletTemp = this.enemyBullets.getFirstExists(false);
-
-                 //}
-
-                 //if (bullet != undefined)
-                 //    bullet.kill();
-                 //if(enemyBullet != undefined)
-                 //    enemyBullet.kill();
-             } else if (game_over && numLives == 0) {
-                 if (firstTimeGameOver) {
-                     firstTimeGameOver = false;
-                     timeDelay = (Math.floor(this.game.time.time / 1000) % 60) + 5;
-                 }
-                 //var time = (Math.floor(this.game.time.time / 1000) % 60) + 500;
-                 //var currentTime = Math.floor(this.game.time.time / 1000) % 60;
-                 if ((Math.floor(this.game.time.time / 1000) % 60) >= timeDelay) {
-                     this.music.mute = true;
-                     this.game.state.start('GameOver', true, false);
-                 }
-             }*/
-            //}
+            if (this.enemyChase.x < 0) {
+                this.enemyChase.x = 800;
+            }
+            if (this.hero.x < 0) {
+                this.hero.x = 800;
+            }
+            if (heroAlive) {
+                if (!levelComplete && this.hero.x >= 17150) {
+                    this.levelComplete();
+                }
+                if (bulletFired && bullet.x - this.hero.x >= 400) {
+                    this.resetBullet(bullet);
+                    bulletFired = false;
+                }
+                //NEW
+                if (swapGravity) {
+                    //heroJumped = true;
+                    jumpLocation = this.hero.body.x;
+                    jumpLocationList.push(jumpLocation);
+                    this.flipHero();
+                    this.hero.body.gravity.y = -this.hero.body.gravity.y;
+                    first = false;
+                }
+                if (cursors.right.isDown) {
+                    this.fireBullet();
+                }
+                for (var j = enemiesDead; j < enemies.length; j++) {
+                    if (enemies[j].alive && enemies[j].x - this.hero.x <= 575) {
+                        enemyBulletWait++;
+                        if (enemyBulletWait % 75 == 0) {
+                            this.fireEnemyBullet(enemies[j]);
+                        }
+                    }
+                    if (enemies[j].x < this.hero.x) {
+                        enemiesDead++;
+                    }
+                }
+                swapGravity = false;
+            }
+            else {
+                if (!this.enemyChase.blocked_after_end && (this.enemyChase.body.blocked.right || this.enemyChase.body.blocked.down)) {
+                    this.enemyChase.blocked_after_end = true;
+                    this.enemyChase.play('idle', 4, true);
+                    this.enemyChase.body.velocity.x = 0;
+                }
+                swapGravity = false;
+                //   console.log(this.hero.body.gravity.y);            
+                if (this.hero.body.gravity.y < 0)
+                    this.hero.body.gravity.y = this.hero.body.gravity.y * -1;
+                if (this.enemyChase.body.gravity.y < 0)
+                    this.enemyChase.body.gravity.y = this.enemyChase.body.gravity.y * -1;
+                if (!floor) {
+                    this.flipHero();
+                }
+                if (!floorEnemy) {
+                    this.flipEnemy();
+                }
+                floor = true;
+                if (respawnButton.isDown && !respawn) {
+                    this.hero.reset(150, 300);
+                    this.enemyChase.reset(0, 300);
+                    respawn = true;
+                    score = 0;
+                    heroAlive = true;
+                    this.enemyChase.blocked_after_end = false;
+                    this.enemyChase.animations.play('run');
+                    this.hero.alive = true;
+                    enemiesKilled = 0;
+                    floor = true;
+                    totalBullets = 500;
+                    for (var i = 0; i < enemyBulletsFired; i++) {
+                        enemyBulletList[i].kill();
+                    }
+                }
+                else if (game_over && numLives == 0) {
+                    if (firstTimeGameOver) {
+                        firstTimeGameOver = false;
+                        timeDelay = (Math.floor(this.game.time.time / 1000) % 60) + 5;
+                    }
+                    if ((Math.floor(this.game.time.time / 1000) % 60) >= timeDelay) {
+                        this.music.mute = true;
+                        this.game.state.start('GameOver', true, false);
+                    }
+                }
+            }
         };
         Level3.prototype.attemptGravitySwap = function () {
             swapGravity = (this.hero.body.blocked.down || this.hero.body.blocked.up);
@@ -1882,13 +1722,10 @@ var GravityGuy;
             heroAlive = false;
             this.hero.body.y = -200;
             this.enemyChase.kill();
-            //this.deathBurst(this.enemyChase);
             levelComplete = true;
             this.victoryMusic.play();
             this.music.stop();
             this.input.onDown.addOnce(this.fadeOut, this);
-            // Transitions to the Second Level after completing the first level
-            // this.game.state.start('Level2', true, false);
         };
         Level3.prototype.fadeOut = function () {
             this.victoryMusic.stop();
@@ -1934,10 +1771,6 @@ var GravityGuy;
                 this.sound_landing.play();
             }
             this.physics.arcade.collide(this.enemyChase, layer);
-            for (var i = 0; i < bulletsFired; i++) {
-                // this.physics.arcade.collide(bulletList[i], layer);
-                this.physics.arcade.overlap(bulletList, layer, this.bulletWallCollide, null, this);
-            }
             for (var i = 0; i < enemyBulletsFired; i++) {
                 // this.physics.arcade.collide(enemyBulletList[i], layer);
                 this.physics.arcade.overlap(enemyBulletList, layer, this.bulletWallCollide, null, this);
@@ -1953,6 +1786,8 @@ var GravityGuy;
             this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
             /* Megaman chasing hero and kills hero */
             //this.physics.arcade.overlap(this.enemyChase, this.hero, this.enemyCollidesHero, null, this);
+            /*Shooting MegaMan*/
+            this.physics.arcade.overlap(this.bullets, this.enemyChase, this.heroShootsEnemyChase, null, this);
             if (!game_over && heroAlive && (this.hero.body.y >= 512 || this.hero.body.y <= -100)) {
                 this.hero.kill();
                 this.sound_hero_death.play();
@@ -2007,11 +1842,23 @@ var GravityGuy;
                 this.endRound();
             }
         };
+        Level3.prototype.heroShootsEnemyChase = function (bullet, enemyChase) {
+            console.log(counterToKill);
+            bullet.kill();
+            //console.log("SHOT");
+            counterToKill++;
+            if (counterToKill > 40 * 3) {
+                console.log("Inside");
+                enemyChase.kill();
+            }
+        };
         Level3.prototype.dustBurst = function (entity) {
-            //explode_emit.x = entity.body.x;
-            //explode_emit.y = entity.body.y;
-            //explode_emit.start(true, 1000, null, 10);
-            dust_cloud_emit.x = entity.body.x + entity.body.halfWidth;
+            if (entity.scale.x < 0) {
+                dust_cloud_emit.x = entity.body.x + 3 * entity.body.halfWidth;
+            }
+            else {
+                dust_cloud_emit.x = entity.body.x + entity.body.halfWidth;
+            }
             if (entity.scale.y < 0) {
                 dust_cloud_emit.y = entity.body.y;
             }
@@ -2082,21 +1929,20 @@ var GravityGuy;
             //  To avoid them being allowed to fire too fast we set a time limit
             if (totalBullets > 0 && !levelComplete && this.game.time.now > bulletTime) {
                 //  Grab the first bullet we can from the pool
-                bulletList.push(this.bullets.getFirstExists(false));
-                bulletsFired++;
-                if (bulletsFired > 0) {
-                    this.physics.arcade.collide(bulletList[bulletsFired - 1], layer);
+                bullet = this.bullets.getFirstExists(false);
+                if (bullet) {
+                    this.physics.arcade.collide(bullet, layer);
                     this.sound_hero_fire.play();
                     if (floor) {
                         if (first)
-                            bulletList[bulletsFired - 1].reset(this.hero.body.x + 140, this.hero.y + 20); //  And fire it
+                            bullet.reset(this.hero.body.x + 140, this.hero.y + 20); //  And fire it
                         else
-                            bulletList[bulletsFired - 1].reset(this.hero.x + 32, this.hero.y - 22);
+                            bullet.reset(this.hero.x + 32, this.hero.y - 22);
                     }
                     else {
-                        bulletList[bulletsFired - 1].reset(this.hero.x + 35, this.hero.y);
+                        bullet.reset(this.hero.x + 35, this.hero.y);
                     }
-                    bulletList[bulletsFired - 1].body.velocity.x = 5000;
+                    bullet.body.velocity.x = 5000;
                     bulletTime = this.game.time.now + 200;
                     bulletFired = true;
                     totalBullets--;
@@ -2162,12 +2008,6 @@ var GravityGuy;
                 var count = 0;
                 //while (count < 10) {
                 this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Arial');
-                //score -= 1;
-                //count++;
-                //if (score <= 0) {
-                //    score = 0;
-                //}
-                //}
                 this.game.debug.text("Press 'R' to Respawn Baddie", 120, 420, 'white', '40px Arial');
             }
             else if (game_over) {
