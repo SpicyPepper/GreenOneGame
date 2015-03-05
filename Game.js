@@ -1150,7 +1150,8 @@ var GravityGuy;
             this.game.debug.text('Bullets : ' + totalBullets, 345, 35, 'white', '34px Lucida Sans Unicode');
             this.game.debug.text('Lives : ' + numLives, 660, 35, 'white', '34px Lucida Sans Unicode');
             if (levelComplete) {
-                this.game.debug.text('Level ' + level + ' Complete, Click to Continue', 10, 200, 'white', '50px Lucida Sans Unicode');
+                this.game.debug.text('Level ' + level + ' Complete!', 190, 125, 'white', '50px Lucida Sans Unicode');
+                this.game.debug.text('Click to Continue', 200, 200, 'white', '50px Lucida Sans Unicode');
                 this.game.debug.text('Score: ' + score, 265, 260, 'white', '45px Lucida Sans Unicode');
                 this.game.debug.text('Enemies Killed: ' + enemiesKilled, 240, 325, 'white', '35px Lucida Sans Unicode');
                 this.game.debug.text('Bullets Left: ' + totalBullets, 260, 370, 'white', '35px Lucida Sans Unicode');
@@ -1249,10 +1250,10 @@ var GravityGuy;
             layer = this.map.createLayer('layer_1');
             layer.resizeWorld();
             _super.prototype.setLayer.call(this, layer);
-            enemiesTotal = 12;
+            enemiesTotal = 10;
             _super.prototype.setEnemiesTotal.call(this, enemiesTotal);
-            enemyLocationsX = [this.game.rnd.integerInRange(450, 815), this.game.rnd.integerInRange(1215, 1840), this.game.rnd.integerInRange(3519, 3729), this.game.rnd.integerInRange(3730, 4047), this.game.rnd.integerInRange(6447, 7000), this.game.rnd.integerInRange(8369, 8752), this.game.rnd.integerInRange(11600, 12100), this.game.rnd.integerInRange(12101, 12600), this.game.rnd.integerInRange(12601, 13100), this.game.rnd.integerInRange(13101, 13965), this.game.rnd.integerInRange(15700, 16150), this.game.rnd.integerInRange(16151, 16560)];
-            enemyLocationsY = [373, 373, 129, 373, 208, 192, 192, 96, 32, 192, 192, 192, 192, 208, 208];
+            enemyLocationsX = [this.game.rnd.integerInRange(450, 815), this.game.rnd.integerInRange(1215, 1840), this.game.rnd.integerInRange(3519, 3729), this.game.rnd.integerInRange(8369, 8752), this.game.rnd.integerInRange(11600, 12100), this.game.rnd.integerInRange(12101, 12600), this.game.rnd.integerInRange(12601, 13100), this.game.rnd.integerInRange(13101, 13965), this.game.rnd.integerInRange(15700, 16150), this.game.rnd.integerInRange(16151, 16560)];
+            enemyLocationsY = [373, 373, 373, 32, 192, 192, 192, 192, 208, 208];
             _super.prototype.setEnemyLocations.call(this, enemyLocationsX, enemyLocationsY);
             _super.prototype.createEnemies.call(this);
             var spaceship = this.game.add.sprite(17080, 245, 'spaceship');
@@ -1301,11 +1302,11 @@ var GravityGuy;
             layer = this.map.createLayer('layer_1');
             layer.resizeWorld();
             _super.prototype.setLayer.call(this, layer);
-            enemiesTotal = 15;
+            enemiesTotal = 2;
             _super.prototype.setEnemiesTotal.call(this, enemiesTotal);
             //************WRONG CORDINATES THIS IS FOR LEVEL1**************
-            enemyLocationsX = [this.game.rnd.integerInRange(450, 815), this.game.rnd.integerInRange(1215, 1840), this.game.rnd.integerInRange(3119, 3518), this.game.rnd.integerInRange(3519, 3729), this.game.rnd.integerInRange(3730, 4047), this.game.rnd.integerInRange(6447, 7000), this.game.rnd.integerInRange(7001, 7790), this.game.rnd.integerInRange(7791, 8368), this.game.rnd.integerInRange(8369, 8752), this.game.rnd.integerInRange(11600, 12100), this.game.rnd.integerInRange(12101, 12600), this.game.rnd.integerInRange(12601, 13100), this.game.rnd.integerInRange(13101, 13965), this.game.rnd.integerInRange(15700, 16150), this.game.rnd.integerInRange(16151, 16560)];
-            enemyLocationsY = [373, 373, 129, 373, 208, 192, 192, 96, 32, 192, 192, 192, 192, 208, 208];
+            enemyLocationsX = [this.game.rnd.integerInRange(500, 1214), this.game.rnd.integerInRange(1570, 1920), this.game.rnd.integerInRange(2000, 2400), this.game.rnd.integerInRange(6990, 7085)];
+            enemyLocationsY = [360, 145, 75, 300];
             _super.prototype.setEnemyLocations.call(this, enemyLocationsX, enemyLocationsY);
             _super.prototype.createEnemies.call(this);
             //************************************************************************************
