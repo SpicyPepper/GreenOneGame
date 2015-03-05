@@ -41,7 +41,6 @@
     <TypeScriptCompile Include="phaser.d.ts" />
     <TypeScriptCompile Include="pixi.d.ts" />
     <TypeScriptCompile Include="Preloader.ts" />
-    <TypeScriptCompile Include="States\TitleScreenState.ts" />
   </ItemGroup>
   <ItemGroup>
     <None Include="web.Debug.config">

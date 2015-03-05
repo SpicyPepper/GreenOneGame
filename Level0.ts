@@ -33,7 +33,7 @@
     var floor;
     var floorEnemy;
     var floorOtherEnemy;
-    var hero_scale = 0.7;
+    var hero_scale = 1.7;
     var enemyChase_scale = 4;
     var enemy_scale = 0.8;
     var explode_emit;
@@ -779,6 +779,7 @@
         }
 
         render() {
+            this.game.debug.spriteInfo(this.hero, 400, 400);
             //  The score
             this.game.debug.text(scoreString + score, 10, 35, 'white', '34px Lucida Sans Unicode');
             this.game.debug.text(this.game.time.fps + '' || '--', 2, 60, "#00ff00");  

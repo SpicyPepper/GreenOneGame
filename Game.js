@@ -1234,7 +1234,7 @@ var GravityGuy;
     var floor;
     var floorEnemy;
     var floorOtherEnemy;
-    var hero_scale = 0.7;
+    var hero_scale = 1.7;
     var enemyChase_scale = 4;
     var enemy_scale = 0.8;
     var explode_emit;
@@ -1812,6 +1812,7 @@ var GravityGuy;
             enemyBullet.kill();
         };
         Level0.prototype.render = function () {
+            this.game.debug.spriteInfo(this.hero, 400, 400);
             //  The score
             this.game.debug.text(scoreString + score, 10, 35, 'white', '34px Lucida Sans Unicode');
             this.game.debug.text(this.game.time.fps + '' || '--', 2, 60, "#00ff00");
@@ -2191,7 +2192,8 @@ var GravityGuy;
         };
         Preloader.prototype.loadSpritesheets = function () {
             this.load.spritesheet('title_text', 'visuals/title_text.png', 474, 117);
-            this.load.spritesheet('hero', 'visuals/test_runner.png', 138, 115);
+            //   this.load.spritesheet('hero', 'visuals/test_runner.png', 138, 115);
+            this.load.spritesheet('hero', 'visuals/hero_sprite_running.png', 41, 44);
             this.load.spritesheet('enemyChase', 'visuals/mega_enemy_sprite.png', 50, 40);
             this.load.spritesheet('enemy1', 'visuals/enemy1.png', 68, 93);
             this.load.spritesheet('alien', 'visuals/alien.png', 100, 200);
@@ -2200,25 +2202,3 @@ var GravityGuy;
     })(Phaser.State);
     GravityGuy.Preloader = Preloader;
 })(GravityGuy || (GravityGuy = {}));
-var TitleState;
-(function (TitleState) {
-    var TitleScreenState = (function (_super) {
-        __extends(TitleScreenState, _super);
-        function TitleScreenState() {
-            _super.apply(this, arguments);
-        }
-        TitleScreenState.prototype.contructor = function () {
-            //super();
-        };
-        TitleScreenState.prototype.create = function () {
-            this.titleScreenImage = this.add.sprite(0, 0, "space_background_planet");
-            this.titleScreenImage.scale.setTo(this.game.width / this.titleScreenImage.width, this.game.height / this.titleScreenImage.height); //scales screen image
-            this.music = this.game.add.audio("Title_DnB");
-            this.music.volume = 15;
-            this.music.loop = true;
-            this.music.play();
-        };
-        return TitleScreenState;
-    })(Phaser.State);
-    TitleState.TitleScreenState = TitleScreenState;
-})(TitleState || (TitleState = {}));
