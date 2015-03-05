@@ -61,15 +61,14 @@
                         }
                         if ((this.body.blocked.down || this.body.blocked.up)) {
                             if (this.body.gravity.y < 0 && (bossLevel.getFloorEnemy() == true)) {
-                                console.log("Whoa");
+                                
                                 bossLevel.flipEnemy();
                             } else if (this.body.gravity.y > 0 && (bossLevel.getFloorEnemy()) == false) {
-                                console.log("Whoa2");
+                              
                                 bossLevel.flipEnemy();
                             }
                         }
-                        console.log("GRAVITY: " + this.body.gravity.y);
-                        console.log("Floor: " + bossLevel.getFloorEnemy());
+                      
                     } else {
                         this.body.velocity.x = 0;
                         this.animations.play('idle');

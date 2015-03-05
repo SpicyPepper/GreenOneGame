@@ -262,17 +262,24 @@
                     facingRight = false;
                     //this.hero.x -= offset;
                 } else {
-                    this.hero.animations.frame = 0;
+                    //this.hero.animations.frame = 0;
+                    if (facingRight) {
+                        this.hero.animations.play('idle_right');
+                    } else {
+                        this.hero.animations.play('idle_right');
+                    }
                 }
 
                 if (cursors.right.isDown) {
                     shootingRight = true;
+                    this.hero.animations.play('walk');
                     this.flipRight();
                     this.fireBullet();
                 }
 
                 if (cursors.left.isDown) {
                     shootingRight = false;
+                    this.hero.animations.play('walk');
                     this.flipLeft();
                     this.fireBullet();
                 }

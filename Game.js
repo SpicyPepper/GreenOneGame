@@ -326,16 +326,12 @@ var GravityGuy;
                         }
                         if ((this.body.blocked.down || this.body.blocked.up)) {
                             if (this.body.gravity.y < 0 && (bossLevel.getFloorEnemy() == true)) {
-                                console.log("Whoa");
                                 bossLevel.flipEnemy();
                             }
                             else if (this.body.gravity.y > 0 && (bossLevel.getFloorEnemy()) == false) {
-                                console.log("Whoa2");
                                 bossLevel.flipEnemy();
                             }
                         }
-                        console.log("GRAVITY: " + this.body.gravity.y);
-                        console.log("Floor: " + bossLevel.getFloorEnemy());
                     }
                     else {
                         this.body.velocity.x = 0;
@@ -500,7 +496,13 @@ var GravityGuy;
             //this.game = game;
             this.scale.setTo(this.hero_scale, this.hero_scale);
             if (state === 3) {
-                this.animations.add('walk', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 10, true);
+                //this.animations.add('walk', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 10, true);
+                this.animations.add('run_left', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 20);
+                this.animations.add('idle_left', [10, 11, 12], 0.3);
+                this.animations.add('idle_straight', [13], 1);
+                this.animations.add('idle_right', [14, 15, 16], 0.3);
+                this.animations.add('run_right', [17, 18, 19, 20, 21, 22, 23, 24, 25, 26], 20);
+                this.animations.add('walk', [17, 18, 19, 20, 21, 22, 23, 24, 25, 26], 10, true);
             }
             else {
                 game.time.events.loop(200, this.running, this);
@@ -509,7 +511,7 @@ var GravityGuy;
                 this.animations.add('run_left', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 20);
                 this.animations.add('idle_left', [10, 11, 12], 0.3);
                 this.animations.add('idle_straight', [13], 1);
-                this.animations.add('idle_left', [14, 15, 16], 0.3);
+                this.animations.add('idle_right', [14, 15, 16], 0.3); //changed from left to right
                 this.animations.add('run_right', [17, 18, 19, 20, 21, 22, 23, 24, 25, 26], 20);
                 this.animations.play('run_right', 20, true);
             }
@@ -1679,15 +1681,23 @@ var GravityGuy;
                     facingRight = false;
                 }
                 else {
-                    this.hero.animations.frame = 0;
+                    //this.hero.animations.frame = 0;
+                    if (facingRight) {
+                        this.hero.animations.play('idle_right');
+                    }
+                    else {
+                        this.hero.animations.play('idle_right');
+                    }
                 }
                 if (cursors.right.isDown) {
                     shootingRight = true;
+                    this.hero.animations.play('walk');
                     this.flipRight();
                     this.fireBullet();
                 }
                 if (cursors.left.isDown) {
                     shootingRight = false;
+                    this.hero.animations.play('walk');
                     this.flipLeft();
                     this.fireBullet();
                 }
