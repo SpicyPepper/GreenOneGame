@@ -103,8 +103,7 @@
          
             this.hero = new Hero(this.game, 150, 300, 1);
             hero_scale = this.hero.hero_scale;
-           // this.hero.scale.setTo(this.hero.hero_scale, this.hero.hero_scale);
-            console.log(hero_scale);
+        
             this.physics.arcade.enableBody(this.hero);
 
             this.enemyChase = new enemyChase(this.game, 0, 300, 1);
@@ -247,7 +246,7 @@
         }
 
         update() {
-           
+            this.collideEverything();
             if (!this.hero.alive && heroAlive) {
                 this.deathBurst(this.hero);
                 this.sound_hero_death.play();
@@ -258,7 +257,7 @@
                     this.endRound();
                 }
             }
-            this.collideEverything();
+            
             /* When hero is alive */
             if (heroAlive) {
                 this.enemyChase.body.velocity.x = 450;
