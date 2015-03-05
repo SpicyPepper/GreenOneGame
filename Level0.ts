@@ -33,7 +33,7 @@
     var floor;
     var floorEnemy;
     var floorOtherEnemy;
-    var hero_scale = 1.7;
+    var hero_scale;
     var enemyChase_scale = 4;
     var enemy_scale = 0.8;
     var explode_emit;
@@ -102,7 +102,9 @@
 
          
             this.hero = new Hero(this.game, 150, 300, 1);
-            this.hero.scale.setTo(hero_scale, hero_scale);
+            hero_scale = this.hero.hero_scale;
+           // this.hero.scale.setTo(this.hero.hero_scale, this.hero.hero_scale);
+            console.log(hero_scale);
             this.physics.arcade.enableBody(this.hero);
 
             this.enemyChase = new enemyChase(this.game, 0, 300, 1);

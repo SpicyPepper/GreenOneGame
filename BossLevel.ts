@@ -33,7 +33,7 @@
     var floor;
     var floorEnemy;
     var floorOtherEnemy;
-    var hero_scale = 0.7;
+    var hero_scale;
     var enemyChase_scale = 4.3;
     var enemy_scale = 0.8;
     var explode_emit;
@@ -102,7 +102,6 @@
 
             this.background = this.add.tileSprite(0, 0, 1024, 512, 'background');
             this.background.fixedToCamera = true;
-
             this.music = this.add.audio('House');
             this.sound_landing = this.add.audio('landing_sound');
             this.sound_hero_gravity = this.add.audio('hero_gravity');
@@ -140,7 +139,7 @@
             layer.resizeWorld();
 
             this.hero = new Hero(this.game, 250, 300, 3);
-            this.hero.scale.setTo(hero_scale, hero_scale);
+       //     this.hero.scale.setTo(this.hero.hero_scale, this.hero.hero_scale);
             this.physics.arcade.enableBody(this.hero);
 
             this.enemyChase = new enemyChase(this.game, 100, 300, 3);
@@ -214,7 +213,7 @@
 
 
         update() {
-
+            console.log("boss level");
             this.game.camera.x = 0;
             this.hero.body.velocity.x = 0;
             //console.log(this.hero.x);

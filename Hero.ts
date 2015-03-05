@@ -12,6 +12,8 @@
 
         in_air;
 
+        hero_scale = 1.7;
+
         sound_footstep: Phaser.Sound;
         sound_landing: Phaser.Sound;
 
@@ -25,15 +27,20 @@
             state = aState;
             //added
             //this.game = game;
-           
+            this.scale.setTo(this.hero_scale, this.hero_scale);
             if (state === 3) {
                 this.animations.add('walk', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 10, true);
             } else {
                 game.time.events.loop(200, this.running, this);
                 this.sound_footstep = game.add.audio('footstep');
                 this.sound_landing = game.add.audio('footstep');
-                this.animations.add('run');
-                this.animations.play('run', 20, true);
+
+                this.animations.add('run_left', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 20);
+                this.animations.add('idle_left', [10, 11, 12], 0.3);
+                this.animations.add('idle_straight', [13], 1);
+                this.animations.add('idle_left', [14, 15, 16], 0.3);
+                this.animations.add('run_right', [17, 18, 19, 20, 21, 22, 23, 24, 25, 26], 20);             
+                this.animations.play('run_right', 20, true);
             }
             this.game.physics.enable(this, Phaser.Physics.ARCADE);
             this.body.bounce.y = 0.2;
