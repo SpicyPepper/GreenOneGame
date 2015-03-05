@@ -80,8 +80,7 @@
 
             this.load.tilemap('Level_3', 'resources/Level_3.json', null, Phaser.Tilemap.TILED_JSON);
 
-            this.load.tilemap('Level_3', 'resources/boss_level_tileset.json', null, Phaser.Tilemap.TILED_JSON);
-
+            this.load.tilemap('boss_level', 'resources/boss_level.json', null, Phaser.Tilemap.TILED_JSON);
         }
 
         loadSpritesheets() {

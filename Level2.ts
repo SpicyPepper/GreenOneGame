@@ -137,7 +137,7 @@
 
         fadeOut() {
             this.victoryMusic.stop();
-            this.game.state.start('GameWon', true, false);
+            this.game.state.start('BossLevel', true, false);
         }
     
     }

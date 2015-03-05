@@ -36,7 +36,7 @@
     <TypeScriptCompile Include="Level0.ts" />
     <TypeScriptCompile Include="Level1.ts" />
     <TypeScriptCompile Include="Level2.ts" />
-    <TypeScriptCompile Include="Level3.ts" />
+    <TypeScriptCompile Include="BossLevel.ts" />
     <TypeScriptCompile Include="MainMenu.ts" />
     <TypeScriptCompile Include="phaser.d.ts" />
     <TypeScriptCompile Include="pixi.d.ts" />

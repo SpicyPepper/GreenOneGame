@@ -59,7 +59,7 @@
     var shootingRight;
 
 
-    export class Level3 extends Phaser.State {
+    export class BossLevel extends Phaser.State {
 
         background: Phaser.TileSprite;
 
@@ -128,7 +128,7 @@
             dust_cloud_emit.gravity = 0;
 
             //LEVEL :D
-            this.map = this.add.tilemap('level_test');
+            this.map = this.add.tilemap('boss_level');
             //  this.map = this.add.tilemap('joels_level'); //### HERE IS TEST MAP. SWAP TO PLAY SHITTY LEVEL. PLEASE SOMEONE MAKE A DIFFERENT ONE.
             this.map.addTilesetImage('tileset_1');
 
