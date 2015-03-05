@@ -1,5 +1,10 @@
 ﻿module GravityGuy {
     var state;
+    var megaManPath;
+    var firstTime;
+    var timeDelay;
+    var offScreen;
+    var bossLevel;
     export class enemyChase extends Phaser.Sprite {
 
         blocked_after_end;
@@ -23,13 +28,57 @@
             this.body.gravity.y = 22000;
             this.anchor.setTo(0.5, 0);
             this.body.velocity.x = 450;
+            megaManPath = 0;
+            firstTime = true;
+            offScreen = false;
 
         }
 
         update() {
             if (state === 3) {
-                this.body.velocity.x = 0;
-                this.animations.play('idle');
+                if (this.alive) {
+                    if (firstTime) {
+                        firstTime = false;
+                        timeDelay = (Math.floor(this.game.time.time / 1000) % 60) + 3;
+                    }
+
+                    if ((Math.floor(this.game.time.time / 1000)) >= timeDelay) {
+                        this.animations.play('run');
+                        this.body.velocity.x = 250;
+                        //megaManPath = this.game.rnd.integerInRange(0, 2);
+                        if (offScreen) {
+
+
+                            this.body.gravity.y = -this.body.gravity.y;
+                            if ((this.body.blocked.down || this.body.blocked.up)) {
+                                //this.scale.y = -this.scale.y;
+                                
+                                bossLevel.flipEnemy();
+
+                            }
+
+
+                        }
+                        if ((this.body.blocked.down || this.body.blocked.up)) {
+                            if (this.body.gravity.y < 0 && (bossLevel.getFloorEnemy() == true)) {
+                                console.log("Whoa");
+                                bossLevel.flipEnemy();
+                            } else if (this.body.gravity.y > 0 && (bossLevel.getFloorEnemy()) == false) {
+                                console.log("Whoa2");
+                                bossLevel.flipEnemy();
+                            }
+                        }
+                        console.log("GRAVITY: " + this.body.gravity.y);
+                        console.log("Floor: " + bossLevel.getFloorEnemy());
+                    } else {
+                        this.body.velocity.x = 0;
+                        this.animations.play('idle');
+                    }
+                } else {
+                    firstTime = true;
+                    offScreen = false;
+                }
+
             } else {
                 this.body.velocity.y = 0;
           
@@ -46,6 +95,15 @@
                     }
                 }
             }
+        }
+        setOffScreen() {
+            // console.log("Before: "+ offScreen );
+            offScreen = !(offScreen);
+            // console.log("After: " + offScreen);
+        }
+
+        setBossLevel(aBossLevel) {
+            bossLevel = aBossLevel;
         }
     }
 }

@@ -33,7 +33,7 @@
     var floor;
     var floorEnemy;
     var floorOtherEnemy;
-    var hero_scale;
+    var hero_scale = 0.7;
     var enemyChase_scale = 4.3;
     var enemy_scale = 0.8;
     var explode_emit;
@@ -57,6 +57,7 @@
     var facingRight;
     var counterToKill;
     var shootingRight;
+
 
 
     export class BossLevel extends Phaser.State {
@@ -102,6 +103,7 @@
 
             this.background = this.add.tileSprite(0, 0, 1024, 512, 'background');
             this.background.fixedToCamera = true;
+
             this.music = this.add.audio('House');
             this.sound_landing = this.add.audio('landing_sound');
             this.sound_hero_gravity = this.add.audio('hero_gravity');
@@ -138,15 +140,15 @@
 
             layer.resizeWorld();
 
-            this.hero = new Hero(this.game, 250, 300, 3);
-       //     this.hero.scale.setTo(this.hero.hero_scale, this.hero.hero_scale);
+            this.hero = new Hero(this.game, 200, 300, 3);
+            this.hero.scale.setTo(hero_scale, hero_scale);
             this.physics.arcade.enableBody(this.hero);
 
             this.enemyChase = new enemyChase(this.game, 100, 300, 3);
             this.enemyChase.scale.setTo(enemyChase_scale, enemyChase_scale);
             this.physics.arcade.enableBody(this.enemyChase);
             this.time.events.loop(25, this.timedUpdate, this);
-
+            this.enemyChase.setBossLevel(this);
 
             enemiesTotal = 15;
             enemiesDead = 0;
@@ -177,6 +179,8 @@
             this.bullets.setAll('anchor.y', 0);
             this.bullets.setAll('outOfBoundsKill', true);
             this.bullets.setAll('checkWorldBounds', true);
+            //this.bullets.scale.setTo(0.99);
+           
 
             //end added 
 
@@ -213,7 +217,7 @@
 
 
         update() {
-            console.log("boss level");
+
             this.game.camera.x = 0;
             this.hero.body.velocity.x = 0;
             //console.log(this.hero.x);
@@ -229,70 +233,78 @@
             //}
             this.collideEverything();
             /* When hero is alive */
-
-            if (moveRightButton.isDown) {
-                // var offset = 0;
-                console.log("Hey");
-                this.hero.animations.play('walk');
-                this.hero.body.velocity.x = 250;
-                this.flipRight();
-                //if (this.hero.scale.x < 0) {
-                //    this.hero.anchor.setTo(1, .5); //so it flips around its middle
-                //    this.hero.scale.x = hero_scale; //flipped
-                //    offset = this.hero.body.halfWidth + 15;
-                //}
-                facingRight = true;
-                //this.hero.x += offset;
-            } else if (moveLeftButton.isDown) {
-                this.hero.animations.play('walk');
-                this.hero.body.velocity.x = -250;
-                //var offset = 0;
-                
-                this.flipLeft();
-                //if (this.hero.scale.x > 0) {
-                //    this.hero.anchor.setTo(1, .5); //so it flips around its middle
-                //    this.hero.scale.x = -hero_scale;
-                //    offset = this.hero.body.halfWidth + 15;
-                //}
-                //first = true;
-                facingRight = false;
-                //this.hero.x -= offset;
-            } else {
-                this.hero.animations.frame = 0;
-            }
-
-            if (cursors.right.isDown) {
-                shootingRight = true;
-                this.flipRight();
-                this.fireBullet();
-            }
-
-            if (cursors.left.isDown) {
-                shootingRight = false;
-                this.flipLeft();
-                this.fireBullet();
-            }
-
-
-
-
-            if (this.hero.x > 800) {
-                this.hero.x = 100;
-
-            }
-            if (this.enemyChase.x > 800) {
-                this.enemyChase.x = 100;
-
-            }
-            if (this.enemyChase.x < 0) {
-                this.enemyChase.x = 800;
-
-            }
-            if (this.hero.x < 0) {
-                this.hero.x = 800;
-
-            }
             if (heroAlive) {
+
+                if (moveRightButton.isDown) {
+                    // var offset = 0;
+                    this.hero.animations.play('walk');
+                    this.hero.body.velocity.x = 250;
+                    this.flipRight();
+                    //if (this.hero.scale.x < 0) {
+                    //    this.hero.anchor.setTo(1, .5); //so it flips around its middle
+                    //    this.hero.scale.x = hero_scale; //flipped
+                    //    offset = this.hero.body.halfWidth + 15;
+                    //}
+                    facingRight = true;
+                    //this.hero.x += offset;
+                } else if (moveLeftButton.isDown) {
+                    this.hero.animations.play('walk');
+                    this.hero.body.velocity.x = -250;
+                    //var offset = 0;
+                
+                    this.flipLeft();
+                    //if (this.hero.scale.x > 0) {
+                    //    this.hero.anchor.setTo(1, .5); //so it flips around its middle
+                    //    this.hero.scale.x = -hero_scale;
+                    //    offset = this.hero.body.halfWidth + 15;
+                    //}
+                    //first = true;
+                    facingRight = false;
+                    //this.hero.x -= offset;
+                } else {
+                    this.hero.animations.frame = 0;
+                }
+
+                if (cursors.right.isDown) {
+                    shootingRight = true;
+                    this.flipRight();
+                    this.fireBullet();
+                }
+
+                if (cursors.left.isDown) {
+                    shootingRight = false;
+                    this.flipLeft();
+                    this.fireBullet();
+                }
+
+
+
+
+                if (this.hero.x > 800) {
+                    this.hero.x = 8;
+
+                }
+                if (this.enemyChase.x > 800) {
+                    this.enemyChase.x = 8;
+                    //if (this.enemyChase.body.gravity.y < 0 && floor) {
+                    //    console.log("Whoa");
+                    //    this.flipEnemy();
+                    //} else if (this.enemyChase.body.gravity.y > 0 && !floor) {
+                    //    console.log("Whoa2");
+                    //    this.flipEnemy();
+                    //}
+                    this.enemyChase.setOffScreen();
+
+                }
+                if (this.enemyChase.x < 8) {
+                    this.enemyChase.x = 800;
+
+                }
+                if (this.hero.x < 8) {
+                    this.hero.x = 800;
+
+                }
+                // if (heroAlive) {
 
 
 
@@ -350,16 +362,16 @@
                 }
                 floor = true;
                 if (respawnButton.isDown && !respawn) {
-                    this.hero.reset(150, 300);
-                    this.enemyChase.reset(0, 300);
+                    this.hero.reset(750, 300);
+                    this.enemyChase.reset(100, 300);
                     respawn = true;
                     score = 0;
                     heroAlive = true;
                     this.enemyChase.blocked_after_end = false;
-                    this.enemyChase.animations.play('run');
+                    this.enemyChase.animations.play('idle');
                     this.hero.alive = true;
                     enemiesKilled = 0;
-
+                    counterToKill = 0;
 
                     floor = true;
 
@@ -518,6 +530,7 @@
             this.physics.arcade.overlap(this.bullets, this.enemyChase, this.heroShootsEnemyChase, null, this);
 
             if (!game_over && heroAlive && (this.hero.body.y >= 512 || this.hero.body.y <= -100)) {
+                console.log("DEATH");
                 this.hero.kill();
                 this.sound_hero_death.play();
                 this.deathBurst(this.hero);
@@ -634,7 +647,7 @@
             if (floorEnemy) {
                 this.enemyChase.anchor.setTo(1, .5); //so it flips around its middle
                 //  this.enemyChase.scale.y = 1; //facing default direction
-                this.enemyChase.scale.y = -1; //flipped
+                this.enemyChase.scale.y = -4.3; //flipped
                 floorEnemy = false;
             } else {
                 //hero.anchor.setTo(1, .5); //so it flips around its middle
@@ -642,7 +655,7 @@
                 //hero.scale.y = 1; //flipped
                 this.enemyChase.anchor.setTo(1, .5); //so it flips around its middle
                 //this.enemyChase.scale.y = -1; //facing default direction
-                this.enemyChase.scale.y = 1; //flipped
+                this.enemyChase.scale.y = 4.3; //flipped
                 floorEnemy = true;
             }
         }
@@ -671,14 +684,20 @@
                 bullet = this.bullets.getFirstExists(false);
 
                 if (bullet && shootingRight) {
+
                     this.physics.arcade.collide(bullet, layer);
                     this.sound_hero_fire.play();
                     if (floor) {
-                        if (first)
-                            bullet.reset(this.hero.body.x + 140, this.hero.y + 20);//  And fire it
-                        else
+                        if (first) {
+                            console.log("HERE1");
+                            bullet.reset(this.hero.body.x + 140, this.hero.y);//  And fire it
+                        }
+                        else {
+                            console.log("HERE2");
                             bullet.reset(this.hero.x + 32, this.hero.y - 22);
+                        }
                     } else {
+                        console.log("HERE3");
                         bullet.reset(this.hero.x + 35, this.hero.y);
                     }
                     bullet.body.velocity.x = 5000;
@@ -780,6 +799,9 @@
                 this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Arial');
                 this.game.debug.text("That all you got?", 210, 380, 'white', '45px Arial');
             }
+        }
+        getFloorEnemy() {
+            return floorEnemy;
         }
     }
 }  
