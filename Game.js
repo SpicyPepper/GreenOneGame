@@ -592,7 +592,7 @@ var GravityGuy;
             _super.apply(this, arguments);
         }
         Level0.prototype.create = function () {
-            //FPS
+            //FPS 
             this.game.time.advancedTiming = true;
             /*Working on key binding*/
             keyboard_grav = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
@@ -2185,6 +2185,7 @@ var GravityGuy;
             this.load.tilemap('joels_level', 'resources/joels_level.json', null, Phaser.Tilemap.TILED_JSON);
             this.load.tilemap('level_test', 'resources/level_test.json', null, Phaser.Tilemap.TILED_JSON);
             this.load.tilemap('Level_3', 'resources/Level_3.json', null, Phaser.Tilemap.TILED_JSON);
+            this.load.tilemap('Level_3', 'resources/boss_level_tileset.json', null, Phaser.Tilemap.TILED_JSON);
         };
         Preloader.prototype.loadSpritesheets = function () {
             this.load.spritesheet('title_text', 'visuals/title_text.png', 474, 117);

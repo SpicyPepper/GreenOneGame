@@ -82,7 +82,7 @@
         enemy: GravityGuy.Enemy
 
         create() {
-            //FPS
+            //FPS 
             this.game.time.advancedTiming = true;
 
             /*Working on key binding*/
@@ -96,10 +96,6 @@
 
             this.physics.startSystem(Phaser.Physics.ARCADE);
             this.world.setBounds(0, 0, 2000, 512);
-
-           
-
-
 
             this.init_sounds();
             this.init_emitters();
