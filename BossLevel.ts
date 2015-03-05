@@ -140,9 +140,11 @@
 
             layer.resizeWorld();
 
-            this.hero = new Hero(this.game, 200, 300, 3);
+            this.hero = new Hero(this.game, 750, 300, 3);
             this.hero.scale.setTo(hero_scale, hero_scale);
             this.physics.arcade.enableBody(this.hero);
+            this.hero.animations.play('idle_right');
+            this.flipLeft();
 
             this.enemyChase = new enemyChase(this.game, 100, 300, 3);
             this.enemyChase.scale.setTo(enemyChase_scale, enemyChase_scale);
@@ -531,7 +533,7 @@
             this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
 
             /* Megaman chasing hero and kills hero */
-            //this.physics.arcade.overlap(this.enemyChase, this.hero, this.enemyCollidesHero, null, this);
+            this.physics.arcade.overlap(this.enemyChase, this.hero, this.enemyCollidesHero, null, this);
 
             /*Shooting MegaMan*/
             this.physics.arcade.overlap(this.bullets, this.enemyChase, this.heroShootsEnemyChase, null, this);
@@ -595,15 +597,17 @@
         }
 
         heroShootsEnemyChase(enemyChase, bullet) {
-            console.log(counterToKill);
+            //console.log(counterToKill);
             //if(bullet.body === undefined)
             bullet.kill();
 
             //console.log("SHOT");
             counterToKill++;
             if (counterToKill > 40) {
-                console.log("Inside");
+            
                 enemyChase.kill();
+                
+                this.game.state.start('GameWon', true, false);
             }
 
         }
