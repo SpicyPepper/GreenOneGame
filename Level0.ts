@@ -780,7 +780,7 @@
         }
 
         render() {
-            this.game.debug.spriteInfo(this.hero, 400, 400);
+            //this.game.debug.spriteInfo(this.hero, 400, 400);
             //  The score
             this.game.debug.text(scoreString + score, 10, 35, 'white', '34px Lucida Sans Unicode');
             this.game.debug.text(this.game.time.fps + '' || '--', 2, 60, "#00ff00");  

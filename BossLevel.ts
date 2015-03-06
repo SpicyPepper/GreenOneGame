@@ -309,6 +309,11 @@
                     this.enemyChase.x = 800;
 
                 }
+
+                if (this.enemyChase.y <= 0 || this.enemyChase.y >= 512 ) {
+                    this.enemyChase.y = 200;
+
+                }
                 if (this.hero.x < 8) {
                     this.hero.x = 800;
 
@@ -371,8 +376,9 @@
                 }
                 floor = true;
                 if (respawnButton.isDown && !respawn) {
+                    this.enemyChase.kill();
                     this.hero.reset(750, 300);
-                    this.enemyChase.reset(100, 300);
+                    this.enemyChase.reset(200, 100);
                     respawn = true;
                     score = 0;
                     heroAlive = true;
@@ -605,9 +611,9 @@
             //console.log("SHOT");
             counterToKill++;
             if (counterToKill > 40) {
-            
-                enemyChase.kill();
                 this.deathBurst(enemyChase);
+                enemyChase.kill();
+                
               
                 
                 this.game.state.start('GameWon', true, false);
