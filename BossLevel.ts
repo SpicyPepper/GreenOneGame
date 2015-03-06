@@ -34,7 +34,7 @@
     var floorEnemy;
     var floorOtherEnemy;
     var hero_scale = 0.7;
-    var enemyChase_scale = 4.3;
+    var enemyChase_scale = 4.0;
     var enemy_scale = 0.8;
     var explode_emit;
     var dust_cloud_emit;
@@ -146,7 +146,7 @@
             this.hero.animations.play('idle_right');
             this.flipLeft();
 
-            this.enemyChase = new enemyChase(this.game, 100, 300, 3);
+            this.enemyChase = new enemyChase(this.game, 200, 100, 3);
             this.enemyChase.scale.setTo(enemyChase_scale, enemyChase_scale);
             this.physics.arcade.enableBody(this.enemyChase);
             this.time.events.loop(25, this.timedUpdate, this);
@@ -658,7 +658,7 @@
             if (floorEnemy) {
                 this.enemyChase.anchor.setTo(1, .5); //so it flips around its middle
                 //  this.enemyChase.scale.y = 1; //facing default direction
-                this.enemyChase.scale.y = -4.3; //flipped
+                this.enemyChase.scale.y = -4.0; //flipped
                 floorEnemy = false;
             } else {
                 //hero.anchor.setTo(1, .5); //so it flips around its middle
@@ -666,7 +666,7 @@
                 //hero.scale.y = 1; //flipped
                 this.enemyChase.anchor.setTo(1, .5); //so it flips around its middle
                 //this.enemyChase.scale.y = -1; //facing default direction
-                this.enemyChase.scale.y = 4.3; //flipped
+                this.enemyChase.scale.y = 4.0; //flipped
                 floorEnemy = true;
             }
         }
