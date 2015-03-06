@@ -599,6 +599,7 @@
         heroShootsEnemyChase(enemyChase, bullet) {
             //console.log(counterToKill);
             //if(bullet.body === undefined)
+            this.deathBurst(bullet);
             bullet.kill();
 
             //console.log("SHOT");
@@ -606,6 +607,8 @@
             if (counterToKill > 40) {
             
                 enemyChase.kill();
+                this.deathBurst(enemyChase);
+              
                 
                 this.game.state.start('GameWon', true, false);
             }

@@ -744,11 +744,13 @@ var GravityGuy;
         BossLevel.prototype.heroShootsEnemyChase = function (enemyChase, bullet) {
             //console.log(counterToKill);
             //if(bullet.body === undefined)
+            this.deathBurst(bullet);
             bullet.kill();
             //console.log("SHOT");
             counterToKill++;
             if (counterToKill > 40) {
                 enemyChase.kill();
+                this.deathBurst(enemyChase);
                 this.game.state.start('GameWon', true, false);
             }
         };
@@ -2206,7 +2208,7 @@ var GravityGuy;
         };
         MainMenu.prototype.startGame = function () {
             this.song.destroy();
-            this.game.state.start('Level2', true, false);
+            this.game.state.start('Level1', true, false);
         };
         return MainMenu;
     })(Phaser.State);
