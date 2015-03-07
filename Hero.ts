@@ -41,7 +41,8 @@
             } else {
                 game.time.events.loop(200, this.running, this);
                 this.sound_footstep = game.add.audio('footstep');
-                this.sound_landing = game.add.audio('footstep');
+                this.sound_footstep.volume = .30;
+                //this.sound_landing = game.add.audio('footstep');
 
                 this.animations.add('run_left', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 20);
                 this.animations.add('idle_left', [10, 11, 12], 0.3);
@@ -82,18 +83,14 @@
                 if (this.alive) {
 
                     /* For the purpose of knowing whether Hero is in air of on ground.*/
-                    if (this.in_air) {
-                        if (this.body.blocked.down || this.body.blocked.up) {
-                            this.in_air = false;
-                           // console.log("blocked");
-                            this.sound_landing.play();
-                        }
-                    } else {
-                        if (!this.body.blocked.down && !this.body.blocked.up) {
+                    if (this.in_air) 
+                        if (this.body.blocked.down || this.body.blocked.up)
+                            this.in_air = false;  
+                     else 
+                        if (!this.body.blocked.down && !this.body.blocked.up)
                             this.in_air = true;
-                          //  console.log("air");
-                        }
-                    }
+                        
+                    
 
                     this.body.velocity.y = 0;
                     this.body.velocity.x = 450;

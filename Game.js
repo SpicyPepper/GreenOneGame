@@ -1211,7 +1211,8 @@ var GravityGuy;
             else {
                 game.time.events.loop(200, this.running, this);
                 this.sound_footstep = game.add.audio('footstep');
-                this.sound_landing = game.add.audio('footstep');
+                this.sound_footstep.volume = .30;
+                //this.sound_landing = game.add.audio('footstep');
                 this.animations.add('run_left', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 20);
                 this.animations.add('idle_left', [10, 11, 12], 0.3);
                 this.animations.add('idle_straight', [13], 1);
@@ -1245,18 +1246,11 @@ var GravityGuy;
             else {
                 if (this.alive) {
                     /* For the purpose of knowing whether Hero is in air of on ground.*/
-                    if (this.in_air) {
-                        if (this.body.blocked.down || this.body.blocked.up) {
+                    if (this.in_air)
+                        if (this.body.blocked.down || this.body.blocked.up)
                             this.in_air = false;
-                            // console.log("blocked");
-                            this.sound_landing.play();
-                        }
-                    }
-                    else {
-                        if (!this.body.blocked.down && !this.body.blocked.up) {
+                        else if (!this.body.blocked.down && !this.body.blocked.up)
                             this.in_air = true;
-                        }
-                    }
                     this.body.velocity.y = 0;
                     this.body.velocity.x = 450;
                     if (offset === 0) {
@@ -1402,13 +1396,20 @@ var GravityGuy;
         };
         Level0.prototype.init_sounds = function () {
             this.music = this.add.audio('House');
+            this.music.volume = .95;
             this.sound_enemy_death = this.add.audio('enemy_death');
+            this.sound_enemy_death.volume = .80;
             //  this.sound_landing = this.add.audio('landing_sound');
             this.sound_hero_gravity = this.add.audio('hero_gravity');
+            this.sound_hero_gravity.volume = .60;
             this.sound_hero_death = this.add.audio('hero_death');
+            this.sound_hero_death.volume = .80;
             this.sound_hero_jump = this.add.audio('hero_jump');
+            this.sound_hero_jump.volume = .60;
             this.sound_hero_fire = this.add.audio('hero_fire');
+            this.sound_hero_fire.volume = .80;
             this.sound_enemy_shoot = this.add.audio('enemy_shoot');
+            this.sound_enemy_shoot.volume = .50;
             this.sound_hero_enemyChase_collision = this.add.audio('hero_enemyChase_collision');
             this.victoryMusic = this.add.audio('victory');
             this.music.play();
