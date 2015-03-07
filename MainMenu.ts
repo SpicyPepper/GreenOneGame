@@ -10,7 +10,7 @@
         preloadBar: Phaser.Sprite
 
         create() {
-
+            this.game.stage.backgroundColor = '#000000';
             this.song = this.add.audio('title_music');
             this.song.play();
 
