@@ -22,11 +22,6 @@
         preload() {
 
             this.game.load.spritesheet('pepper', 'visuals/spicy_pepper_sprite.png', 80, 120); 
-            //this.load.setPreloadSprite(this.preloadBar);
-            //this.loadAudio();
-            //this.loadMaps();
-            //this.loadSpritesheets();
-            //this.loadImages();
 
         }
 
@@ -45,6 +40,7 @@
             this.load.audio('footstep', ['audio/landing_sound.mp3', 'audio/landing_sound.ogg']);
             this.load.audio('game_won_song', ['audio/game_won_song.mp3', 'audio/game_won_song.ogg']);
             this.load.audio('enemy_death', ['audio/enemy_death.mp3', 'audio/enemy_death.ogg']);
+            this.load.audio('grav', ['audio/sound_enemies_grav.mp3', 'audio/sound_enemies_grav.ogg']);
 
             /*IMAGES*/
             this.load.image('explosion_small', 'visuals/explosion_small.png');
@@ -71,7 +67,7 @@
             this.load.spritesheet('hero', 'visuals/hero_sprite_full.png', 41, 49);
             this.load.spritesheet('enemyChase', 'visuals/mega_enemy_sprite.png', 50, 40);
             this.load.spritesheet('enemy1', 'visuals/enemy1.png', 68, 93);
-            this.load.spritesheet('alien', 'visuals/alien.png', 100, 200);
+            this.load.spritesheet('alien', 'visuals/alien.jpg', 100, 200);
 
             this.game.load.start();
         }

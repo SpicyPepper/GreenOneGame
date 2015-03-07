@@ -7,7 +7,6 @@
         title: Phaser.Sprite
         song: Phaser.Sound
         slam: Phaser.Sound
-        preloadBar: Phaser.Sprite
 
         create() {
             this.game.stage.backgroundColor = '#000000';

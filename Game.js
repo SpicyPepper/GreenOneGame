@@ -1,218 +1,4 @@
-/*var game = new Phaser.Game(800, 512, Phaser.CANVAS, 'greenone', { preload: preload, create: create, update: update, render: render });
-var map;
-var hero;
-var bullets;
-var bullet;
-var bulletTime = 0;
-var enemyChase;
-var cursors;
-var background;
-var layer;
-var gravityButton;
-var floor; // boolean for is character on the floor
-var floorEnemy;
-var first;
-var jumpLocation;
-var heroJumped = false;
-
-    function preload() {
-
-//        game.load.tilemap('level1', 'resources/level1.json', null, Phaser.Tilemap.TILED_JSON);
-        game.load.tilemap('level2', 'resources/level2.json', null, Phaser.Tilemap.TILED_JSON);
-        game.load.image('tiles-1', 'resources/tiles-1.png');
-        game.load.image('bullet', 'visuals/laser.png');
-        game.load.image('background', 'visuals/bkgrnd_sand.png');
-        game.load.spritesheet('hero', 'visuals/test_runner.png', 138, 115);
-        game.load.spritesheet('enemyChase', 'visuals/megaenemy.png', 56.66, 60);
-//        game.load.audio('DnB', ['audio/Title_DnB.mp3', 'audio/Title_DnB.ogg']);
-        game.load.audio('House', ['audio/Title_TechHouse.mp3', 'audio/Title_TechHouse.ogg']);
-    }
-    
-    var music;
-    function create() {
-        
-        game.physics.startSystem(Phaser.Physics.ARCADE);
-        game.world.setBounds(0, 0, 2000, 512);
-       
-         //MUSIC :D
-        music = game.add.audio('House');
-        music.play();
-        
-        //SCROLLING BACKGROUND :D
-        background = game.add.tileSprite(0, 0, 1024, 512, 'background');
-        background.fixedToCamera = true;
-        
-        //LEVEL :D
-        map = game.add.tilemap('level2');
-        //set collision
-        map.addTilesetImage('tiles-1');
-
-        map.setCollisionByExclusion([]);
-
-        layer = map.createLayer('Tile Layer 1');
-        //layer.debug = true;
-
-        layer.resizeWorld();
-
-        game.physics.arcade.gravity.y = 0;
-        
-        bullets = game.add.group();
-        bullets.enableBody = true;
-        bullets.physicsBodyType = Phaser.Physics.ARCADE;
-        bullets.createMultiple(30, 'bullet');
-        bullets.setAll('anchor.x', 1);
-        bullets.setAll('anchor.y', 0);
-        bullets.setAll('outOfBoundsKill', true);
-        bullets.setAll('checkWorldBounds', true);
-
-        first = true;
-
-        //Phaser.Physics.Arcade.collideSpriteVsTilemapLayer(hero,
-        //hero sprite
-        hero = game.add.sprite(150, 300, 'hero'); // Start location
-        
-        enemyChase = game.add.sprite(0, 300, 'enemyChase'); // Start location
-
-        floor = true;
-        floorEnemy = true;
-        hero.animations.add('run');
-        hero.animations.play('run', 10, true);
-        game.physics.enable(hero, Phaser.Physics.ARCADE);
-        hero.body.bounce.y = 0.2;
-        hero.body.collideWorldBounds = true;
-        game.camera.follow(hero);
-        hero.body.allowRotation = true;
-
-        enemyChase.animations.add('run');
-        enemyChase.animations.play('run', 10, true);
-        game.physics.enable(enemyChase, Phaser.Physics.ARCADE);
-        enemyChase.body.bounce.y = 0.2;
-        enemyChase.body.collideWorldBounds = true;
-        enemyChase.body.allowRotation = true;
-        hero.body.gravity.y = 18000;
-        enemyChase.body.gravity.y = 18000;
-
-        cursors = game.input.keyboard.createCursorKeys();
-        gravityButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-    }
-
-    function update() {
-        //console.log("HERO " + hero.body.x);
-        //console.log("Enemy " + enemyChase.body.x);
-        game.physics.arcade.collide(hero, layer);
-        game.physics.arcade.collide(enemyChase, layer);
-        background.tilePosition.x -= 2;
-        hero.body.velocity.y = 0;
-        hero.body.velocity.x = 400;
-        //enemyChase.body.x = hero.body.x - 150;
-        enemyChase.body.velocity.x = 400;
-        enemyChase.body.velocity.y = 0;
-
-        //if (gravityButton.isDown) {
-        if (gravityButton.isDown && hero.body.blocked.down || gravityButton.isDown && hero.body.blocked.up) {
-            flipHero();
-            heroJumped = true;
-            jumpLocation = hero.body.x;
-            hero.body.gravity.y = hero.body.gravity.y * -1;
-            //game.physics.arcade.gravity.y = game.physics.arcade.gravity.y * -1;
-            first = false;
-        }
-
-        if (enemyChase.body.x >= jumpLocation && heroJumped && (enemyChase.body.blocked.down || enemyChase.body.blocked.up )){
-            if (floorEnemy != floor) {
-                flipEnemy();
-                enemyChase.body.gravity.y = enemyChase.body.gravity.y * -1;
-            }
-            heroJumped = false;
-        }
-
-        if (enemyChase.body.x <= hero.body.x - 300) {
-            enemyChase.body.x = hero.body.x - 100;
-        }
-
-        if (cursors.right.isDown) {
-            fireBullet();
-        }
-    }
-
-    function flipHero() {
-        if (floor) {
-            hero.anchor.setTo(1, .5); //so it flips around its middle
-            hero.scale.y = 1; //facing default direction
-            hero.scale.y = -1; //flipped
-            //enemyChase.anchor.setTo(1, .5); //so it flips around its middle
-            //enemyChase.scale.y = 1; //facing default direction
-            //enemyChase.scale.y = -1; //flipped
-            floor = false;
-        } else {
-            hero.anchor.setTo(1, .5); //so it flips around its middle
-            hero.scale.y = -1; //facing default direction
-            hero.scale.y = 1; //flipped
-            //enemyChase.anchor.setTo(1, .5); //so it flips around its middle
-            //enemyChase.scale.y = -1; //facing default direction
-            //enemyChase.scale.y = 1; //flipped
-            floor = true;
-        }
-    }
-
-function flipEnemy() {
-    if (floorEnemy) {
-        //hero.anchor.setTo(1, .5); //so it flips around its middle
-        //hero.scale.y = 1; //facing default direction
-        //hero.scale.y = -1; //flipped
-        enemyChase.anchor.setTo(1, .5); //so it flips around its middle
-        enemyChase.scale.y = 1; //facing default direction
-        enemyChase.scale.y = -1; //flipped
-        floorEnemy = false;
-    } else {
-        //hero.anchor.setTo(1, .5); //so it flips around its middle
-        //hero.scale.y = -1; //facing default direction
-        //hero.scale.y = 1; //flipped
-        enemyChase.anchor.setTo(1, .5); //so it flips around its middle
-        enemyChase.scale.y = -1; //facing default direction
-        enemyChase.scale.y = 1; //flipped
-        floorEnemy = true;
-    }
-    }
-
-    function fireBullet() {
-
-        //  To avoid them being allowed to fire too fast we set a time limit
-        if (game.time.now > bulletTime) {
-            //  Grab the first bullet we can from the pool
-            bullet = bullets.getFirstExists(false);
-
-            if (bullet) {
-                if (floor) {
-                    if (first) {
-                        //  And fire it
-                        bullet.reset(hero.x + 170, hero.y + 30);
-                        bullet.body.velocity.x = 10000;
-                        bulletTime = game.time.now + 200;
-                    } else {
-                        bullet.reset(hero.x + 30, hero.y - 30);
-                        bullet.body.velocity.x = 10000;
-                        bulletTime = game.time.now + 200;
-                    }
-                } else {
-                    bullet.reset(hero.x + 30, hero.y + 5);
-                    bullet.body.velocity.x = 10000;
-                    bulletTime = game.time.now + 200;
-                }
-            }
-        }
-    }
-
-    function resetBullet(bullet) {
-
-        //  Called if the bullet goes out of the screen
-        bullet.kill();
-    }
-
-    function render() {
-       // game.debug.cameraInfo(game.camera, 500, 32);//164
-       // game.debug.spriteCoords(hero, 32, 32);
-    }*/
+/* lol */
 window.onload = function () {
     var game = new GravityGuy.Game();
 };
@@ -229,19 +15,11 @@ var GravityGuy;
         function Boot() {
             _super.apply(this, arguments);
         }
-        Boot.prototype.preload = function () {
-            this.load.image('preloadBar', 'visuals/loadbar.png');
-        };
         Boot.prototype.create = function () {
-            //  Unless you specifically need to support multitouch I would recommend setting this to 1
             this.input.maxPointers = 1;
-            //  Phaser will automatically pause if the browser tab the game is in loses focus. You can disable that here:
             this.stage.disableVisibilityChange = true;
             if (this.game.device.desktop) {
-                //  If you have any desktop specific settings, they can go in here
                 this.game.scale.pageAlignHorizontally = true;
-            }
-            else {
             }
             this.game.state.start('Preloader', true, false);
         };
@@ -960,10 +738,15 @@ var GravityGuy;
     var move;
     var Enemy = (function (_super) {
         __extends(Enemy, _super);
-        function Enemy(game, x, y) {
+        function Enemy(game, lvl, player, x, y) {
             _super.call(this, game, x, y, 'enemy1', 0);
+            this.cooldown = false;
             this.game.physics.arcade.enableBody(this);
             this.game.add.existing(this);
+            this.hero = player;
+            this.level = lvl;
+            this.my_velocity = -40;
+            this.scale.setTo(lvl.enemy_scale, lvl.enemy_scale);
             this.animations.add('walk');
             this.animations.play('walk', 4, true);
             this.game.physics.enable(this, Phaser.Physics.ARCADE);
@@ -975,7 +758,29 @@ var GravityGuy;
         }
         Enemy.prototype.update = function () {
             this.body.velocity.y = 0;
-            this.body.velocity.x = -40;
+            if (!this.cooldown && this.body.x - this.hero.body.x <= 400 && this.alive) {
+                this.body.velocity.x = this.my_velocity;
+                if (this.body.gravity.y > 0) {
+                    if (this.hero.body.gravity.y < 0) {
+                        this.flipEntity();
+                    }
+                }
+                else if (this.hero.body.gravity.y > 0) {
+                    this.flipEntity();
+                }
+            }
+        };
+        Enemy.prototype.cooledDown = function () {
+            this.cooldown = false;
+        };
+        Enemy.prototype.flipEntity = function () {
+            console.log("hero: " + this.hero.body.x.toFixed(0) + ", " + this.hero.body.y.toFixed(0) + " enemy: " + this.body.x.toFixed(0) + ", " + this.body.y.toFixed(0));
+            this.cooldown = true;
+            this.game.time.events.add(Phaser.Timer.QUARTER, this.cooledDown, this);
+            this.level.sound_grav.play();
+            this.body.gravity.y *= -1;
+            this.anchor.setTo(1, .5);
+            this.scale.y *= -1;
         };
         return Enemy;
     })(Phaser.Sprite);
@@ -1326,7 +1131,6 @@ var GravityGuy;
     var floorOtherEnemy;
     var hero_scale;
     var enemyChase_scale = 4;
-    var enemy_scale = 0.8;
     var explode_emit;
     var dust_cloud_emit;
     var levelComplete;
@@ -1356,6 +1160,7 @@ var GravityGuy;
             /*Working on key binding*/
             keyboard_grav = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
             keyboard_grav.onDown.add(this.attemptGravitySwap, this);
+            this.enemy_scale = 0.8;
             respawnButton = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
             /* If escape is pressed, game ends */
             escapeKey = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
@@ -1408,6 +1213,8 @@ var GravityGuy;
             this.sound_hero_jump.volume = .60;
             this.sound_hero_fire = this.add.audio('hero_fire');
             this.sound_hero_fire.volume = .80;
+            this.sound_grav = this.add.audio('grav');
+            this.sound_grav.volume = .70;
             this.sound_enemy_shoot = this.add.audio('enemy_shoot');
             this.sound_enemy_shoot.volume = .50;
             this.sound_hero_enemyChase_collision = this.add.audio('hero_enemyChase_collision');
@@ -1427,7 +1234,6 @@ var GravityGuy;
             firstTimeGameOver = true;
             floor = true;
             floorEnemy = true;
-            floorOtherEnemy = true;
             enemies;
             enemiesTotal;
             enemiesDead;
@@ -1446,7 +1252,7 @@ var GravityGuy;
             numLives = 3;
             heroJumped = false;
             enemyJump = false;
-            totalBullets = 50;
+            totalBullets = 35;
         };
         Level0.prototype.init_bullets = function () {
             this.bullets = this.game.add.group();
@@ -1475,9 +1281,7 @@ var GravityGuy;
         Level0.prototype.createEnemies = function () {
             enemies = [];
             for (var i = 0; i < enemiesTotal; i++) {
-                var anotherEnemy = new GravityGuy.Enemy(this.game, enemyLocationsX[i], enemyLocationsY[i]);
-                anotherEnemy.scale.setTo(enemy_scale, enemy_scale);
-                this.physics.arcade.enableBody(anotherEnemy);
+                var anotherEnemy = new GravityGuy.Enemy(this.game, this, this.hero, enemyLocationsX[i], enemyLocationsY[i]);
                 enemies.push(anotherEnemy);
             }
         };
@@ -1559,15 +1363,7 @@ var GravityGuy;
                         break;
                     }
                 }
-                for (var j = enemiesDead; j < enemies.length; j++) {
-                    if (enemies[j].alive && enemies[j].x - this.hero.x <= 400 && enemies[j].y - this.hero.y > 25) {
-                        if (enemyJump && (enemies[j].body.blocked.down || enemies[j].body.blocked.up)) {
-                            this.flipOtherEnemy(enemies[j]);
-                            enemies[j].body.gravity.y = enemies[j].body.gravity.y * -1;
-                            enemyJump = false;
-                        }
-                    }
-                }
+                //END NEW
                 if (this.enemyChase.body.x <= this.hero.body.x - 300) {
                     this.enemyChase.body.x = this.hero.body.x - 100;
                 }
@@ -1579,6 +1375,7 @@ var GravityGuy;
                         enemyBulletWait++;
                         if (enemyBulletWait % 75 == 0) {
                             this.fireEnemyBullet(enemies[j]);
+                            enemyBulletWait = 0;
                         }
                     }
                     if (enemies[j].x < this.hero.x) {
@@ -1590,6 +1387,10 @@ var GravityGuy;
             else {
                 if (!this.enemyChase.blocked_after_end && (this.enemyChase.body.blocked.right || this.enemyChase.body.blocked.down)) {
                     this.enemyChase.blocked_after_end = true;
+                    for (var i = 0; i < enemies.length; i++) {
+                        enemies[i].animations.stop();
+                        enemies[i].my_velocity = 0;
+                    }
                     this.enemyChase.play('idle', 4, true);
                     this.enemyChase.body.velocity.x = 0;
                 }
@@ -1624,7 +1425,7 @@ var GravityGuy;
                     //    console.log("hi " + i);
                     //}
                     // enemies.
-                    totalBullets = 50;
+                    totalBullets = 35;
                     for (var i = 0; i < enemyBulletsFired; i++) {
                         enemyBulletList[i].kill();
                     }
@@ -1840,23 +1641,29 @@ var GravityGuy;
                 floorEnemy = true;
             }
         };
-        Level0.prototype.flipOtherEnemy = function (otherEnemy) {
-            this.sound_hero_gravity.play();
-            if (floorOtherEnemy) {
-                otherEnemy.anchor.setTo(1, .5); //so it flips around its middle
-                //  this.enemyChase.scale.y = 1; //facing default direction
-                otherEnemy.scale.y = -enemy_scale; //flipped
-            }
-            else {
-                //hero.anchor.setTo(1, .5); //so it flips around its middle
-                //hero.scale.y = -1; //facing default direction
-                //hero.scale.y = 1; //flipped
-                otherEnemy.anchor.setTo(1, .5); //so it flips around its middle
-                //this.enemyChase.scale.y = -1; //facing default direction
-                otherEnemy.scale.y = enemy_scale; //flipped
-            }
-            floorOtherEnemy = !floorOtherEnemy;
+        Level0.prototype.flipEntity = function (entity) {
+            console.log("HERYO");
+            this.sound_grav.play();
+            entity.body.gravity.y *= -1;
+            entity.anchor.setTo(1, .5);
+            entity.scale.y *= -1;
         };
+        //flipOtherEnemy(otherEnemy) {
+        //    this.sound_hero_gravity.play();
+        //    if (floorOtherEnemy) {
+        //        otherEnemy.anchor.setTo(1, .5); //so it flips around its middle
+        //        //  this.enemyChase.scale.y = 1; //facing default direction
+        //        otherEnemy.scale.y = -enemy_scale; //flipped
+        //    } else {
+        //        //hero.anchor.setTo(1, .5); //so it flips around its middle
+        //        //hero.scale.y = -1; //facing default direction
+        //        //hero.scale.y = 1; //flipped
+        //        otherEnemy.anchor.setTo(1, .5); //so it flips around its middle
+        //        //this.enemyChase.scale.y = -1; //facing default direction
+        //        otherEnemy.scale.y = enemy_scale; //flipped
+        //    }
+        //    floorOtherEnemy = !floorOtherEnemy;
+        //}
         Level0.prototype.fireBullet = function () {
             //  To avoid them being allowed to fire too fast we set a time limit
             if (totalBullets > 0 && !levelComplete && this.game.time.now > bulletTime) {
@@ -2017,10 +1824,10 @@ var GravityGuy;
             layer = this.map.createLayer('layer_1');
             layer.resizeWorld();
             _super.prototype.setLayer.call(this, layer);
-            enemiesTotal = 10;
+            enemiesTotal = 18;
             _super.prototype.setEnemiesTotal.call(this, enemiesTotal);
-            enemyLocationsX = [this.game.rnd.integerInRange(450, 815), this.game.rnd.integerInRange(1215, 1840), this.game.rnd.integerInRange(3519, 3729), this.game.rnd.integerInRange(8369, 8752), this.game.rnd.integerInRange(11600, 12100), this.game.rnd.integerInRange(12101, 12600), this.game.rnd.integerInRange(12601, 13100), this.game.rnd.integerInRange(13101, 13965), this.game.rnd.integerInRange(15700, 16150), this.game.rnd.integerInRange(16151, 16560)];
-            enemyLocationsY = [373, 373, 373, 32, 192, 192, 192, 192, 208, 208];
+            enemyLocationsX = [this.game.rnd.integerInRange(450, 815), this.game.rnd.integerInRange(1215, 1840), this.game.rnd.integerInRange(3519, 3729), this.game.rnd.integerInRange(8369, 8752), this.game.rnd.integerInRange(11600, 12100), this.game.rnd.integerInRange(12101, 12600), this.game.rnd.integerInRange(12601, 13100), this.game.rnd.integerInRange(13101, 13965), this.game.rnd.integerInRange(15700, 16150), this.game.rnd.integerInRange(16151, 16560), this.game.rnd.integerInRange(13443, 13743), this.game.rnd.integerInRange(13959, 14259), this.game.rnd.integerInRange(13193, 13698), this.game.rnd.integerInRange(14727, 15027), this.game.rnd.integerInRange(15220, 15880), this.game.rnd.integerInRange(16000, 16320), this.game.rnd.integerInRange(16800, 16950), this.game.rnd.integerInRange(16600, 16800)];
+            enemyLocationsY = [373, 373, 373, 32, 192, 192, 192, 192, 208, 208, 125, 125, 125, 125, 125, 125, 125, 125];
             _super.prototype.setEnemyLocations.call(this, enemyLocationsX, enemyLocationsY);
             _super.prototype.createEnemies.call(this);
             var spaceship = this.game.add.sprite(17080, 245, 'spaceship');
@@ -2060,117 +1867,33 @@ var GravityGuy;
             _super.prototype.setBackground.call(this, this.background);
             _super.prototype.create.call(this);
             _super.prototype.setLevel.call(this, 2);
-            //LEVEL :D
             this.map = this.add.tilemap('joels_level');
-            //  this.map = this.add.tilemap('joels_level'); //### HERE IS TEST MAP. SWAP TO PLAY SHITTY LEVEL. PLEASE SOMEONE MAKE A DIFFERENT ONE.
             this.map.addTilesetImage('tileset_1');
             this.map.setCollisionByExclusion([]);
-            //    layer = this.map.createLayer('layer_1');
             layer = this.map.createLayer('layer_1');
             layer.resizeWorld();
             _super.prototype.setLayer.call(this, layer);
-            enemiesTotal = 2;
+            enemiesTotal = 23;
             _super.prototype.setEnemiesTotal.call(this, enemiesTotal);
-            //************WRONG CORDINATES THIS IS FOR LEVEL1**************
-            enemyLocationsX = [this.game.rnd.integerInRange(500, 1214), this.game.rnd.integerInRange(1570, 1920), this.game.rnd.integerInRange(2000, 2400), this.game.rnd.integerInRange(6990, 7085)];
-            enemyLocationsY = [360, 145, 75, 300];
+            enemyLocationsX = [this.game.rnd.integerInRange(500, 1214), this.game.rnd.integerInRange(1570, 1920), this.game.rnd.integerInRange(2000, 2400), this.game.rnd.integerInRange(6990, 7085), 8246, 8611, 8944, 9366, 9895, 10286, 11136, 11100, 11000, 12074, 12579, 13670, 13790, 5191, 5299, 5005, 6011, 6196, 6860];
+            enemyLocationsY = [360, 145, 75, 300, 200, 200, 200, 200, 200, 200, 200, 200, 200, 100, 250, 250, 250, 123, 335, 355, 135, 335, 130];
             _super.prototype.setEnemyLocations.call(this, enemyLocationsX, enemyLocationsY);
             _super.prototype.createEnemies.call(this);
-            //************************************************************************************
-            //Commented out. This is Level 2 spawn Enemies. Change to they way we do it for level1
-            //*****************************************************************************************
-            /*
-            for (var i = 0; i < enemiesTotal; i++) {
-                console.log("created");
-                if (i == 0) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(450, 815), 373);
-                } else if (i == 1) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(1215, 1840), 373);
-                } else if (i == 2) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(3119, 3518), 129);
-                } else if (i == 3) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(3519, 3729), 373);
-                } else if (i == 4) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(3730, 4047), 208);
-                } else if (i == 5) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(6447, 7000), 192);
-                } else if (i == 6) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(7001, 7790), 192);
-                } else if (i == 7) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(7791, 8368), 96);
-                } else if (i == 8) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(8369, 8752), 34);
-                } else if (i == 9) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(11600, 12100), 192);
-                } else if (i == 10) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(12101, 12600), 192);
-                } else if (i == 11) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(12601, 13100), 192);
-                } else if (i == 12) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(13101, 13965), 192);
-                } else if (i == 13) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(15700, 16150), 208);
-                } else if (i == 14) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(16151, 16560), 208);
-                }
-                anotherEnemy.scale.setTo(enemy_scale, enemy_scale);
-                this.physics.arcade.enableBody(anotherEnemy);
-                enemies.push(anotherEnemy);
-                //    console.log('enemy created at ' + newEnemyX);
-            }*/
             var spaceship = this.game.add.sprite(13870, 195, 'spaceship');
             levelComplete = false;
         };
         Level2.prototype.update = function () {
-            if (!levelComplete && this.hero.x >= 13870) {
+            if (!levelComplete && this.hero.x >= 13900) {
                 _super.prototype.levelComplete.call(this);
                 this.input.onDown.addOnce(this.fadeOut, this);
                 levelComplete = true;
             }
             _super.prototype.update.call(this);
-            //************************************************************************************
-            //Commented out. This is Level 2 spawn Enemies. Change to they way we do it for level1
-            //*****************************************************************************************
-            /*for (var i = 0; i < enemiesTotal; i++) {
-                if (i == 0) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(450, 815), 373);
-                } else if (i == 1) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(1215, 1840), 373);
-                } else if (i == 2) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(3119, 3518), 129);
-                } else if (i == 3) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(3519, 3729), 373);
-                } else if (i == 4) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(3730, 4047), 208);
-                } else if (i == 5) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(6447, 7000), 192);
-                } else if (i == 6) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(7001, 7790), 192);
-                } else if (i == 7) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(7791, 8368), 96);
-                } else if (i == 8) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(8369, 8752), 34);
-                } else if (i == 9) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(11600, 12100), 192);
-                } else if (i == 10) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(12101, 12600), 192);
-                } else if (i == 11) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(12601, 13100), 192);
-                } else if (i == 12) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(13101, 13965), 192);
-                } else if (i == 13) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(15700, 16150), 208);
-                } else if (i == 14) {
-                    var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(16151, 16560), 208);
-                }
-                anotherEnemy.scale.setTo(enemy_scale, enemy_scale);
-                this.physics.arcade.enableBody(anotherEnemy);
-                enemies.push(anotherEnemy);
-            }*/
         };
         Level2.prototype.fadeOut = function () {
             this.victoryMusic.stop();
-            this.game.state.start('BossLevel', true, false);
+            //  this.game.state.start('BossLevel', true, false);
+            this.game.state.start('GameWon', true, false);
         };
         return Level2;
     })(GravityGuy.Level0);
@@ -2240,11 +1963,6 @@ var GravityGuy;
         };
         Preloader.prototype.preload = function () {
             this.game.load.spritesheet('pepper', 'visuals/spicy_pepper_sprite.png', 80, 120);
-            //this.load.setPreloadSprite(this.preloadBar);
-            //this.loadAudio();
-            //this.loadMaps();
-            //this.loadSpritesheets();
-            //this.loadImages();
         };
         Preloader.prototype.loadAll = function () {
             /*AUDIO*/
@@ -2261,6 +1979,7 @@ var GravityGuy;
             this.load.audio('footstep', ['audio/landing_sound.mp3', 'audio/landing_sound.ogg']);
             this.load.audio('game_won_song', ['audio/game_won_song.mp3', 'audio/game_won_song.ogg']);
             this.load.audio('enemy_death', ['audio/enemy_death.mp3', 'audio/enemy_death.ogg']);
+            this.load.audio('grav', ['audio/sound_enemies_grav.mp3', 'audio/sound_enemies_grav.ogg']);
             /*IMAGES*/
             this.load.image('explosion_small', 'visuals/explosion_small.png');
             this.load.image('dust_cloud', 'visuals/dust_cloud.png');
@@ -2283,7 +2002,7 @@ var GravityGuy;
             this.load.spritesheet('hero', 'visuals/hero_sprite_full.png', 41, 49);
             this.load.spritesheet('enemyChase', 'visuals/mega_enemy_sprite.png', 50, 40);
             this.load.spritesheet('enemy1', 'visuals/enemy1.png', 68, 93);
-            this.load.spritesheet('alien', 'visuals/alien.png', 100, 200);
+            this.load.spritesheet('alien', 'visuals/alien.jpg', 100, 200);
             this.game.load.start();
         };
         Preloader.prototype.loadStart = function () {

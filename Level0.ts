@@ -35,7 +35,7 @@
     var floorOtherEnemy;
     var hero_scale;
     var enemyChase_scale = 4;
-    var enemy_scale = 0.8;
+    
     var explode_emit;
     var dust_cloud_emit;
     var levelComplete;
@@ -62,6 +62,7 @@
         map: Phaser.Tilemap
 
         music: Phaser.Sound
+        sound_grav: Phaser.Sound
         sound_enemy_death: Phaser.Sound
         sound_hero_death: Phaser.Sound
         sound_hero_jump: Phaser.Sound
@@ -79,7 +80,7 @@
         hero: GravityGuy.Hero
         enemyChase: GravityGuy.enemyChase
         enemy: GravityGuy.Enemy
-
+        enemy_scale;
         create() {
             //FPS 
             this.game.time.advancedTiming = true;
@@ -88,6 +89,7 @@
             keyboard_grav = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
             keyboard_grav.onDown.add(this.attemptGravitySwap, this);
 
+            this.enemy_scale = 0.8;
             respawnButton = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
 
             /* If escape is pressed, game ends */
@@ -169,6 +171,8 @@
             this.sound_hero_jump.volume = .60;
             this.sound_hero_fire = this.add.audio('hero_fire');
             this.sound_hero_fire.volume = .80;
+            this.sound_grav = this.add.audio('grav');
+            this.sound_grav.volume = .70;
             this.sound_enemy_shoot = this.add.audio('enemy_shoot');
             this.sound_enemy_shoot.volume = .50;
             this.sound_hero_enemyChase_collision = this.add.audio('hero_enemyChase_collision');
@@ -190,7 +194,7 @@
             firstTimeGameOver = true;
             floor = true;
             floorEnemy = true;
-            floorOtherEnemy = true;   
+          
             enemies;
             enemiesTotal;
             enemiesDead;
@@ -209,7 +213,7 @@
             numLives = 3;
             heroJumped = false;
             enemyJump = false;
-            totalBullets = 50;
+            totalBullets = 35;
         }
 
         init_bullets() {
@@ -244,9 +248,7 @@
         createEnemies() {
             enemies = [];
             for (var i = 0; i < enemiesTotal; i++) {
-                var anotherEnemy = new Enemy(this.game, enemyLocationsX[i], enemyLocationsY[i]);
-                anotherEnemy.scale.setTo(enemy_scale, enemy_scale);
-                this.physics.arcade.enableBody(anotherEnemy);
+                var anotherEnemy = new Enemy(this.game, this, this.hero, enemyLocationsX[i], enemyLocationsY[i]);
                 enemies.push(anotherEnemy);
             }
         }
@@ -339,15 +341,7 @@
                     }
                 }
                 //END NEW
-                for (var j = enemiesDead; j < enemies.length; j++) {
-                    if (enemies[j].alive && enemies[j].x - this.hero.x <= 400 && enemies[j].y - this.hero.y > 25) {
-                        if (enemyJump && (enemies[j].body.blocked.down || enemies[j].body.blocked.up)) {
-                            this.flipOtherEnemy(enemies[j]);
-                            enemies[j].body.gravity.y = enemies[j].body.gravity.y * -1;
-                            enemyJump = false;
-                        }
-                    }
-                }
+
                 if (this.enemyChase.body.x <= this.hero.body.x - 300) {
                     this.enemyChase.body.x = this.hero.body.x - 100;
                 }
@@ -355,11 +349,13 @@
                 if (cursors.right.isDown) {
                     this.fireBullet();
                 }
+
                 for (var j = enemiesDead; j < enemies.length; j++) {
                     if (enemies[j].alive && enemies[j].x - this.hero.x <= 575) {
                         enemyBulletWait++;
                         if (enemyBulletWait % 75 == 0) {
                             this.fireEnemyBullet(enemies[j]);
+                            enemyBulletWait = 0;
                         }
                     }
                     if (enemies[j].x < this.hero.x) {
@@ -370,7 +366,11 @@
             } else { // HERO DEAD
                 if (!this.enemyChase.blocked_after_end && (this.enemyChase.body.blocked.right || this.enemyChase.body.blocked.down)) {
                     this.enemyChase.blocked_after_end = true;
-
+                    for (var i = 0; i < enemies.length; i++) {
+                        enemies[i].animations.stop();
+                        enemies[i].my_velocity = 0;
+                        
+                    }
                     this.enemyChase.play('idle', 4, true);
                     this.enemyChase.body.velocity.x = 0;
                 }
@@ -408,7 +408,7 @@
                     //    console.log("hi " + i);
                     //}
                     // enemies.
-                    totalBullets = 50;
+                    totalBullets = 35;
 
                     for (var i = 0; i < enemyBulletsFired; i++) {
                         enemyBulletList[i].kill();
@@ -420,46 +420,7 @@
                     //this.enemyChase.body.gravity.y = 18000;
                     this.removeEnemies();
                     this.createEnemies();
-                    //for (var i = 0; i < enemiesTotal; i++) {
-                    //   /* THE PROBLEM COMES F*/
-                    //    if (i === 0) {
-                    //        enemies[i].reset((this.game.rnd.integerInRange(450, 815), 373);
-                    //    if (i == 0) {
-                    //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(450, 815), 373);
-                    //    } else if (i == 1) {
-                    //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(1215, 1840), 373);
-                    //    } else if (i == 2) {
-                    //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(3119, 3518), 129);
-                    //    } else if (i == 3) {
-                    //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(3519, 3729), 373);
-                    //    } else if (i == 4) {
-                    //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(3730, 4047), 208);
-                    //    } else if (i == 5) {
-                    //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(6447, 7000), 192);
-                    //    } else if (i == 6) {
-                    //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(7001, 7790), 192);
-                    //    } else if (i == 7) {
-                    //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(7791, 8368), 96);
-                    //    } else if (i == 8) {
-                    //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(8369, 8752), 34);
-                    //    } else if (i == 9) {
-                    //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(11600, 12100), 192);
-                    //    } else if (i == 10) {
-                    //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(12101, 12600), 192);
-                    //    } else if (i == 11) {
-                    //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(12601, 13100), 192);
-                    //    } else if (i == 12) {
-                    //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(13101, 13965), 192);
-                    //    } else if (i == 13) {
-                    //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(15700, 16150), 208);
-                    //    } else if (i == 14) {
-                    //        var anotherEnemy = new Enemy(this.game, this.game.rnd.integerInRange(16151, 16560), 208);
-                    //    }
-                    //    anotherEnemy.scale.setTo(enemy_scale, enemy_scale);
-                    //    this.physics.arcade.enableBody(anotherEnemy);
-                    //    enemies.push(anotherEnemy);
-                    //    //    console.log('enemy created at ' + newEnemyX);
-                    //}
+                    
                     //for (var i = 0; i < this.enemyBullets.length; i++) {
                     //   if (this.enemyBullets[i] != undefined )
                     //        this.enemyBullets[i].kill();
@@ -708,22 +669,30 @@
             }
         }
 
-        flipOtherEnemy(otherEnemy) {
-            this.sound_hero_gravity.play();
-            if (floorOtherEnemy) {
-                otherEnemy.anchor.setTo(1, .5); //so it flips around its middle
-                //  this.enemyChase.scale.y = 1; //facing default direction
-                otherEnemy.scale.y = -enemy_scale; //flipped
-            } else {
-                //hero.anchor.setTo(1, .5); //so it flips around its middle
-                //hero.scale.y = -1; //facing default direction
-                //hero.scale.y = 1; //flipped
-                otherEnemy.anchor.setTo(1, .5); //so it flips around its middle
-                //this.enemyChase.scale.y = -1; //facing default direction
-                otherEnemy.scale.y = enemy_scale; //flipped
-            }
-            floorOtherEnemy = !floorOtherEnemy;
+        flipEntity(entity) {
+            console.log("HERYO");
+            this.sound_grav.play();
+            entity.body.gravity.y *= -1;
+            entity.anchor.setTo(1, .5);
+            entity.scale.y *= -1;
         }
+
+        //flipOtherEnemy(otherEnemy) {
+        //    this.sound_hero_gravity.play();
+        //    if (floorOtherEnemy) {
+        //        otherEnemy.anchor.setTo(1, .5); //so it flips around its middle
+        //        //  this.enemyChase.scale.y = 1; //facing default direction
+        //        otherEnemy.scale.y = -enemy_scale; //flipped
+        //    } else {
+        //        //hero.anchor.setTo(1, .5); //so it flips around its middle
+        //        //hero.scale.y = -1; //facing default direction
+        //        //hero.scale.y = 1; //flipped
+        //        otherEnemy.anchor.setTo(1, .5); //so it flips around its middle
+        //        //this.enemyChase.scale.y = -1; //facing default direction
+        //        otherEnemy.scale.y = enemy_scale; //flipped
+        //    }
+        //    floorOtherEnemy = !floorOtherEnemy;
+        //}
 
         fireBullet() {
             //  To avoid them being allowed to fire too fast we set a time limit
