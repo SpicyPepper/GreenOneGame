@@ -52,7 +52,7 @@
             this.cooldown = false;
         }
         flipEntity() {
-            console.log("hero: " + this.hero.body.x.toFixed(0) + ", " + this.hero.body.y.toFixed(0) + " enemy: " + this.body.x.toFixed(0) + ", " + this.body.y.toFixed(0)); 
+        //    console.log("hero: " + this.hero.body.x.toFixed(0) + ", " + this.hero.body.y.toFixed(0) + " enemy: " + this.body.x.toFixed(0) + ", " + this.body.y.toFixed(0)); 
             this.cooldown = true;
             this.game.time.events.add(Phaser.Timer.QUARTER, this.cooledDown, this);
             this.level.sound_grav.play();
