@@ -53,7 +53,6 @@
                 levelComplete = true;
             }
             super.update();
-            
         }
 
         fadeOut() {

@@ -64,6 +64,7 @@
         music: Phaser.Sound
         sound_grav: Phaser.Sound
         sound_enemy_death: Phaser.Sound
+        sound_collision: Phaser.Sound
         sound_hero_death: Phaser.Sound
         sound_hero_jump: Phaser.Sound
         sound_hero_gravity: Phaser.Sound
@@ -167,6 +168,8 @@
             this.sound_hero_gravity.volume = .60;
             this.sound_hero_death = this.add.audio('hero_death');
             this.sound_hero_death.volume = .80;
+            this.sound_collision = this.add.audio('collision');
+            this.sound_collision.volume = .60;
             this.sound_hero_jump = this.add.audio('hero_jump');
             this.sound_hero_jump.volume = .60;
             this.sound_hero_fire = this.add.audio('hero_fire');
@@ -511,7 +514,7 @@
 
         /* Case where Megaman Catches up with Hero, death ensues */
         heroEnemyChaseCollide(hero, enemyChase) {
-
+            this.sound_collision.play();
             this.sound_hero_enemyChase_collision.play();
             this.deathBurst(hero);
             this.deathBurst(enemyChase);
@@ -525,7 +528,6 @@
                 numLives -= 1;
                 this.endRound();
             }
-
         }
 
         collideEverything() {
@@ -574,6 +576,7 @@
 
         /* This function is to kill hero when collide with megaman*/
         enemyCollidesHero(enemyChase, hero) {
+            this.sound_collision.play();
             this.deathBurst(hero);
             this.sound_hero_death.play();
             hero.kill();

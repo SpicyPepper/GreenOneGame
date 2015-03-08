@@ -24,7 +24,6 @@
             layer.resizeWorld();
             super.setLayer(layer);
 
-
             enemiesTotal = 23;
             super.setEnemiesTotal(enemiesTotal);
 
@@ -40,16 +39,13 @@
 
         }
 
-
         update() {
             if (!levelComplete && this.hero.x >= 13900) {
                 super.levelComplete();
                 this.input.onDown.addOnce(this.fadeOut, this);
                 levelComplete = true;
             }
-            super.update();
-
-            
+            super.update();            
         }
 
         fadeOut() {
