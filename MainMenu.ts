@@ -52,7 +52,7 @@
 
         startGame() {
             this.song.destroy();
-            this.game.state.start('Level1', true, false);
+            this.game.state.start('LevelNoob', true, false);
             
         }
 

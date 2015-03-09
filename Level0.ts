@@ -159,17 +159,16 @@
         }
 
         init_sounds() {
-            this.music = this.add.audio('House');
-            this.music.volume = .95;
+           this.music = this.add.audio('House');
+            this.music.volume = .60;
             this.sound_enemy_death = this.add.audio('enemy_death');
             this.sound_enemy_death.volume = .80;
-          //  this.sound_landing = this.add.audio('landing_sound');
             this.sound_hero_gravity = this.add.audio('hero_gravity');
             this.sound_hero_gravity.volume = .60;
             this.sound_hero_death = this.add.audio('hero_death');
             this.sound_hero_death.volume = .80;
             this.sound_collision = this.add.audio('collision');
-            this.sound_collision.volume = .60;
+            this.sound_collision.volume = .99;
             this.sound_hero_jump = this.add.audio('hero_jump');
             this.sound_hero_jump.volume = .60;
             this.sound_hero_fire = this.add.audio('hero_fire');
@@ -178,7 +177,7 @@
             this.sound_grav.volume = .70;
             this.sound_enemy_shoot = this.add.audio('enemy_shoot');
             this.sound_enemy_shoot.volume = .50;
-            this.sound_hero_enemyChase_collision = this.add.audio('hero_enemyChase_collision');
+      //      this.sound_hero_enemyChase_collision = this.add.audio('hero_enemyChase_collision');
             this.victoryMusic = this.add.audio('victory');
             this.music.play();
         }
@@ -443,16 +442,21 @@
                 } else if (game_over && numLives == 0) {
                     if (firstTimeGameOver) {
                         firstTimeGameOver = false;
-                        timeDelay = (Math.floor(this.game.time.time / 1000) % 60) + 5;
+                        this.input.onDown.addOnce(this.restartAtFirstLevel, this);
                     }
                     //var time = (Math.floor(this.game.time.time / 1000) % 60) + 500;
                     //var currentTime = Math.floor(this.game.time.time / 1000) % 60;
                     if ((Math.floor(this.game.time.time / 1000) % 60) >= timeDelay) {
-                        this.music.mute = true;
-                        this.game.state.start('GameOver', true, false);
+
                     }
                 }
             }
+        }
+
+        restartAtFirstLevel() {
+            this.deleteReferences();
+            this.music.stop();
+            this.game.state.start('LevelNoob', true, false);
         }
 
         attemptGravitySwap() {
@@ -500,26 +504,9 @@
         heroEnemyCollide(hero, enemy) {
             this.deathBurst(hero);
             this.deathBurst(enemy);
+            this.sound_collision.play();
             this.sound_hero_death.play();
             enemy.kill();
-            hero.kill();
-            if (numLives == 0) {
-                this.itsGameOver();
-            }
-            else {
-                numLives -= 1;
-                this.endRound();
-            }
-        }
-
-        /* Case where Megaman Catches up with Hero, death ensues */
-        heroEnemyChaseCollide(hero, enemyChase) {
-            this.sound_collision.play();
-            this.sound_hero_enemyChase_collision.play();
-            this.deathBurst(hero);
-            this.deathBurst(enemyChase);
-            this.sound_hero_death.play();
-            enemyChase.kill();
             hero.kill();
             if (numLives == 0) {
                 this.itsGameOver();
@@ -673,7 +660,7 @@
         }
 
         flipEntity(entity) {
-            console.log("HERYO");
+           // console.log("HERYO");
             this.sound_grav.play();
             entity.body.gravity.y *= -1;
             entity.anchor.setTo(1, .5);
@@ -760,9 +747,10 @@
         render() {
             //this.game.debug.spriteInfo(this.hero, 400, 400);
             //  The score
-            this.game.debug.text(scoreString + score, 10, 35, 'white', '34px Lucida Sans Unicode');
-            this.game.debug.text(this.game.time.fps + '' || '--', 2, 60, "#00ff00");  
+           
+          //  this.game.debug.text(this.game.time.fps + '' || '--', 2, 60, "#00ff00");  
             // this.game.debug.spriteCoords(this.hero, 300, 300);
+            this.game.debug.text(scoreString + score, 10, 35, 'white', '34px Lucida Sans Unicode');
             this.game.debug.text('Bullets : ' + totalBullets, 345, 35, 'white', '34px Lucida Sans Unicode');
             this.game.debug.text('Lives : ' + numLives, 660, 35, 'white', '34px Lucida Sans Unicode');
             if (levelComplete) {
@@ -787,24 +775,24 @@
                     bonusAdded = true;
                 }
             } else if (!respawn) {
-                this.game.debug.text("You Have Died......", 180, 200, 'white', '50px Lucida Sans Unicode');
-                this.game.debug.text("(you're bad, loser)", 180, 260, 'white', '50px Lucida Sans Unicode');
+                this.game.debug.text("You have died", 43, 435, 'red', '40px Lucida Sans Unicode');
+                //   this.game.debug.text("(you're bad, loser)", 180, 260, 'white', '50px Lucida Sans Unicode');
                 var count = 0;
                 //while (count < 10) {
-                this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Lucida Sans Unicode');
+                //     this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Lucida Sans Unicode');
                 //score -= 1;
                 //count++;
                 //if (score <= 0) {
                 //    score = 0;
                 //}
                 //}
-                this.game.debug.text("Press 'R' to Respawn Baddie", 120, 420, 'white', '40px Lucida Sans Unicode');
+                this.game.debug.text("Press 'R' to Respawn", 50, 462, 'white', '20px Lucida Sans Unicode');
             } else if (game_over) {
-                this.game.debug.text("Game Over", 265, 200, 'white', '50px Lucida Sans Unicode');
-                this.game.debug.text("That was sad to watch...", 160, 260, 'white', '50px Lucida Sans Unicode');
+                this.game.debug.text("Game Over", 40, 320, 'red', '70px Lucida Sans Unicode');
+             //   this.game.debug.text("That was sad to watch...", 160, 260, 'white', '50px Lucida Sans Unicode');
                 //while (count < 10) {
-                this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Lucida Sans Unicode');
-                this.game.debug.text("That all you got?", 210, 380, 'white', '45px Lucida Sans Unicode');
+                this.game.debug.text('Final Score: ' + score, 46, 368, 'white', '45px Lucida Sans Unicode');
+                this.game.debug.text("Click anywhere to try again.", 48, 415, 'white', '20px Lucida Sans Unicode');
             }
         }
 

@@ -888,6 +888,7 @@ var GravityGuy;
             this.state.add('Boot', GravityGuy.Boot, false);
             this.state.add('Preloader', GravityGuy.Preloader, false);
             this.state.add('MainMenu', GravityGuy.MainMenu, false);
+            this.state.add('LevelNoob', GravityGuy.LevelNoob, false);
             this.state.add('Level0', GravityGuy.Level0, false);
             this.state.add('Level1', GravityGuy.Level1, false);
             // This is the second level, test mode
@@ -1016,7 +1017,7 @@ var GravityGuy;
             else {
                 game.time.events.loop(200, this.running, this);
                 this.sound_footstep = game.add.audio('footstep');
-                this.sound_footstep.volume = .30;
+                this.sound_footstep.volume = .50;
                 //this.sound_landing = game.add.audio('footstep');
                 this.animations.add('run_left', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 20);
                 this.animations.add('idle_left', [10, 11, 12], 0.3);
@@ -1201,16 +1202,15 @@ var GravityGuy;
         };
         Level0.prototype.init_sounds = function () {
             this.music = this.add.audio('House');
-            this.music.volume = .95;
+            this.music.volume = .60;
             this.sound_enemy_death = this.add.audio('enemy_death');
             this.sound_enemy_death.volume = .80;
-            //  this.sound_landing = this.add.audio('landing_sound');
             this.sound_hero_gravity = this.add.audio('hero_gravity');
             this.sound_hero_gravity.volume = .60;
             this.sound_hero_death = this.add.audio('hero_death');
             this.sound_hero_death.volume = .80;
             this.sound_collision = this.add.audio('collision');
-            this.sound_collision.volume = .60;
+            this.sound_collision.volume = .99;
             this.sound_hero_jump = this.add.audio('hero_jump');
             this.sound_hero_jump.volume = .60;
             this.sound_hero_fire = this.add.audio('hero_fire');
@@ -1219,7 +1219,7 @@ var GravityGuy;
             this.sound_grav.volume = .70;
             this.sound_enemy_shoot = this.add.audio('enemy_shoot');
             this.sound_enemy_shoot.volume = .50;
-            this.sound_hero_enemyChase_collision = this.add.audio('hero_enemyChase_collision');
+            //      this.sound_hero_enemyChase_collision = this.add.audio('hero_enemyChase_collision');
             this.victoryMusic = this.add.audio('victory');
             this.music.play();
         };
@@ -1442,16 +1442,19 @@ var GravityGuy;
                 else if (game_over && numLives == 0) {
                     if (firstTimeGameOver) {
                         firstTimeGameOver = false;
-                        timeDelay = (Math.floor(this.game.time.time / 1000) % 60) + 5;
+                        this.input.onDown.addOnce(this.restartAtFirstLevel, this);
                     }
                     //var time = (Math.floor(this.game.time.time / 1000) % 60) + 500;
                     //var currentTime = Math.floor(this.game.time.time / 1000) % 60;
                     if ((Math.floor(this.game.time.time / 1000) % 60) >= timeDelay) {
-                        this.music.mute = true;
-                        this.game.state.start('GameOver', true, false);
                     }
                 }
             }
+        };
+        Level0.prototype.restartAtFirstLevel = function () {
+            this.deleteReferences();
+            this.music.stop();
+            this.game.state.start('LevelNoob', true, false);
         };
         Level0.prototype.attemptGravitySwap = function () {
             swapGravity = (this.hero.body.blocked.down || this.hero.body.blocked.up);
@@ -1489,25 +1492,9 @@ var GravityGuy;
         Level0.prototype.heroEnemyCollide = function (hero, enemy) {
             this.deathBurst(hero);
             this.deathBurst(enemy);
+            this.sound_collision.play();
             this.sound_hero_death.play();
             enemy.kill();
-            hero.kill();
-            if (numLives == 0) {
-                this.itsGameOver();
-            }
-            else {
-                numLives -= 1;
-                this.endRound();
-            }
-        };
-        /* Case where Megaman Catches up with Hero, death ensues */
-        Level0.prototype.heroEnemyChaseCollide = function (hero, enemyChase) {
-            this.sound_collision.play();
-            this.sound_hero_enemyChase_collision.play();
-            this.deathBurst(hero);
-            this.deathBurst(enemyChase);
-            this.sound_hero_death.play();
-            enemyChase.kill();
             hero.kill();
             if (numLives == 0) {
                 this.itsGameOver();
@@ -1646,7 +1633,7 @@ var GravityGuy;
             }
         };
         Level0.prototype.flipEntity = function (entity) {
-            console.log("HERYO");
+            // console.log("HERYO");
             this.sound_grav.play();
             entity.body.gravity.y *= -1;
             entity.anchor.setTo(1, .5);
@@ -1722,9 +1709,9 @@ var GravityGuy;
         Level0.prototype.render = function () {
             //this.game.debug.spriteInfo(this.hero, 400, 400);
             //  The score
-            this.game.debug.text(scoreString + score, 10, 35, 'white', '34px Lucida Sans Unicode');
-            this.game.debug.text(this.game.time.fps + '' || '--', 2, 60, "#00ff00");
+            //  this.game.debug.text(this.game.time.fps + '' || '--', 2, 60, "#00ff00");  
             // this.game.debug.spriteCoords(this.hero, 300, 300);
+            this.game.debug.text(scoreString + score, 10, 35, 'white', '34px Lucida Sans Unicode');
             this.game.debug.text('Bullets : ' + totalBullets, 345, 35, 'white', '34px Lucida Sans Unicode');
             this.game.debug.text('Lives : ' + numLives, 660, 35, 'white', '34px Lucida Sans Unicode');
             if (levelComplete) {
@@ -1749,25 +1736,25 @@ var GravityGuy;
                 }
             }
             else if (!respawn) {
-                this.game.debug.text("You Have Died......", 180, 200, 'white', '50px Lucida Sans Unicode');
-                this.game.debug.text("(you're bad, loser)", 180, 260, 'white', '50px Lucida Sans Unicode');
+                this.game.debug.text("You have died", 43, 435, 'red', '40px Lucida Sans Unicode');
+                //   this.game.debug.text("(you're bad, loser)", 180, 260, 'white', '50px Lucida Sans Unicode');
                 var count = 0;
                 //while (count < 10) {
-                this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Lucida Sans Unicode');
+                //     this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Lucida Sans Unicode');
                 //score -= 1;
                 //count++;
                 //if (score <= 0) {
                 //    score = 0;
                 //}
                 //}
-                this.game.debug.text("Press 'R' to Respawn Baddie", 120, 420, 'white', '40px Lucida Sans Unicode');
+                this.game.debug.text("Press 'R' to Respawn", 50, 462, 'white', '20px Lucida Sans Unicode');
             }
             else if (game_over) {
-                this.game.debug.text("Game Over", 265, 200, 'white', '50px Lucida Sans Unicode');
-                this.game.debug.text("That was sad to watch...", 160, 260, 'white', '50px Lucida Sans Unicode');
+                this.game.debug.text("Game Over", 40, 320, 'red', '70px Lucida Sans Unicode');
+                //   this.game.debug.text("That was sad to watch...", 160, 260, 'white', '50px Lucida Sans Unicode');
                 //while (count < 10) {
-                this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Lucida Sans Unicode');
-                this.game.debug.text("That all you got?", 210, 380, 'white', '45px Lucida Sans Unicode');
+                this.game.debug.text('Final Score: ' + score, 46, 368, 'white', '45px Lucida Sans Unicode');
+                this.game.debug.text("Click anywhere to try again.", 48, 415, 'white', '20px Lucida Sans Unicode');
             }
         };
         Level0.prototype.deleteReferences = function () {
@@ -1905,6 +1892,58 @@ var GravityGuy;
 })(GravityGuy || (GravityGuy = {}));
 var GravityGuy;
 (function (GravityGuy) {
+    var layer;
+    var enemiesTotal;
+    var enemyLocationsX;
+    var enemyLocationsY;
+    var levelComplete;
+    var LevelNoob = (function (_super) {
+        __extends(LevelNoob, _super);
+        function LevelNoob() {
+            _super.apply(this, arguments);
+        }
+        LevelNoob.prototype.create = function () {
+            //has to be above super.ceate
+            this.background = this.add.tileSprite(0, 0, 1024, 512, 'background');
+            this.background.fixedToCamera = true;
+            _super.prototype.setBackground.call(this, this.background);
+            //end
+            _super.prototype.create.call(this);
+            _super.prototype.setLevel.call(this, 1);
+            //LEVEL :D
+            this.map = this.add.tilemap('noob_level');
+            this.map.addTilesetImage('tileset_1');
+            this.map.setCollisionByExclusion([]);
+            layer = this.map.createLayer('layer_1');
+            layer.resizeWorld();
+            _super.prototype.setLayer.call(this, layer);
+            enemiesTotal = 4;
+            _super.prototype.setEnemiesTotal.call(this, enemiesTotal);
+            enemyLocationsX = [this.game.rnd.integerInRange(13193, 13698), this.game.rnd.integerInRange(14727, 15027), this.game.rnd.integerInRange(16000, 16320), this.game.rnd.integerInRange(16800, 16950)];
+            enemyLocationsY = [125, 125, 125, 125];
+            _super.prototype.setEnemyLocations.call(this, enemyLocationsX, enemyLocationsY);
+            _super.prototype.createEnemies.call(this);
+            var spaceship = this.game.add.sprite(17080, 245, 'spaceship');
+            levelComplete = false;
+        };
+        LevelNoob.prototype.update = function () {
+            if (!levelComplete && this.hero.x >= 17150) {
+                _super.prototype.levelComplete.call(this);
+                this.input.onDown.addOnce(this.fadeOut, this);
+                levelComplete = true;
+            }
+            _super.prototype.update.call(this);
+        };
+        LevelNoob.prototype.fadeOut = function () {
+            this.victoryMusic.stop();
+            this.game.state.start('Level1', true, false);
+        };
+        return LevelNoob;
+    })(GravityGuy.Level0);
+    GravityGuy.LevelNoob = LevelNoob;
+})(GravityGuy || (GravityGuy = {}));
+var GravityGuy;
+(function (GravityGuy) {
     var MainMenu = (function (_super) {
         __extends(MainMenu, _super);
         function MainMenu() {
@@ -1941,7 +1980,7 @@ var GravityGuy;
         };
         MainMenu.prototype.startGame = function () {
             this.song.destroy();
-            this.game.state.start('Level1', true, false);
+            this.game.state.start('LevelNoob', true, false);
         };
         return MainMenu;
     })(Phaser.State);
@@ -1979,11 +2018,12 @@ var GravityGuy;
             this.load.audio('hero_jump', ['audio/hero_jump.mp3', 'audio/hero_jump.ogg']);
             this.load.audio('enemy_shoot', ['audio/enemy_shoot.mp3', 'audio/enemy_shoot.ogg']);
             this.load.audio('victory', ['audio/victory.mp3', 'audio/victory.ogg']);
-            this.load.audio('hero_enemyChase_collision', ['audio/hero_enemyChase_collision.mp3', 'audio/hero_enemyChase_collision.mp3']);
+            //   this.load.audio('hero_enemyChase_collision', ['audio/hero_enemyChase_collision.mp3', 'audio/hero_enemyChase_collision.mp3']);
             this.load.audio('footstep', ['audio/landing_sound.mp3', 'audio/landing_sound.ogg']);
             this.load.audio('game_won_song', ['audio/game_won_song.mp3', 'audio/game_won_song.ogg']);
             this.load.audio('enemy_death', ['audio/enemy_death.mp3', 'audio/enemy_death.ogg']);
             this.load.audio('grav', ['audio/sound_enemies_grav.mp3', 'audio/sound_enemies_grav.ogg']);
+            this.load.audio('collision', ['audio/collision.mp3', 'audio/collision.ogg']);
             /*IMAGES*/
             this.load.image('explosion_small', 'visuals/explosion_small.png');
             this.load.image('dust_cloud', 'visuals/dust_cloud.png');
@@ -1997,6 +2037,7 @@ var GravityGuy;
             this.load.image('spaceship', 'visuals/spaceship.png');
             this.load.image('game_won_background', 'visuals/game_won.png');
             /*MAPS*/
+            this.load.tilemap('noob_level', 'resources/noob_level.json', null, Phaser.Tilemap.TILED_JSON);
             this.load.tilemap('joels_level', 'resources/joels_level.json', null, Phaser.Tilemap.TILED_JSON);
             this.load.tilemap('level_test', 'resources/level_test.json', null, Phaser.Tilemap.TILED_JSON);
             this.load.tilemap('Level_3', 'resources/Level_3.json', null, Phaser.Tilemap.TILED_JSON);
