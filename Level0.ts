@@ -57,8 +57,6 @@
 
     export class Level0 extends Phaser.State {
 
-        //
-
         map: Phaser.Tilemap
 
         music: Phaser.Sound
@@ -81,7 +79,12 @@
         hero: GravityGuy.Hero
         enemyChase: GravityGuy.enemyChase
         enemy: GravityGuy.Enemy
+
+        enemy2: GravityGuy.Enemy2
+        enemy2_scale;
+
         enemy_scale;
+
         create() {
             //FPS 
             this.game.time.advancedTiming = true;
@@ -101,7 +104,6 @@
 
             this.init_sounds();
             this.init_emitters();
-
          
             this.hero = new Hero(this.game, 150, 300, 1);
             hero_scale = this.hero.hero_scale;
@@ -112,8 +114,7 @@
 
             this.physics.arcade.enableBody(this.enemyChase);
             this.time.events.loop(25, this.timedUpdate, this);
-
-       
+     
             enemiesDead = 0;
 
             enemyBulletList = [];
@@ -123,12 +124,6 @@
             //this.createEnemies();
             //works above
 
-            
-
-
-
-
-
             //text = this.add.text(this.world.centerX, game.world.centerY, "- phaser -\nrocking with\ngoogle web fonts");
 
             //Bullets
@@ -137,10 +132,6 @@
             //end added 
             this. init_bullets();
             //Enemy Bullets
-
-
-
-            
         }
         init_emitters() {
 

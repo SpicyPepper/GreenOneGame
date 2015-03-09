@@ -4,7 +4,7 @@
     var layer;
     var move;
 
-    export class Enemy extends Phaser.Sprite {
+    export class Enemy2 extends Phaser.Sprite {
         hero: Hero
         sound_grav: Phaser.Sound
         level: Level0
@@ -12,7 +12,7 @@
         my_velocity;
         constructor(game: Phaser.Game, lvl: Level0, player: Hero, x: number, y: number) {
 
-            super(game, x, y, 'enemy1', 0);
+            super(game, x, y, 'enemy2', 0);
         
             this.game.physics.arcade.enableBody(this);
             this.game.add.existing(this);
@@ -44,8 +44,6 @@
                     this.flipEntity();
                 }              
             }
-
-
         }
         cooledDown() {
             this.cooldown = false;
@@ -58,7 +56,6 @@
             this.body.gravity.y *= -1;
             this.anchor.setTo(1, .5);
             this.scale.y *= -1;
-
         }
     }
 }
