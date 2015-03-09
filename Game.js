@@ -29,58 +29,707 @@ var GravityGuy;
 })(GravityGuy || (GravityGuy = {}));
 var GravityGuy;
 (function (GravityGuy) {
-    var cursors;
+    var bullet;
+    var bulletTime;
+    var bulletFired;
+    var bulletsFired;
+    var totalBullets;
+    var enemyChaseBlockedAfterDeath;
+    var enemies;
+    var enemiesTotal;
+    var enemiesDead;
+    var enemiesKilled;
+    var enemyBulletList;
+    var enemyBulletTime;
+    var enemyBulletWait;
+    var enemyBulletsFired;
+    var enemyAlive;
+    var heroAlive;
+    var enemyAliveCount;
+    var scoreString;
+    var score_text;
+    var score;
+    var lives;
+    var numLives;
     var layer;
-    var move;
-    var Enemy2 = (function (_super) {
-        __extends(Enemy2, _super);
-        function Enemy2(game, lvl, player, x, y) {
-            _super.call(this, game, x, y, 'enemy2', 0);
-            this.cooldown = false;
-            this.game.physics.arcade.enableBody(this);
-            this.game.add.existing(this);
-            this.hero = player;
-            this.level = lvl;
-            this.my_velocity = -40;
-            this.scale.setTo(lvl.enemy_scale, lvl.enemy_scale);
-            this.animations.add('walk');
-            this.animations.play('walk', 4, true);
-            this.game.physics.enable(this, Phaser.Physics.ARCADE);
-            this.body.bounce.y = 0.2;
-            this.body.collideWorldBounds = false;
-            this.body.allowRotation = true;
-            this.body.gravity.y = 18000;
-            this.anchor.setTo(0.5, 0);
+    var gravityButton;
+    var cursors;
+    var jumpLocation;
+    var jumpLocationList = [];
+    var heroJumped;
+    var enemyJump;
+    var first;
+    var floor;
+    var floorEnemy;
+    var floorOtherEnemy;
+    var hero_scale = 0.7;
+    var enemyChase_scale = 4.0;
+    var enemy_scale = 0.8;
+    var explode_emit;
+    var dust_cloud_emit;
+    var levelComplete;
+    var respawn;
+    var respawnButton;
+    var escapeKey;
+    var game_over;
+    var bonusAdded;
+    var swapGravity;
+    var keyboard_grav;
+    var firstTimeGameOver;
+    var timeDelay;
+    var text;
+    var grd;
+    var enemyLocationsX;
+    var enemyLocationsY;
+    var moveRightButton;
+    var moveLeftButton;
+    var facingRight;
+    var counterToKill;
+    var shootingRight;
+    var BossLevel = (function (_super) {
+        __extends(BossLevel, _super);
+        function BossLevel() {
+            _super.apply(this, arguments);
         }
-        Enemy2.prototype.update = function () {
-            this.body.velocity.y = 0;
-            if (!this.cooldown && this.body.x - this.hero.body.x <= 400 && this.alive) {
-                this.body.velocity.x = this.my_velocity;
-                if (this.body.gravity.y > 0) {
-                    if (this.hero.body.gravity.y < 0) {
-                        this.flipEntity();
+        BossLevel.prototype.create = function () {
+            /*Working on key binding*/
+            keyboard_grav = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+            keyboard_grav.onDown.add(this.attemptGravitySwap, this);
+            respawnButton = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
+            moveRightButton = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
+            moveLeftButton = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
+            /* If escape is pressed, game ends */
+            escapeKey = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
+            this.physics.startSystem(Phaser.Physics.ARCADE);
+            this.world.setBounds(0, 0, 2000, 512);
+            this.background = this.add.tileSprite(0, 0, 1024, 512, 'background');
+            this.background.fixedToCamera = true;
+            this.music = this.add.audio('House');
+            this.sound_landing = this.add.audio('landing_sound');
+            this.sound_hero_gravity = this.add.audio('hero_gravity');
+            this.sound_hero_death = this.add.audio('hero_death');
+            this.sound_hero_jump = this.add.audio('hero_jump');
+            this.sound_hero_fire = this.add.audio('hero_fire');
+            this.sound_enemy_shoot = this.add.audio('enemy_shoot');
+            this.sound_hero_enemyChase_collision = this.add.audio('hero_enemyChase_collision');
+            this.victoryMusic = this.add.audio('victory');
+            this.music.play();
+            explode_emit = this.game.add.emitter(0, 0, 20);
+            explode_emit.makeParticles('explosion_small');
+            explode_emit.gravity = 200;
+            dust_cloud_emit = this.game.add.emitter(0, 0, 10000);
+            dust_cloud_emit.makeParticles('dust_cloud');
+            dust_cloud_emit.bounce.y = 0;
+            dust_cloud_emit.setYSpeed(0, 0);
+            dust_cloud_emit.setXSpeed(0, 0);
+            dust_cloud_emit.allowGravity = false;
+            dust_cloud_emit.bounce.x = 0;
+            dust_cloud_emit.gravity = 0;
+            //LEVEL :D
+            this.map = this.add.tilemap('boss_level');
+            //  this.map = this.add.tilemap('joels_level'); //### HERE IS TEST MAP. SWAP TO PLAY SHITTY LEVEL. PLEASE SOMEONE MAKE A DIFFERENT ONE.
+            this.map.addTilesetImage('tileset_1');
+            this.map.setCollisionByExclusion([]);
+            //    layer = this.map.createLayer('layer_1');
+            layer = this.map.createLayer('layer_1');
+            layer.resizeWorld();
+            this.hero = new GravityGuy.Hero(this.game, 750, 300, 3);
+            this.hero.scale.setTo(hero_scale, hero_scale);
+            this.physics.arcade.enableBody(this.hero);
+            this.hero.animations.play('idle_right');
+            this.flipLeft();
+            this.enemyChase = new GravityGuy.enemyChase(this.game, 200, 100, 3);
+            this.enemyChase.scale.setTo(enemyChase_scale, enemyChase_scale);
+            this.physics.arcade.enableBody(this.enemyChase);
+            this.time.events.loop(25, this.timedUpdate, this);
+            this.enemyChase.setBossLevel(this);
+            enemiesTotal = 15;
+            enemiesDead = 0;
+            enemyBulletList = [];
+            enemies = [];
+            first = true;
+            floor = true;
+            floorEnemy = true;
+            floorOtherEnemy = true;
+            gravityButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+            cursors = this.game.input.keyboard.createCursorKeys();
+            //respawnButton = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
+            //text = this.add.text(this.world.centerX, game.world.centerY, "- phaser -\nrocking with\ngoogle web fonts");
+            //Bullets
+            this.bullets = this.game.add.group();
+            this.bullets.enableBody = true;
+            this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
+            this.bullets.createMultiple(30, 'bullet');
+            this.bullets.setAll('anchor.x', 1);
+            this.bullets.setAll('anchor.y', 0);
+            this.bullets.setAll('outOfBoundsKill', true);
+            this.bullets.setAll('checkWorldBounds', true);
+            //this.bullets.scale.setTo(0.99);
+            //end added 
+            levelComplete = false;
+            respawn = true;
+            game_over = false;
+            bonusAdded = false;
+            swapGravity = false;
+            firstTimeGameOver = true;
+            bulletTime = 0;
+            bulletFired = false;
+            bulletsFired = 0;
+            enemies;
+            enemiesTotal;
+            enemiesDead;
+            enemiesKilled = 0;
+            enemyBulletTime = 0;
+            enemyBulletWait = 0;
+            enemyBulletsFired = 0;
+            enemyAlive = false;
+            heroAlive = true;
+            scoreString = 'Score : ';
+            score = 0;
+            numLives = 3;
+            heroJumped = false;
+            enemyJump = false;
+            totalBullets = 500;
+            facingRight = true;
+            shootingRight = true;
+            counterToKill = 0;
+        };
+        BossLevel.prototype.update = function () {
+            this.game.camera.x = 0;
+            this.hero.body.velocity.x = 0;
+            //console.log(this.hero.x);
+            //if (!this.hero.alive && heroAlive) {
+            //    this.deathBurst(this.hero);
+            //    this.sound_hero_death.play();
+            //    if (numLives == 0) {
+            //        this.itsGameOver();
+            //    } else {
+            //        numLives -= 1;
+            //        this.endRound();
+            //    }
+            //}
+            this.collideEverything();
+            /* When hero is alive */
+            if (heroAlive) {
+                if (moveRightButton.isDown) {
+                    // var offset = 0;
+                    this.hero.animations.play('walk');
+                    this.hero.body.velocity.x = 250;
+                    this.flipRight();
+                    //if (this.hero.scale.x < 0) {
+                    //    this.hero.anchor.setTo(1, .5); //so it flips around its middle
+                    //    this.hero.scale.x = hero_scale; //flipped
+                    //    offset = this.hero.body.halfWidth + 15;
+                    //}
+                    facingRight = true;
+                }
+                else if (moveLeftButton.isDown) {
+                    this.hero.animations.play('walk');
+                    this.hero.body.velocity.x = -250;
+                    //var offset = 0;
+                    this.flipLeft();
+                    //if (this.hero.scale.x > 0) {
+                    //    this.hero.anchor.setTo(1, .5); //so it flips around its middle
+                    //    this.hero.scale.x = -hero_scale;
+                    //    offset = this.hero.body.halfWidth + 15;
+                    //}
+                    //first = true;
+                    facingRight = false;
+                }
+                else {
+                    //this.hero.animations.frame = 0;
+                    if (facingRight) {
+                        this.hero.animations.play('idle_right');
+                    }
+                    else {
+                        this.hero.animations.play('idle_right');
                     }
                 }
-                else if (this.hero.body.gravity.y > 0) {
-                    this.flipEntity();
+                if (cursors.right.isDown) {
+                    shootingRight = true;
+                    this.hero.animations.play('walk');
+                    this.flipRight();
+                    this.fireBullet();
+                }
+                if (cursors.left.isDown) {
+                    shootingRight = false;
+                    this.hero.animations.play('walk');
+                    this.flipLeft();
+                    this.fireBullet();
+                }
+                if (this.hero.x > 800) {
+                    this.hero.x = 8;
+                }
+                if (this.enemyChase.x > 800) {
+                    this.enemyChase.x = 8;
+                    //if (this.enemyChase.body.gravity.y < 0 && floor) {
+                    //    console.log("Whoa");
+                    //    this.flipEnemy();
+                    //} else if (this.enemyChase.body.gravity.y > 0 && !floor) {
+                    //    console.log("Whoa2");
+                    //    this.flipEnemy();
+                    //}
+                    this.enemyChase.setOffScreen();
+                }
+                if (this.enemyChase.x < 8) {
+                    this.enemyChase.x = 800;
+                }
+                if (this.enemyChase.y <= 0 || this.enemyChase.y >= 512) {
+                    this.enemyChase.y = 200;
+                }
+                if (this.hero.x < 8) {
+                    this.hero.x = 800;
+                }
+                // if (heroAlive) {
+                if (!levelComplete && this.hero.x >= 17150) {
+                    this.levelComplete();
+                }
+                if (bulletFired && bullet.x - this.hero.x >= 400) {
+                    this.resetBullet(bullet);
+                    bulletFired = false;
+                }
+                //NEW
+                if (swapGravity) {
+                    //heroJumped = true;
+                    jumpLocation = this.hero.body.x;
+                    jumpLocationList.push(jumpLocation);
+                    this.flipHero();
+                    this.hero.body.gravity.y = -this.hero.body.gravity.y;
+                    first = false;
+                }
+                for (var j = enemiesDead; j < enemies.length; j++) {
+                    if (enemies[j].alive && enemies[j].x - this.hero.x <= 575) {
+                        enemyBulletWait++;
+                        if (enemyBulletWait % 75 == 0) {
+                            this.fireEnemyBullet(enemies[j]);
+                        }
+                    }
+                    if (enemies[j].x < this.hero.x) {
+                        enemiesDead++;
+                    }
+                }
+                swapGravity = false;
+            }
+            else {
+                if (!this.enemyChase.blocked_after_end && (this.enemyChase.body.blocked.right || this.enemyChase.body.blocked.down)) {
+                    this.enemyChase.blocked_after_end = true;
+                    this.enemyChase.play('idle', 4, true);
+                    this.enemyChase.body.velocity.x = 0;
+                }
+                swapGravity = false;
+                //   console.log(this.hero.body.gravity.y);            
+                if (this.hero.body.gravity.y < 0)
+                    this.hero.body.gravity.y = this.hero.body.gravity.y * -1;
+                if (this.enemyChase.body.gravity.y < 0)
+                    this.enemyChase.body.gravity.y = this.enemyChase.body.gravity.y * -1;
+                if (!floor) {
+                    this.flipHero();
+                }
+                if (!floorEnemy) {
+                    this.flipEnemy();
+                }
+                floor = true;
+                if (respawnButton.isDown && !respawn) {
+                    this.enemyChase.kill();
+                    this.hero.reset(750, 300);
+                    this.enemyChase.reset(200, 100);
+                    respawn = true;
+                    score = 0;
+                    heroAlive = true;
+                    this.enemyChase.blocked_after_end = false;
+                    this.enemyChase.animations.play('idle');
+                    this.hero.alive = true;
+                    enemiesKilled = 0;
+                    counterToKill = 0;
+                    floor = true;
+                    totalBullets = 500;
+                    for (var i = 0; i < enemyBulletsFired; i++) {
+                        enemyBulletList[i].kill();
+                    }
+                }
+                else if (game_over && numLives == 0) {
+                    if (firstTimeGameOver) {
+                        firstTimeGameOver = false;
+                        timeDelay = (Math.floor(this.game.time.time / 1000) % 60) + 5;
+                    }
+                    if ((Math.floor(this.game.time.time / 1000) % 60) >= timeDelay) {
+                        this.music.mute = true;
+                        this.game.state.start('GameOver', true, false);
+                    }
                 }
             }
         };
-        Enemy2.prototype.cooledDown = function () {
-            this.cooldown = false;
+        BossLevel.prototype.flipRight = function () {
+            var offset = 0;
+            if (this.hero.scale.x < 0) {
+                this.hero.anchor.setTo(1, .5); //so it flips around its middle
+                this.hero.scale.x = hero_scale; //flipped
+                offset = this.hero.body.halfWidth + 15;
+            }
+            this.hero.x += offset;
         };
-        Enemy2.prototype.flipEntity = function () {
-            //    console.log("hero: " + this.hero.body.x.toFixed(0) + ", " + this.hero.body.y.toFixed(0) + " enemy: " + this.body.x.toFixed(0) + ", " + this.body.y.toFixed(0)); 
-            this.cooldown = true;
-            this.game.time.events.add(Phaser.Timer.QUARTER, this.cooledDown, this);
-            this.level.sound_grav.play();
-            this.body.gravity.y *= -1;
-            this.anchor.setTo(1, .5);
-            this.scale.y *= -1;
+        BossLevel.prototype.flipLeft = function () {
+            var offset = 0;
+            if (first) {
+                first = false;
+            }
+            if (this.hero.scale.x > 0) {
+                this.hero.anchor.setTo(1, .5); //so it flips around its middle
+                this.hero.scale.x = -hero_scale;
+                offset = this.hero.body.halfWidth + 15;
+            }
+            this.hero.x -= offset;
         };
-        return Enemy2;
-    })(Phaser.Sprite);
-    GravityGuy.Enemy2 = Enemy2;
+        BossLevel.prototype.attemptGravitySwap = function () {
+            swapGravity = (this.hero.body.blocked.down || this.hero.body.blocked.up);
+        };
+        BossLevel.prototype.itsGameOver = function () {
+            game_over = true;
+            heroAlive = false;
+            this.hero.kill();
+            this.enemyChase.kill();
+            for (var i = 0; i < enemies.length; i++) {
+                enemies[i].kill();
+            }
+        };
+        BossLevel.prototype.timedUpdate = function () {
+            if (!game_over && !levelComplete && respawn) {
+                score += 10;
+            }
+        };
+        BossLevel.prototype.levelComplete = function () {
+            this.hero.kill();
+            heroAlive = false;
+            this.hero.body.y = -200;
+            this.enemyChase.kill();
+            levelComplete = true;
+            this.victoryMusic.play();
+            this.music.stop();
+            this.input.onDown.addOnce(this.fadeOut, this);
+        };
+        BossLevel.prototype.fadeOut = function () {
+            this.victoryMusic.stop();
+            this.game.state.start('GameWon', true, false);
+        };
+        BossLevel.prototype.bulletWallCollide = function (bullet, layer) {
+            bullet.kill();
+        };
+        BossLevel.prototype.heroEnemyCollide = function (hero, enemy) {
+            this.deathBurst(hero);
+            this.deathBurst(enemy);
+            this.sound_hero_death.play();
+            enemy.kill();
+            hero.kill();
+            if (numLives == 0) {
+                this.itsGameOver();
+            }
+            else {
+                numLives -= 1;
+                this.endRound();
+            }
+        };
+        /* Case where Megaman Catches up with Hero, death ensues */
+        BossLevel.prototype.heroEnemyChaseCollide = function (hero, enemyChase) {
+            this.sound_hero_enemyChase_collision.play();
+            this.deathBurst(hero);
+            this.deathBurst(enemyChase);
+            this.sound_hero_death.play();
+            enemyChase.kill();
+            hero.kill();
+            if (numLives == 0) {
+                this.itsGameOver();
+            }
+            else {
+                numLives -= 1;
+                this.endRound();
+            }
+        };
+        BossLevel.prototype.collideEverything = function () {
+            this.physics.arcade.collide(this.hero, layer);
+            if (this.hero.body.blocked.down && this.hero.in_air) {
+                this.hero.in_air = false;
+                this.sound_landing.play();
+            }
+            this.physics.arcade.collide(this.enemyChase, layer);
+            for (var i = 0; i < enemyBulletsFired; i++) {
+                // this.physics.arcade.collide(enemyBulletList[i], layer);
+                this.physics.arcade.overlap(enemyBulletList, layer, this.bulletWallCollide, null, this);
+            }
+            for (var i = 0; i < enemies.length; i++) {
+                this.physics.arcade.collide(enemies[i], layer);
+                this.physics.arcade.overlap(this.hero, enemies[i], this.heroEnemyCollide, null, this);
+            }
+            for (var i = 0; i < enemies.length; i++) {
+                this.physics.arcade.overlap(this.bullets, enemies[i], this.heroShootsEnemy, null, this);
+            }
+            /* COMMENT THIS OUT TO REMOVE ENEMY BULLETS KILLING HERO. */
+            this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
+            /* Megaman chasing hero and kills hero */
+            this.physics.arcade.overlap(this.enemyChase, this.hero, this.enemyCollidesHero, null, this);
+            /*Shooting MegaMan*/
+            this.physics.arcade.overlap(this.bullets, this.enemyChase, this.heroShootsEnemyChase, null, this);
+            if (!game_over && heroAlive && (this.hero.body.y >= 512 || this.hero.body.y <= -100)) {
+                console.log("DEATH");
+                this.hero.kill();
+                this.sound_hero_death.play();
+                this.deathBurst(this.hero);
+                if (numLives == 0) {
+                    this.itsGameOver();
+                }
+                else {
+                    numLives -= 1;
+                    this.endRound();
+                }
+            }
+            for (var i = 0; i < enemies.length; i++) {
+                if (!game_over && (enemies[i].y >= 512 || enemies[i].body.y <= -100)) {
+                    enemies[i].kill();
+                }
+            }
+        };
+        /* This function is to kill hero when collide with megaman*/
+        BossLevel.prototype.enemyCollidesHero = function (enemyChase, hero) {
+            this.deathBurst(hero);
+            this.sound_hero_death.play();
+            hero.kill();
+            if (numLives == 0) {
+                this.itsGameOver();
+            }
+            else {
+                numLives -= 1;
+                this.endRound();
+            }
+            heroAlive = false;
+        };
+        BossLevel.prototype.heroShootsEnemy = function (bullet, enemy) {
+            this.deathBurst(enemy);
+            bullet.kill();
+            enemy.kill();
+            for (var i = 0; i < enemyBulletsFired; i++) {
+                enemyBulletList[i].kill();
+            }
+            enemiesKilled++;
+        };
+        BossLevel.prototype.enemyShootsHero = function (enemyBullet, hero) {
+            this.deathBurst(hero);
+            this.sound_hero_death.play();
+            enemyBullet.kill();
+            hero.kill();
+            if (numLives == 0) {
+                this.itsGameOver();
+            }
+            else {
+                numLives -= 1;
+                this.endRound();
+            }
+        };
+        BossLevel.prototype.heroShootsEnemyChase = function (enemyChase, bullet) {
+            //console.log(counterToKill);
+            //if(bullet.body === undefined)
+            this.deathBurst(bullet);
+            bullet.kill();
+            //console.log("SHOT");
+            counterToKill++;
+            if (counterToKill > 40) {
+                this.deathBurst(enemyChase);
+                enemyChase.kill();
+                this.game.state.start('GameWon', true, false);
+            }
+        };
+        BossLevel.prototype.dustBurst = function (entity) {
+            if (entity.scale.x < 0) {
+                dust_cloud_emit.x = entity.body.x + 3 * entity.body.halfWidth;
+            }
+            else {
+                dust_cloud_emit.x = entity.body.x + entity.body.halfWidth;
+            }
+            if (entity.scale.y < 0) {
+                dust_cloud_emit.y = entity.body.y;
+            }
+            else {
+                dust_cloud_emit.y = entity.body.y + entity.body.height;
+            }
+            dust_cloud_emit.start(true, 800, null, 1);
+        };
+        BossLevel.prototype.deathBurst = function (entity) {
+            explode_emit.x = entity.body.x;
+            explode_emit.y = entity.body.y;
+            explode_emit.start(true, 1000, null, 10);
+        };
+        BossLevel.prototype.flipHero = function () {
+            this.dustBurst(this.hero);
+            score += 100;
+            this.sound_hero_jump.play();
+            this.sound_hero_gravity.play();
+            if (floor) {
+                this.hero.anchor.setTo(1, .5); //so it flips around its middle
+                this.hero.scale.y = -hero_scale; //flipped
+                enemyJump = true;
+            }
+            else {
+                this.hero.anchor.setTo(1, .5); //so it flips around its middle
+                this.hero.scale.y = hero_scale; //flipped
+                enemyJump = false;
+            }
+            floor = !floor;
+        };
+        BossLevel.prototype.flipEnemy = function () {
+            this.sound_hero_gravity.play();
+            this.dustBurst(this.enemyChase);
+            if (floorEnemy) {
+                this.enemyChase.anchor.setTo(1, .5); //so it flips around its middle
+                //  this.enemyChase.scale.y = 1; //facing default direction
+                this.enemyChase.scale.y = -4.0; //flipped
+                floorEnemy = false;
+            }
+            else {
+                //hero.anchor.setTo(1, .5); //so it flips around its middle
+                //hero.scale.y = -1; //facing default direction
+                //hero.scale.y = 1; //flipped
+                this.enemyChase.anchor.setTo(1, .5); //so it flips around its middle
+                //this.enemyChase.scale.y = -1; //facing default direction
+                this.enemyChase.scale.y = 4.0; //flipped
+                floorEnemy = true;
+            }
+        };
+        BossLevel.prototype.flipOtherEnemy = function (otherEnemy) {
+            this.sound_hero_gravity.play();
+            if (floorOtherEnemy) {
+                otherEnemy.anchor.setTo(1, .5); //so it flips around its middle
+                //  this.enemyChase.scale.y = 1; //facing default direction
+                otherEnemy.scale.y = -enemy_scale; //flipped
+            }
+            else {
+                //hero.anchor.setTo(1, .5); //so it flips around its middle
+                //hero.scale.y = -1; //facing default direction
+                //hero.scale.y = 1; //flipped
+                otherEnemy.anchor.setTo(1, .5); //so it flips around its middle
+                //this.enemyChase.scale.y = -1; //facing default direction
+                otherEnemy.scale.y = enemy_scale; //flipped
+            }
+            floorOtherEnemy = !floorOtherEnemy;
+        };
+        BossLevel.prototype.fireBullet = function () {
+            //  To avoid them being allowed to fire too fast we set a time limit
+            if (totalBullets > 0 && !levelComplete && this.game.time.now > bulletTime) {
+                //  Grab the first bullet we can from the pool
+                bullet = this.bullets.getFirstExists(false);
+                if (bullet && shootingRight) {
+                    this.physics.arcade.collide(bullet, layer);
+                    this.sound_hero_fire.play();
+                    if (floor) {
+                        if (first) {
+                            console.log("HERE1");
+                            bullet.reset(this.hero.body.x + 140, this.hero.y); //  And fire it
+                        }
+                        else {
+                            console.log("HERE2");
+                            bullet.reset(this.hero.x + 32, this.hero.y - 22);
+                        }
+                    }
+                    else {
+                        console.log("HERE3");
+                        bullet.reset(this.hero.x + 35, this.hero.y);
+                    }
+                    bullet.body.velocity.x = 5000;
+                    bulletTime = this.game.time.now + 200;
+                    bulletFired = true;
+                    totalBullets--;
+                }
+                else if (bullet) {
+                    this.physics.arcade.collide(bullet, layer);
+                    this.sound_hero_fire.play();
+                    if (floor) {
+                        if (first)
+                            bullet.reset(this.hero.body.x - 140, this.hero.y + 20); //  And fire it
+                        else
+                            bullet.reset(this.hero.x - 32, this.hero.y - 22);
+                    }
+                    else {
+                        bullet.reset(this.hero.x - 35, this.hero.y);
+                    }
+                    bullet.body.velocity.x = -5000;
+                    bulletTime = this.game.time.now + 200;
+                    bulletFired = true;
+                    totalBullets--;
+                }
+            }
+        };
+        BossLevel.prototype.resetBullet = function (bullet) {
+            //  Called if the bullet goes out of the screen
+            bullet.kill();
+        };
+        BossLevel.prototype.fireEnemyBullet = function (activeEnemy) {
+            //  To avoid them being allowed to fire too fast we set a time limit
+            if (this.game.time.now > enemyBulletTime) {
+                //  Grab the first bullet we can from the pool
+                enemyBulletList.push(this.enemyBullets.getFirstExists(false));
+                enemyBulletsFired++;
+                if (enemyBulletsFired > 0) {
+                    this.physics.arcade.collide(enemyBulletList[enemyBulletsFired - 1], layer);
+                    this.sound_enemy_shoot.play();
+                    enemyBulletList[enemyBulletsFired - 1].reset(activeEnemy.body.x + 10, activeEnemy.y + 18);
+                    enemyBulletList[enemyBulletsFired - 1].body.velocity.x = -250;
+                    enemyBulletTime = this.game.time.now + 200;
+                }
+            }
+        };
+        BossLevel.prototype.endRound = function () {
+            respawn = false;
+            heroAlive = false;
+        };
+        BossLevel.prototype.resetEnemyBullet = function (enemyBullet) {
+            //  Called if the bullet goes out of the screen
+            enemyBullet.kill();
+        };
+        BossLevel.prototype.render = function () {
+            //  The score
+            this.game.debug.text(scoreString + score, 10, 35, 'white', '34px Arial');
+            // this.game.debug.spriteCoords(this.hero, 300, 300);
+            this.game.debug.text('Bullets : ' + totalBullets, 345, 35, 'white', '34px Arial');
+            this.game.debug.text('Lives : ' + numLives, 660, 35, 'white', '34px Arial');
+            if (levelComplete) {
+                this.game.debug.text('Level 1 Complete', 200, 200, 'white', '50px Arial');
+                this.game.debug.text('Score: ' + score, 265, 260, 'white', '45px Arial');
+                this.game.debug.text('Enemies Killed: ' + enemiesKilled, 240, 325, 'white', '35px Arial');
+                this.game.debug.text('Bullets Left: ' + totalBullets, 260, 370, 'white', '35px Arial');
+                this.game.debug.text('Lives Left: ' + numLives, 285, 415, 'white', '35px Arial');
+                this.game.debug.text('Bonus: ' + (enemiesKilled * 1000 + totalBullets * 100 + numLives * 5000), 280, 475, 'white', '40px Arial');
+                if (!bonusAdded) {
+                    for (var i = 0; i < enemiesKilled * 1000; i++) {
+                        score++;
+                    }
+                    for (var i = 0; i < totalBullets * 100; i++) {
+                        score++;
+                    }
+                    for (var i = 0; i < numLives * 5000; i++) {
+                        score++;
+                    }
+                    bonusAdded = true;
+                }
+            }
+            else if (!respawn) {
+                this.game.debug.text("You Have Died......", 180, 200, 'white', '50px Arial');
+                this.game.debug.text("(you're bad, loser)", 180, 260, 'white', '50px Arial');
+                var count = 0;
+                //while (count < 10) {
+                this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Arial');
+                this.game.debug.text("Press 'R' to Respawn Baddie", 120, 420, 'white', '40px Arial');
+            }
+            else if (game_over) {
+                this.game.debug.text("Game Over", 265, 200, 'white', '50px Arial');
+                this.game.debug.text("That was sad to watch...", 160, 260, 'white', '50px Arial');
+                //while (count < 10) {
+                this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Arial');
+                this.game.debug.text("That all you got?", 210, 380, 'white', '45px Arial');
+            }
+        };
+        BossLevel.prototype.getFloorEnemy = function () {
+            return floorEnemy;
+        };
+        return BossLevel;
+    })(Phaser.State);
+    GravityGuy.BossLevel = BossLevel;
 })(GravityGuy || (GravityGuy = {}));
 var GravityGuy;
 (function (GravityGuy) {
@@ -136,6 +785,91 @@ var GravityGuy;
         return Enemy;
     })(Phaser.Sprite);
     GravityGuy.Enemy = Enemy;
+})(GravityGuy || (GravityGuy = {}));
+var GravityGuy;
+(function (GravityGuy) {
+    var cursors;
+    var layer;
+    var move;
+    var EnemyAir = (function (_super) {
+        __extends(EnemyAir, _super);
+        /* Parameters: game, the level, does the enemy collide with layers, x-coord to spawn, low y threshold for motion, high y threshold for motion.*/
+        function EnemyAir(game, lvl, player, collide, x, yLow, yHigh) {
+            _super.call(this, game, x, yLow, 'enemyAir', 0);
+            this.cooldown = false;
+            this.gravity = 10000;
+            this.game.physics.arcade.enableBody(this);
+            this.game.add.existing(this);
+            this.hero = player;
+            this.level = lvl;
+            this.collides = collide;
+            this.y_low = yLow;
+            this.y_high = yHigh;
+            this.ascending = true;
+            this.orbitRadius = (yHigh - yLow) / 2;
+            //     this.scale.setTo(lvl.enemy_scale, lvl.enemy_scale);
+            this.animations.add('hover');
+            this.animations.play('hover', 10, true);
+            this.game.physics.enable(this, Phaser.Physics.ARCADE);
+            this.body.bounce.y = 0.2;
+            this.body.collideWorldBounds = false;
+            this.body.allowRotation = true;
+            if (collide)
+                this.body.gravity.y = 1000;
+            //     this.anchor.setTo(0.5, 0);
+        }
+        EnemyAir.prototype.update = function () {
+            //if (this.collides) {
+            //  //  console.log("hi");
+            //    this.level.physics.arcade.collide(this, this.level.getLayer());
+            //    if (this.body.blocked.up) {
+            //        this.ascending = false;
+            //        this.body.gravity.y = this.gravity;
+            //    } else if (this.body.blocked.down) {
+            //        this.ascending = true;
+            //        this.body.gravity.y = -this.gravity;
+            //    }
+            //} else {
+            if (this.body.y > this.y_high) {
+                this.ascending = false;
+            }
+            else if (this.body.y < this.y_low) {
+                this.ascending = true;
+            }
+            //    }
+            if (this.ascending) {
+                this.body.y += 10;
+            }
+            else {
+                this.body.y -= 10;
+            }
+            this.body.x = this.hero.body.x + 100; // THIS LINE IS ONLY FOR TESTING (TO KEEP THE ENEMY ON THE SCREEN)
+            //this.body.x = this.hero.body.x + 100;
+            //this.body.x = this.orbitRadius * Math.cos(this.angle) + this.body.x
+            //this.y = this.orbitRadius * Math.sin(this.angle) + this.body.x;
+            //this.angle += this.angular_increase;
+            //this.angle = cycle(this.angle, 0, 360);
+            //this.body.x = this.hero.body.x + 100;
+            //this.body.x = 
+            //this.body.y++;
+            //this.body.y = this.cycle(this.body.y, this.y_low, this.y_high);
+            //this.body.velocity.y = 0;
+        };
+        EnemyAir.prototype.cycle = function (value, min, max) {
+            var result, delta;
+            delta = (max - min);
+            // % is remainder-of-division operator here.
+            // limit input to (-delta .. +delta):
+            result = (value - min) % delta;
+            // wrap negative results around the limit:
+            if (result < 0)
+                result += delta;
+            // return adjusted input:
+            return min + result;
+        };
+        return EnemyAir;
+    })(Phaser.Sprite);
+    GravityGuy.EnemyAir = EnemyAir;
 })(GravityGuy || (GravityGuy = {}));
 var GravityGuy;
 (function (GravityGuy) {
@@ -232,45 +966,6 @@ var GravityGuy;
 })(GravityGuy || (GravityGuy = {}));
 var GravityGuy;
 (function (GravityGuy) {
-    var GameWon = (function (_super) {
-        __extends(GameWon, _super);
-        function GameWon() {
-            _super.apply(this, arguments);
-        }
-        GameWon.prototype.create = function () {
-            this.song = this.add.audio('game_won_song');
-            this.song.play();
-            this.background = this.add.sprite(0, 0, 'game_won_background');
-            this.background.alpha = 0;
-            this.add.tween(this.background).to({ alpha: 1 }, 2000, Phaser.Easing.Bounce.InOut, true);
-            //     this.logo = this.add.sprite(this.world.centerX, -300, 'title_planet');
-            //      this.logo.anchor.setTo(0.5, 0.5);
-            this.title = this.add.sprite(50, -200, 'title_text');
-            this.title.scale.setTo(1.2, 1.2);
-            this.game.add.existing(this.title);
-            this.game.time.events.add(Phaser.Timer.SECOND * 4, this.addInput, this);
-        };
-        GameWon.prototype.firstLevel = function () {
-            this.song.destroy();
-            this.game.state.start('Level1', true, false);
-        };
-        GameWon.prototype.restartGame = function () {
-            this.title.x = 100;
-            this.title.y = 200;
-            this.title.animations.add('display');
-            this.title.animations.play('display', 13, false);
-            this.game.time.events.add(Phaser.Timer.SECOND * 4, this.firstLevel, this);
-        };
-        GameWon.prototype.addInput = function () {
-            this.input.onDown.addOnce(this.restartGame, this);
-            //  tween.onComplete.add(this.startGame, this);
-        };
-        return GameWon;
-    })(Phaser.State);
-    GravityGuy.GameWon = GameWon;
-})(GravityGuy || (GravityGuy = {}));
-var GravityGuy;
-(function (GravityGuy) {
     var Game = (function (_super) {
         __extends(Game, _super);
         function Game() {
@@ -332,6 +1027,45 @@ var GravityGuy;
         return GameOver;
     })(Phaser.State);
     GravityGuy.GameOver = GameOver;
+})(GravityGuy || (GravityGuy = {}));
+var GravityGuy;
+(function (GravityGuy) {
+    var GameWon = (function (_super) {
+        __extends(GameWon, _super);
+        function GameWon() {
+            _super.apply(this, arguments);
+        }
+        GameWon.prototype.create = function () {
+            this.song = this.add.audio('game_won_song');
+            this.song.play();
+            this.background = this.add.sprite(0, 0, 'game_won_background');
+            this.background.alpha = 0;
+            this.add.tween(this.background).to({ alpha: 1 }, 2000, Phaser.Easing.Bounce.InOut, true);
+            //     this.logo = this.add.sprite(this.world.centerX, -300, 'title_planet');
+            //      this.logo.anchor.setTo(0.5, 0.5);
+            this.title = this.add.sprite(50, -200, 'title_text');
+            this.title.scale.setTo(1.2, 1.2);
+            this.game.add.existing(this.title);
+            this.game.time.events.add(Phaser.Timer.SECOND * 4, this.addInput, this);
+        };
+        GameWon.prototype.firstLevel = function () {
+            this.song.destroy();
+            this.game.state.start('Level1', true, false);
+        };
+        GameWon.prototype.restartGame = function () {
+            this.title.x = 100;
+            this.title.y = 200;
+            this.title.animations.add('display');
+            this.title.animations.play('display', 13, false);
+            this.game.time.events.add(Phaser.Timer.SECOND * 4, this.firstLevel, this);
+        };
+        GameWon.prototype.addInput = function () {
+            this.input.onDown.addOnce(this.restartGame, this);
+            //  tween.onComplete.add(this.startGame, this);
+        };
+        return GameWon;
+    })(Phaser.State);
+    GravityGuy.GameWon = GameWon;
 })(GravityGuy || (GravityGuy = {}));
 var GravityGuy;
 (function (GravityGuy) {
@@ -1243,710 +1977,6 @@ var GravityGuy;
 })(GravityGuy || (GravityGuy = {}));
 var GravityGuy;
 (function (GravityGuy) {
-    var bullet;
-    var bulletTime;
-    var bulletFired;
-    var bulletsFired;
-    var totalBullets;
-    var enemyChaseBlockedAfterDeath;
-    var enemies;
-    var enemiesTotal;
-    var enemiesDead;
-    var enemiesKilled;
-    var enemyBulletList;
-    var enemyBulletTime;
-    var enemyBulletWait;
-    var enemyBulletsFired;
-    var enemyAlive;
-    var heroAlive;
-    var enemyAliveCount;
-    var scoreString;
-    var score_text;
-    var score;
-    var lives;
-    var numLives;
-    var layer;
-    var gravityButton;
-    var cursors;
-    var jumpLocation;
-    var jumpLocationList = [];
-    var heroJumped;
-    var enemyJump;
-    var first;
-    var floor;
-    var floorEnemy;
-    var floorOtherEnemy;
-    var hero_scale = 0.7;
-    var enemyChase_scale = 4.0;
-    var enemy_scale = 0.8;
-    var explode_emit;
-    var dust_cloud_emit;
-    var levelComplete;
-    var respawn;
-    var respawnButton;
-    var escapeKey;
-    var game_over;
-    var bonusAdded;
-    var swapGravity;
-    var keyboard_grav;
-    var firstTimeGameOver;
-    var timeDelay;
-    var text;
-    var grd;
-    var enemyLocationsX;
-    var enemyLocationsY;
-    var moveRightButton;
-    var moveLeftButton;
-    var facingRight;
-    var counterToKill;
-    var shootingRight;
-    var BossLevel = (function (_super) {
-        __extends(BossLevel, _super);
-        function BossLevel() {
-            _super.apply(this, arguments);
-        }
-        BossLevel.prototype.create = function () {
-            /*Working on key binding*/
-            keyboard_grav = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-            keyboard_grav.onDown.add(this.attemptGravitySwap, this);
-            respawnButton = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
-            moveRightButton = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
-            moveLeftButton = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
-            /* If escape is pressed, game ends */
-            escapeKey = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
-            this.physics.startSystem(Phaser.Physics.ARCADE);
-            this.world.setBounds(0, 0, 2000, 512);
-            this.background = this.add.tileSprite(0, 0, 1024, 512, 'background');
-            this.background.fixedToCamera = true;
-            this.music = this.add.audio('House');
-            this.sound_landing = this.add.audio('landing_sound');
-            this.sound_hero_gravity = this.add.audio('hero_gravity');
-            this.sound_hero_death = this.add.audio('hero_death');
-            this.sound_hero_jump = this.add.audio('hero_jump');
-            this.sound_hero_fire = this.add.audio('hero_fire');
-            this.sound_enemy_shoot = this.add.audio('enemy_shoot');
-            this.sound_hero_enemyChase_collision = this.add.audio('hero_enemyChase_collision');
-            this.victoryMusic = this.add.audio('victory');
-            this.music.play();
-            explode_emit = this.game.add.emitter(0, 0, 20);
-            explode_emit.makeParticles('explosion_small');
-            explode_emit.gravity = 200;
-            dust_cloud_emit = this.game.add.emitter(0, 0, 10000);
-            dust_cloud_emit.makeParticles('dust_cloud');
-            dust_cloud_emit.bounce.y = 0;
-            dust_cloud_emit.setYSpeed(0, 0);
-            dust_cloud_emit.setXSpeed(0, 0);
-            dust_cloud_emit.allowGravity = false;
-            dust_cloud_emit.bounce.x = 0;
-            dust_cloud_emit.gravity = 0;
-            //LEVEL :D
-            this.map = this.add.tilemap('boss_level');
-            //  this.map = this.add.tilemap('joels_level'); //### HERE IS TEST MAP. SWAP TO PLAY SHITTY LEVEL. PLEASE SOMEONE MAKE A DIFFERENT ONE.
-            this.map.addTilesetImage('tileset_1');
-            this.map.setCollisionByExclusion([]);
-            //    layer = this.map.createLayer('layer_1');
-            layer = this.map.createLayer('layer_1');
-            layer.resizeWorld();
-            this.hero = new GravityGuy.Hero(this.game, 750, 300, 3);
-            this.hero.scale.setTo(hero_scale, hero_scale);
-            this.physics.arcade.enableBody(this.hero);
-            this.hero.animations.play('idle_right');
-            this.flipLeft();
-            this.enemyChase = new GravityGuy.enemyChase(this.game, 200, 100, 3);
-            this.enemyChase.scale.setTo(enemyChase_scale, enemyChase_scale);
-            this.physics.arcade.enableBody(this.enemyChase);
-            this.time.events.loop(25, this.timedUpdate, this);
-            this.enemyChase.setBossLevel(this);
-            enemiesTotal = 15;
-            enemiesDead = 0;
-            enemyBulletList = [];
-            enemies = [];
-            first = true;
-            floor = true;
-            floorEnemy = true;
-            floorOtherEnemy = true;
-            gravityButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-            cursors = this.game.input.keyboard.createCursorKeys();
-            //respawnButton = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
-            //text = this.add.text(this.world.centerX, game.world.centerY, "- phaser -\nrocking with\ngoogle web fonts");
-            //Bullets
-            this.bullets = this.game.add.group();
-            this.bullets.enableBody = true;
-            this.bullets.physicsBodyType = Phaser.Physics.ARCADE;
-            this.bullets.createMultiple(30, 'bullet');
-            this.bullets.setAll('anchor.x', 1);
-            this.bullets.setAll('anchor.y', 0);
-            this.bullets.setAll('outOfBoundsKill', true);
-            this.bullets.setAll('checkWorldBounds', true);
-            //this.bullets.scale.setTo(0.99);
-            //end added 
-            levelComplete = false;
-            respawn = true;
-            game_over = false;
-            bonusAdded = false;
-            swapGravity = false;
-            firstTimeGameOver = true;
-            bulletTime = 0;
-            bulletFired = false;
-            bulletsFired = 0;
-            enemies;
-            enemiesTotal;
-            enemiesDead;
-            enemiesKilled = 0;
-            enemyBulletTime = 0;
-            enemyBulletWait = 0;
-            enemyBulletsFired = 0;
-            enemyAlive = false;
-            heroAlive = true;
-            scoreString = 'Score : ';
-            score = 0;
-            numLives = 3;
-            heroJumped = false;
-            enemyJump = false;
-            totalBullets = 500;
-            facingRight = true;
-            shootingRight = true;
-            counterToKill = 0;
-        };
-        BossLevel.prototype.update = function () {
-            this.game.camera.x = 0;
-            this.hero.body.velocity.x = 0;
-            //console.log(this.hero.x);
-            //if (!this.hero.alive && heroAlive) {
-            //    this.deathBurst(this.hero);
-            //    this.sound_hero_death.play();
-            //    if (numLives == 0) {
-            //        this.itsGameOver();
-            //    } else {
-            //        numLives -= 1;
-            //        this.endRound();
-            //    }
-            //}
-            this.collideEverything();
-            /* When hero is alive */
-            if (heroAlive) {
-                if (moveRightButton.isDown) {
-                    // var offset = 0;
-                    this.hero.animations.play('walk');
-                    this.hero.body.velocity.x = 250;
-                    this.flipRight();
-                    //if (this.hero.scale.x < 0) {
-                    //    this.hero.anchor.setTo(1, .5); //so it flips around its middle
-                    //    this.hero.scale.x = hero_scale; //flipped
-                    //    offset = this.hero.body.halfWidth + 15;
-                    //}
-                    facingRight = true;
-                }
-                else if (moveLeftButton.isDown) {
-                    this.hero.animations.play('walk');
-                    this.hero.body.velocity.x = -250;
-                    //var offset = 0;
-                    this.flipLeft();
-                    //if (this.hero.scale.x > 0) {
-                    //    this.hero.anchor.setTo(1, .5); //so it flips around its middle
-                    //    this.hero.scale.x = -hero_scale;
-                    //    offset = this.hero.body.halfWidth + 15;
-                    //}
-                    //first = true;
-                    facingRight = false;
-                }
-                else {
-                    //this.hero.animations.frame = 0;
-                    if (facingRight) {
-                        this.hero.animations.play('idle_right');
-                    }
-                    else {
-                        this.hero.animations.play('idle_right');
-                    }
-                }
-                if (cursors.right.isDown) {
-                    shootingRight = true;
-                    this.hero.animations.play('walk');
-                    this.flipRight();
-                    this.fireBullet();
-                }
-                if (cursors.left.isDown) {
-                    shootingRight = false;
-                    this.hero.animations.play('walk');
-                    this.flipLeft();
-                    this.fireBullet();
-                }
-                if (this.hero.x > 800) {
-                    this.hero.x = 8;
-                }
-                if (this.enemyChase.x > 800) {
-                    this.enemyChase.x = 8;
-                    //if (this.enemyChase.body.gravity.y < 0 && floor) {
-                    //    console.log("Whoa");
-                    //    this.flipEnemy();
-                    //} else if (this.enemyChase.body.gravity.y > 0 && !floor) {
-                    //    console.log("Whoa2");
-                    //    this.flipEnemy();
-                    //}
-                    this.enemyChase.setOffScreen();
-                }
-                if (this.enemyChase.x < 8) {
-                    this.enemyChase.x = 800;
-                }
-                if (this.enemyChase.y <= 0 || this.enemyChase.y >= 512) {
-                    this.enemyChase.y = 200;
-                }
-                if (this.hero.x < 8) {
-                    this.hero.x = 800;
-                }
-                // if (heroAlive) {
-                if (!levelComplete && this.hero.x >= 17150) {
-                    this.levelComplete();
-                }
-                if (bulletFired && bullet.x - this.hero.x >= 400) {
-                    this.resetBullet(bullet);
-                    bulletFired = false;
-                }
-                //NEW
-                if (swapGravity) {
-                    //heroJumped = true;
-                    jumpLocation = this.hero.body.x;
-                    jumpLocationList.push(jumpLocation);
-                    this.flipHero();
-                    this.hero.body.gravity.y = -this.hero.body.gravity.y;
-                    first = false;
-                }
-                for (var j = enemiesDead; j < enemies.length; j++) {
-                    if (enemies[j].alive && enemies[j].x - this.hero.x <= 575) {
-                        enemyBulletWait++;
-                        if (enemyBulletWait % 75 == 0) {
-                            this.fireEnemyBullet(enemies[j]);
-                        }
-                    }
-                    if (enemies[j].x < this.hero.x) {
-                        enemiesDead++;
-                    }
-                }
-                swapGravity = false;
-            }
-            else {
-                if (!this.enemyChase.blocked_after_end && (this.enemyChase.body.blocked.right || this.enemyChase.body.blocked.down)) {
-                    this.enemyChase.blocked_after_end = true;
-                    this.enemyChase.play('idle', 4, true);
-                    this.enemyChase.body.velocity.x = 0;
-                }
-                swapGravity = false;
-                //   console.log(this.hero.body.gravity.y);            
-                if (this.hero.body.gravity.y < 0)
-                    this.hero.body.gravity.y = this.hero.body.gravity.y * -1;
-                if (this.enemyChase.body.gravity.y < 0)
-                    this.enemyChase.body.gravity.y = this.enemyChase.body.gravity.y * -1;
-                if (!floor) {
-                    this.flipHero();
-                }
-                if (!floorEnemy) {
-                    this.flipEnemy();
-                }
-                floor = true;
-                if (respawnButton.isDown && !respawn) {
-                    this.enemyChase.kill();
-                    this.hero.reset(750, 300);
-                    this.enemyChase.reset(200, 100);
-                    respawn = true;
-                    score = 0;
-                    heroAlive = true;
-                    this.enemyChase.blocked_after_end = false;
-                    this.enemyChase.animations.play('idle');
-                    this.hero.alive = true;
-                    enemiesKilled = 0;
-                    counterToKill = 0;
-                    floor = true;
-                    totalBullets = 500;
-                    for (var i = 0; i < enemyBulletsFired; i++) {
-                        enemyBulletList[i].kill();
-                    }
-                }
-                else if (game_over && numLives == 0) {
-                    if (firstTimeGameOver) {
-                        firstTimeGameOver = false;
-                        timeDelay = (Math.floor(this.game.time.time / 1000) % 60) + 5;
-                    }
-                    if ((Math.floor(this.game.time.time / 1000) % 60) >= timeDelay) {
-                        this.music.mute = true;
-                        this.game.state.start('GameOver', true, false);
-                    }
-                }
-            }
-        };
-        BossLevel.prototype.flipRight = function () {
-            var offset = 0;
-            if (this.hero.scale.x < 0) {
-                this.hero.anchor.setTo(1, .5); //so it flips around its middle
-                this.hero.scale.x = hero_scale; //flipped
-                offset = this.hero.body.halfWidth + 15;
-            }
-            this.hero.x += offset;
-        };
-        BossLevel.prototype.flipLeft = function () {
-            var offset = 0;
-            if (first) {
-                first = false;
-            }
-            if (this.hero.scale.x > 0) {
-                this.hero.anchor.setTo(1, .5); //so it flips around its middle
-                this.hero.scale.x = -hero_scale;
-                offset = this.hero.body.halfWidth + 15;
-            }
-            this.hero.x -= offset;
-        };
-        BossLevel.prototype.attemptGravitySwap = function () {
-            swapGravity = (this.hero.body.blocked.down || this.hero.body.blocked.up);
-        };
-        BossLevel.prototype.itsGameOver = function () {
-            game_over = true;
-            heroAlive = false;
-            this.hero.kill();
-            this.enemyChase.kill();
-            for (var i = 0; i < enemies.length; i++) {
-                enemies[i].kill();
-            }
-        };
-        BossLevel.prototype.timedUpdate = function () {
-            if (!game_over && !levelComplete && respawn) {
-                score += 10;
-            }
-        };
-        BossLevel.prototype.levelComplete = function () {
-            this.hero.kill();
-            heroAlive = false;
-            this.hero.body.y = -200;
-            this.enemyChase.kill();
-            levelComplete = true;
-            this.victoryMusic.play();
-            this.music.stop();
-            this.input.onDown.addOnce(this.fadeOut, this);
-        };
-        BossLevel.prototype.fadeOut = function () {
-            this.victoryMusic.stop();
-            this.game.state.start('GameWon', true, false);
-        };
-        BossLevel.prototype.bulletWallCollide = function (bullet, layer) {
-            bullet.kill();
-        };
-        BossLevel.prototype.heroEnemyCollide = function (hero, enemy) {
-            this.deathBurst(hero);
-            this.deathBurst(enemy);
-            this.sound_hero_death.play();
-            enemy.kill();
-            hero.kill();
-            if (numLives == 0) {
-                this.itsGameOver();
-            }
-            else {
-                numLives -= 1;
-                this.endRound();
-            }
-        };
-        /* Case where Megaman Catches up with Hero, death ensues */
-        BossLevel.prototype.heroEnemyChaseCollide = function (hero, enemyChase) {
-            this.sound_hero_enemyChase_collision.play();
-            this.deathBurst(hero);
-            this.deathBurst(enemyChase);
-            this.sound_hero_death.play();
-            enemyChase.kill();
-            hero.kill();
-            if (numLives == 0) {
-                this.itsGameOver();
-            }
-            else {
-                numLives -= 1;
-                this.endRound();
-            }
-        };
-        BossLevel.prototype.collideEverything = function () {
-            this.physics.arcade.collide(this.hero, layer);
-            if (this.hero.body.blocked.down && this.hero.in_air) {
-                this.hero.in_air = false;
-                this.sound_landing.play();
-            }
-            this.physics.arcade.collide(this.enemyChase, layer);
-            for (var i = 0; i < enemyBulletsFired; i++) {
-                // this.physics.arcade.collide(enemyBulletList[i], layer);
-                this.physics.arcade.overlap(enemyBulletList, layer, this.bulletWallCollide, null, this);
-            }
-            for (var i = 0; i < enemies.length; i++) {
-                this.physics.arcade.collide(enemies[i], layer);
-                this.physics.arcade.overlap(this.hero, enemies[i], this.heroEnemyCollide, null, this);
-            }
-            for (var i = 0; i < enemies.length; i++) {
-                this.physics.arcade.overlap(this.bullets, enemies[i], this.heroShootsEnemy, null, this);
-            }
-            /* COMMENT THIS OUT TO REMOVE ENEMY BULLETS KILLING HERO. */
-            this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
-            /* Megaman chasing hero and kills hero */
-            this.physics.arcade.overlap(this.enemyChase, this.hero, this.enemyCollidesHero, null, this);
-            /*Shooting MegaMan*/
-            this.physics.arcade.overlap(this.bullets, this.enemyChase, this.heroShootsEnemyChase, null, this);
-            if (!game_over && heroAlive && (this.hero.body.y >= 512 || this.hero.body.y <= -100)) {
-                console.log("DEATH");
-                this.hero.kill();
-                this.sound_hero_death.play();
-                this.deathBurst(this.hero);
-                if (numLives == 0) {
-                    this.itsGameOver();
-                }
-                else {
-                    numLives -= 1;
-                    this.endRound();
-                }
-            }
-            for (var i = 0; i < enemies.length; i++) {
-                if (!game_over && (enemies[i].y >= 512 || enemies[i].body.y <= -100)) {
-                    enemies[i].kill();
-                }
-            }
-        };
-        /* This function is to kill hero when collide with megaman*/
-        BossLevel.prototype.enemyCollidesHero = function (enemyChase, hero) {
-            this.deathBurst(hero);
-            this.sound_hero_death.play();
-            hero.kill();
-            if (numLives == 0) {
-                this.itsGameOver();
-            }
-            else {
-                numLives -= 1;
-                this.endRound();
-            }
-            heroAlive = false;
-        };
-        BossLevel.prototype.heroShootsEnemy = function (bullet, enemy) {
-            this.deathBurst(enemy);
-            bullet.kill();
-            enemy.kill();
-            for (var i = 0; i < enemyBulletsFired; i++) {
-                enemyBulletList[i].kill();
-            }
-            enemiesKilled++;
-        };
-        BossLevel.prototype.enemyShootsHero = function (enemyBullet, hero) {
-            this.deathBurst(hero);
-            this.sound_hero_death.play();
-            enemyBullet.kill();
-            hero.kill();
-            if (numLives == 0) {
-                this.itsGameOver();
-            }
-            else {
-                numLives -= 1;
-                this.endRound();
-            }
-        };
-        BossLevel.prototype.heroShootsEnemyChase = function (enemyChase, bullet) {
-            //console.log(counterToKill);
-            //if(bullet.body === undefined)
-            this.deathBurst(bullet);
-            bullet.kill();
-            //console.log("SHOT");
-            counterToKill++;
-            if (counterToKill > 40) {
-                this.deathBurst(enemyChase);
-                enemyChase.kill();
-                this.game.state.start('GameWon', true, false);
-            }
-        };
-        BossLevel.prototype.dustBurst = function (entity) {
-            if (entity.scale.x < 0) {
-                dust_cloud_emit.x = entity.body.x + 3 * entity.body.halfWidth;
-            }
-            else {
-                dust_cloud_emit.x = entity.body.x + entity.body.halfWidth;
-            }
-            if (entity.scale.y < 0) {
-                dust_cloud_emit.y = entity.body.y;
-            }
-            else {
-                dust_cloud_emit.y = entity.body.y + entity.body.height;
-            }
-            dust_cloud_emit.start(true, 800, null, 1);
-        };
-        BossLevel.prototype.deathBurst = function (entity) {
-            explode_emit.x = entity.body.x;
-            explode_emit.y = entity.body.y;
-            explode_emit.start(true, 1000, null, 10);
-        };
-        BossLevel.prototype.flipHero = function () {
-            this.dustBurst(this.hero);
-            score += 100;
-            this.sound_hero_jump.play();
-            this.sound_hero_gravity.play();
-            if (floor) {
-                this.hero.anchor.setTo(1, .5); //so it flips around its middle
-                this.hero.scale.y = -hero_scale; //flipped
-                enemyJump = true;
-            }
-            else {
-                this.hero.anchor.setTo(1, .5); //so it flips around its middle
-                this.hero.scale.y = hero_scale; //flipped
-                enemyJump = false;
-            }
-            floor = !floor;
-        };
-        BossLevel.prototype.flipEnemy = function () {
-            this.sound_hero_gravity.play();
-            this.dustBurst(this.enemyChase);
-            if (floorEnemy) {
-                this.enemyChase.anchor.setTo(1, .5); //so it flips around its middle
-                //  this.enemyChase.scale.y = 1; //facing default direction
-                this.enemyChase.scale.y = -4.0; //flipped
-                floorEnemy = false;
-            }
-            else {
-                //hero.anchor.setTo(1, .5); //so it flips around its middle
-                //hero.scale.y = -1; //facing default direction
-                //hero.scale.y = 1; //flipped
-                this.enemyChase.anchor.setTo(1, .5); //so it flips around its middle
-                //this.enemyChase.scale.y = -1; //facing default direction
-                this.enemyChase.scale.y = 4.0; //flipped
-                floorEnemy = true;
-            }
-        };
-        BossLevel.prototype.flipOtherEnemy = function (otherEnemy) {
-            this.sound_hero_gravity.play();
-            if (floorOtherEnemy) {
-                otherEnemy.anchor.setTo(1, .5); //so it flips around its middle
-                //  this.enemyChase.scale.y = 1; //facing default direction
-                otherEnemy.scale.y = -enemy_scale; //flipped
-            }
-            else {
-                //hero.anchor.setTo(1, .5); //so it flips around its middle
-                //hero.scale.y = -1; //facing default direction
-                //hero.scale.y = 1; //flipped
-                otherEnemy.anchor.setTo(1, .5); //so it flips around its middle
-                //this.enemyChase.scale.y = -1; //facing default direction
-                otherEnemy.scale.y = enemy_scale; //flipped
-            }
-            floorOtherEnemy = !floorOtherEnemy;
-        };
-        BossLevel.prototype.fireBullet = function () {
-            //  To avoid them being allowed to fire too fast we set a time limit
-            if (totalBullets > 0 && !levelComplete && this.game.time.now > bulletTime) {
-                //  Grab the first bullet we can from the pool
-                bullet = this.bullets.getFirstExists(false);
-                if (bullet && shootingRight) {
-                    this.physics.arcade.collide(bullet, layer);
-                    this.sound_hero_fire.play();
-                    if (floor) {
-                        if (first) {
-                            console.log("HERE1");
-                            bullet.reset(this.hero.body.x + 140, this.hero.y); //  And fire it
-                        }
-                        else {
-                            console.log("HERE2");
-                            bullet.reset(this.hero.x + 32, this.hero.y - 22);
-                        }
-                    }
-                    else {
-                        console.log("HERE3");
-                        bullet.reset(this.hero.x + 35, this.hero.y);
-                    }
-                    bullet.body.velocity.x = 5000;
-                    bulletTime = this.game.time.now + 200;
-                    bulletFired = true;
-                    totalBullets--;
-                }
-                else if (bullet) {
-                    this.physics.arcade.collide(bullet, layer);
-                    this.sound_hero_fire.play();
-                    if (floor) {
-                        if (first)
-                            bullet.reset(this.hero.body.x - 140, this.hero.y + 20); //  And fire it
-                        else
-                            bullet.reset(this.hero.x - 32, this.hero.y - 22);
-                    }
-                    else {
-                        bullet.reset(this.hero.x - 35, this.hero.y);
-                    }
-                    bullet.body.velocity.x = -5000;
-                    bulletTime = this.game.time.now + 200;
-                    bulletFired = true;
-                    totalBullets--;
-                }
-            }
-        };
-        BossLevel.prototype.resetBullet = function (bullet) {
-            //  Called if the bullet goes out of the screen
-            bullet.kill();
-        };
-        BossLevel.prototype.fireEnemyBullet = function (activeEnemy) {
-            //  To avoid them being allowed to fire too fast we set a time limit
-            if (this.game.time.now > enemyBulletTime) {
-                //  Grab the first bullet we can from the pool
-                enemyBulletList.push(this.enemyBullets.getFirstExists(false));
-                enemyBulletsFired++;
-                if (enemyBulletsFired > 0) {
-                    this.physics.arcade.collide(enemyBulletList[enemyBulletsFired - 1], layer);
-                    this.sound_enemy_shoot.play();
-                    enemyBulletList[enemyBulletsFired - 1].reset(activeEnemy.body.x + 10, activeEnemy.y + 18);
-                    enemyBulletList[enemyBulletsFired - 1].body.velocity.x = -250;
-                    enemyBulletTime = this.game.time.now + 200;
-                }
-            }
-        };
-        BossLevel.prototype.endRound = function () {
-            respawn = false;
-            heroAlive = false;
-        };
-        BossLevel.prototype.resetEnemyBullet = function (enemyBullet) {
-            //  Called if the bullet goes out of the screen
-            enemyBullet.kill();
-        };
-        BossLevel.prototype.render = function () {
-            //  The score
-            this.game.debug.text(scoreString + score, 10, 35, 'white', '34px Arial');
-            // this.game.debug.spriteCoords(this.hero, 300, 300);
-            this.game.debug.text('Bullets : ' + totalBullets, 345, 35, 'white', '34px Arial');
-            this.game.debug.text('Lives : ' + numLives, 660, 35, 'white', '34px Arial');
-            if (levelComplete) {
-                this.game.debug.text('Level 1 Complete', 200, 200, 'white', '50px Arial');
-                this.game.debug.text('Score: ' + score, 265, 260, 'white', '45px Arial');
-                this.game.debug.text('Enemies Killed: ' + enemiesKilled, 240, 325, 'white', '35px Arial');
-                this.game.debug.text('Bullets Left: ' + totalBullets, 260, 370, 'white', '35px Arial');
-                this.game.debug.text('Lives Left: ' + numLives, 285, 415, 'white', '35px Arial');
-                this.game.debug.text('Bonus: ' + (enemiesKilled * 1000 + totalBullets * 100 + numLives * 5000), 280, 475, 'white', '40px Arial');
-                if (!bonusAdded) {
-                    for (var i = 0; i < enemiesKilled * 1000; i++) {
-                        score++;
-                    }
-                    for (var i = 0; i < totalBullets * 100; i++) {
-                        score++;
-                    }
-                    for (var i = 0; i < numLives * 5000; i++) {
-                        score++;
-                    }
-                    bonusAdded = true;
-                }
-            }
-            else if (!respawn) {
-                this.game.debug.text("You Have Died......", 180, 200, 'white', '50px Arial');
-                this.game.debug.text("(you're bad, loser)", 180, 260, 'white', '50px Arial');
-                var count = 0;
-                //while (count < 10) {
-                this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Arial');
-                this.game.debug.text("Press 'R' to Respawn Baddie", 120, 420, 'white', '40px Arial');
-            }
-            else if (game_over) {
-                this.game.debug.text("Game Over", 265, 200, 'white', '50px Arial');
-                this.game.debug.text("That was sad to watch...", 160, 260, 'white', '50px Arial');
-                //while (count < 10) {
-                this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Arial');
-                this.game.debug.text("That all you got?", 210, 380, 'white', '45px Arial');
-            }
-        };
-        BossLevel.prototype.getFloorEnemy = function () {
-            return floorEnemy;
-        };
-        return BossLevel;
-    })(Phaser.State);
-    GravityGuy.BossLevel = BossLevel;
-})(GravityGuy || (GravityGuy = {}));
-var GravityGuy;
-(function (GravityGuy) {
     var layer;
     var enemiesTotal;
     var enemyLocationsX;
@@ -2098,6 +2128,7 @@ var GravityGuy;
             this.load.tilemap('Level_3', 'resources/Level_3.json', null, Phaser.Tilemap.TILED_JSON);
             this.load.tilemap('boss_level', 'resources/boss_level.json', null, Phaser.Tilemap.TILED_JSON);
             /*SPRITESHEETS*/
+            this.load.spritesheet('enemyAir', 'visuals/enemy_air.png', 65, 72);
             this.load.spritesheet('title_text', 'visuals/title_text.png', 474, 117);
             this.load.spritesheet('hero', 'visuals/hero_sprite_full.png', 41, 49);
             this.load.spritesheet('enemyChase', 'visuals/mega_enemy_sprite.png', 50, 40);

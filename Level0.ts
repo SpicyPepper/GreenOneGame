@@ -57,8 +57,10 @@
 
     export class Level0 extends Phaser.State {
 
-        map: Phaser.Tilemap
+        //
 
+        map: Phaser.Tilemap
+        layer;
         music: Phaser.Sound
         sound_grav: Phaser.Sound
         sound_enemy_death: Phaser.Sound
@@ -79,12 +81,8 @@
         hero: GravityGuy.Hero
         enemyChase: GravityGuy.enemyChase
         enemy: GravityGuy.Enemy
-
-        enemy2: GravityGuy.Enemy2
-        enemy2_scale;
-
+        enemyAir: GravityGuy.EnemyAir
         enemy_scale;
-
         create() {
             //FPS 
             this.game.time.advancedTiming = true;
@@ -104,6 +102,7 @@
 
             this.init_sounds();
             this.init_emitters();
+
          
             this.hero = new Hero(this.game, 150, 300, 1);
             hero_scale = this.hero.hero_scale;
@@ -112,9 +111,11 @@
 
             this.enemyChase = new enemyChase(this.game, 0, 300, 1);
 
+            this.enemyAir = new EnemyAir(this.game, this, this.hero, true, 3700, 200, 200);
+
             this.physics.arcade.enableBody(this.enemyChase);
             this.time.events.loop(25, this.timedUpdate, this);
-     
+
             enemiesDead = 0;
 
             enemyBulletList = [];
@@ -124,6 +125,12 @@
             //this.createEnemies();
             //works above
 
+            
+
+
+
+
+
             //text = this.add.text(this.world.centerX, game.world.centerY, "- phaser -\nrocking with\ngoogle web fonts");
 
             //Bullets
@@ -132,6 +139,10 @@
             //end added 
             this. init_bullets();
             //Enemy Bullets
+
+
+
+            
         }
         init_emitters() {
 
@@ -736,7 +747,7 @@
         }
 
         render() {
-            //this.game.debug.spriteInfo(this.hero, 400, 400);
+            this.game.debug.spriteInfo(this.enemyAir, 400, 400);
             //  The score
            
           //  this.game.debug.text(this.game.time.fps + '' || '--', 2, 60, "#00ff00");  
@@ -800,7 +811,12 @@
         }
 
         setLayer(aLayer) {
+           
             layer = aLayer;
+        }
+
+        getLayer() {
+            return layer;
         }
 
         setEnemiesTotal(anEnemyAmount) {

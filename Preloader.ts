@@ -64,7 +64,7 @@
             this.load.tilemap('boss_level', 'resources/boss_level.json', null, Phaser.Tilemap.TILED_JSON);
 
             /*SPRITESHEETS*/
-
+            this.load.spritesheet('enemyAir', 'visuals/enemy_air.png', 65, 72);
             this.load.spritesheet('title_text', 'visuals/title_text.png', 474, 117);
             this.load.spritesheet('hero', 'visuals/hero_sprite_full.png', 41, 49);
             this.load.spritesheet('enemyChase', 'visuals/mega_enemy_sprite.png', 50, 40);

@@ -28,6 +28,7 @@
             this.body.allowRotation = true;
             this.body.gravity.y = 18000;
             this.anchor.setTo(0.5, 0);
+
         }
         
         update() {
