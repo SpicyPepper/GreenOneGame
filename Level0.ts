@@ -50,7 +50,6 @@
     var timeDelay;
     var text;
     var grd;
-    var numLives;
     var enemyLocationsX;
     var enemyLocationsY;
     var background;
@@ -93,10 +92,6 @@
             score = aScore;
             numLives = aNumberLives;
         }
-
-        addLives(n: number) {
-            numLives += n;
-        }
         create() {
             //FPS 
             this.game.time.advancedTiming = true;
@@ -118,7 +113,7 @@
             this.init_emitters();
 
             this.hero = new Hero(this.game, 150, 300, 1);
-            numLives = 3;
+            this.hero.addLives(numLives);
             hero_scale = this.hero.hero_scale;
 
             this.physics.arcade.enableBody(this.hero);
@@ -221,7 +216,7 @@
             heroAlive = true;
             scoreString = 'Score : ';
             //score = 0;
-            //numLives = 3;
+            //this.hero.numLives = 3;
             heroJumped = false;
             enemyJump = false;
             totalBullets = 35;
@@ -268,10 +263,10 @@
             if (!this.hero.alive && heroAlive) {
                 this.deathBurst(this.hero);
                 this.sound_hero_death.play();
-                if (numLives == 0) {
+                if (this.hero.numLives == 0) {
                     this.itsGameOver();
                 } else {
-                    numLives -= 1;
+                    this.hero.numLives -= 1;
                     this.endRound();
                 }
             }
@@ -445,7 +440,7 @@
                     //    bullet.kill();
                     //if(enemyBullet != undefined)
                     //    enemyBullet.kill();
-                } else if (game_over && numLives == 0) {
+                } else if (game_over && this.hero.numLives == 0) {
                     if (firstTimeGameOver) {
                         firstTimeGameOver = false;
                         this.input.onDown.addOnce(this.restartAtFirstLevel, this);
@@ -514,11 +509,11 @@
             this.sound_hero_death.play();
             enemy.kill();
             hero.kill();
-            if (numLives == 0) {
+            if (this.hero.numLives == 0) {
                 this.itsGameOver();
             }
             else {
-                numLives -= 1;
+                this.hero.numLives -= 1;
                 this.endRound();
             }
         }
@@ -566,11 +561,11 @@
                 this.hero.kill();
                 this.sound_hero_death.play();
                 this.deathBurst(this.hero);
-                if (numLives == 0) {
+                if (this.hero.numLives == 0) {
                     this.itsGameOver();
                 }
                 else {
-                    numLives -= 1;
+                    this.hero.numLives -= 1;
                     this.endRound();
                 }
             }
@@ -587,10 +582,10 @@
             this.deathBurst(hero);
             this.sound_hero_death.play();
             hero.kill();
-            if (numLives == 0) {
+            if (this.hero.numLives == 0) {
                 this.itsGameOver();
             } else {
-                numLives -= 1;
+                this.hero.numLives -= 1;
                 this.endRound();
             }
             heroAlive = false;
@@ -612,11 +607,11 @@
             this.sound_hero_death.play();
             enemyBullet.kill();
             hero.kill();
-            if (numLives == 0) {
+            if (this.hero.numLives == 0) {
                 this.itsGameOver();
             }
             else {
-                numLives -= 1;
+                this.hero.numLives -= 1;
                 this.endRound();
             }
         }
@@ -774,15 +769,15 @@
             // this.game.debug.spriteCoords(this.hero, 300, 300);
             this.game.debug.text(scoreString + score, 10, 35, 'white', '34px Lucida Sans Unicode');
             this.game.debug.text('Bullets : ' + totalBullets, 345, 35, 'white', '34px Lucida Sans Unicode');
-            this.game.debug.text('Lives : ' + numLives, 660, 35, 'white', '34px Lucida Sans Unicode');
+            this.game.debug.text('Lives : ' + this.hero.numLives, 660, 35, 'white', '34px Lucida Sans Unicode');
             if (levelComplete) {
                 this.game.debug.text('Level ' + level + ' Complete!', 190, 125, 'white', '50px Lucida Sans Unicode');
                 this.game.debug.text('Click to Continue', 200, 200, 'white', '50px Lucida Sans Unicode');
                 this.game.debug.text('Score: ' + score, 265, 260, 'white', '45px Lucida Sans Unicode');
                 this.game.debug.text('Enemies Killed: ' + enemiesKilled, 240, 325, 'white', '35px Lucida Sans Unicode');
                 this.game.debug.text('Bullets Left: ' + totalBullets, 260, 370, 'white', '35px Lucida Sans Unicode');
-                this.game.debug.text('Lives Left: ' + numLives, 285, 415, 'white', '35px Lucida Sans Unicode');
-                this.game.debug.text('Bonus: ' + (enemiesKilled * 1000 + totalBullets * 100 + numLives * 5000), 280, 475, 'white', '40px Lucida Sans Unicode');
+                this.game.debug.text('Lives Left: ' + this.hero.numLives, 285, 415, 'white', '35px Lucida Sans Unicode');
+                this.game.debug.text('Bonus: ' + (enemiesKilled * 1000 + totalBullets * 100 + this.hero.numLives * 5000), 280, 475, 'white', '40px Lucida Sans Unicode');
                 if (!bonusAdded) {
                     for (var i = 0; i < enemiesKilled * 1000; i++) {
                         score++;
@@ -790,7 +785,7 @@
                     for (var i = 0; i < totalBullets * 100; i++) {
                         score++;
                     }
-                    for (var i = 0; i < numLives * 5000; i++) {
+                    for (var i = 0; i < this.hero.numLives * 5000; i++) {
                         score++;
                     }
 
@@ -866,7 +861,7 @@
         }
 
         getNumLives() {
-            return numLives;
+            return this.hero.numLives;
         }
     }
 }

@@ -14,7 +14,7 @@
         in_air;
 
         hero_scale = 1.65;
- 
+        numLives = 0;
         sound_footstep: Phaser.Sound;
         sound_landing: Phaser.Sound;
 
@@ -23,11 +23,9 @@
 
             super(game, x, y, 'hero', 0);
             just_landed = false;
-           
             //layer = layerT;
             //this.game.physics.arcade.enableBody(this);
             this.game.add.existing(this);
-            this.in_air = true;
             state = aState;
             //added
             //this.game = game;
@@ -74,11 +72,13 @@
 
         running() {
             if (!this.in_air && this.alive) {
-                console.log("play");
                 this.sound_footstep.play();
             }
         }
 
+        addLives(n: number) {
+            this.numLives += n;
+        }
 
         update() {
            
@@ -89,13 +89,12 @@
                 if (this.alive) {
 
                     /* For the purpose of knowing whether Hero is in air of on ground.*/
-                    
-                        if (this.body.blocked.down || this.body.blocked.up) {
-                            this.in_air = false;
-                        } else if (!this.body.blocked.down && !this.body.blocked.up) {
+                    if (this.in_air) 
+                        if (this.body.blocked.down || this.body.blocked.up)
+                            this.in_air = false;  
+                     else 
+                        if (!this.body.blocked.down && !this.body.blocked.up)
                             this.in_air = true;
-                        }
-                    
                         
                     
 
