@@ -1329,6 +1329,7 @@ var GravityGuy;
     var enemyLocationsY;
     var background;
     var level;
+    var life;
     var Level0 = (function (_super) {
         __extends(Level0, _super);
         function Level0() {
@@ -1357,6 +1358,10 @@ var GravityGuy;
             this.physics.arcade.enableBody(this.hero);
             this.enemyChase = new GravityGuy.enemyChase(this.game, 0, 300, 1);
             this.enemyAir = new GravityGuy.EnemyAir(this.game, this, this.hero, true, 3700, 200, 200);
+            //this.game.add.sprite(3500, 110, 'life'); 
+            this.life = new GravityGuy.Powerups(this.game, 3000, 150, 1);
+            //life.enableBody = true;
+            this.physics.arcade.enableBody(this.life);
             this.physics.arcade.enableBody(this.enemyChase);
             this.time.events.loop(25, this.timedUpdate, this);
             enemiesDead = 0;
@@ -1484,7 +1489,6 @@ var GravityGuy;
                     this.endRound();
                 }
             }
-            /* When hero is alive */
             if (heroAlive) {
                 this.enemyChase.body.velocity.x = 450;
                 if (this.enemyChase.x < (this.hero.x - 300) || this.enemyChase.y < (this.hero.y - 512) || this.enemyChase.y > (this.hero.y + 512)) {
@@ -1691,6 +1695,16 @@ var GravityGuy;
         Level0.prototype.collideEverything = function () {
             this.physics.arcade.collide(this.hero, layer);
             this.physics.arcade.collide(this.enemyChase, layer);
+            //  this.physics.arcade.collide(this.enemies, layer);
+            this.physics.arcade.collide(this.life, layer);
+            /* Invincibility*/
+            //for (var i = 0; i < 4; i++) {
+            //    var invincible = invincibility.create(i * 70, 0, 'invincible');
+            //    invincible.body.gravity.y = 6;
+            //    invincible.body.bounce.y = 0.7 + Math.random() * 0.2;
+            //}
+            /* Invincibility*/
+            this.physics.arcade.overlap(this.hero, this.life, this.collectLife, null, this);
             for (var i = 0; i < enemyBulletsFired; i++) {
                 // this.physics.arcade.collide(enemyBulletList[i], layer);
                 this.physics.arcade.overlap(enemyBulletList, layer, this.bulletWallCollide, null, this);
@@ -1761,6 +1775,11 @@ var GravityGuy;
                 numLives -= 1;
                 this.endRound();
             }
+        };
+        /* Invincibility*/
+        Level0.prototype.collectLife = function (hero, life) {
+            life.kill();
+            numLives++;
         };
         Level0.prototype.dustBurst = function (entity) {
             //explode_emit.x = entity.body.x;
@@ -2192,6 +2211,33 @@ var GravityGuy;
 })(GravityGuy || (GravityGuy = {}));
 var GravityGuy;
 (function (GravityGuy) {
+    var cursors;
+    var layer;
+    var move;
+    var Powerups = (function (_super) {
+        __extends(Powerups, _super);
+        /* Parameters: game, level, collide with layers, x-coordinate to spawn */
+        function Powerups(game, x, y, aState) {
+            _super.call(this, game, x, y, 'life', 1900);
+            this.cooldown = false;
+            this.game.physics.enable(this, Phaser.Physics.ARCADE);
+            this.game.physics.arcade.enableBody(this);
+            this.game.add.existing(this);
+            this.body.velocity.x = 0;
+            this.game.physics.enable(this, Phaser.Physics.ARCADE);
+            this.body.bounce.y = 0.2;
+            this.body.collideWorldBounds = false;
+            this.body.allowRotation = true;
+        }
+        Powerups.prototype.update = function () {
+            this.body.velocity.y = 0;
+        };
+        return Powerups;
+    })(Phaser.Sprite);
+    GravityGuy.Powerups = Powerups;
+})(GravityGuy || (GravityGuy = {}));
+var GravityGuy;
+(function (GravityGuy) {
     var Preloader = (function (_super) {
         __extends(Preloader, _super);
         function Preloader() {
@@ -2240,6 +2286,8 @@ var GravityGuy;
             this.load.image('background2', 'visuals/surface_macbeth.png');
             this.load.image('spaceship', 'visuals/spaceship.png');
             this.load.image('game_won_background', 'visuals/game_won.png');
+            /* Invincibility */
+            //  this.load.image('invincibility', 'visuals/invincibility.png'); // ########  in sprite
             /*MAPS*/
             this.load.tilemap('noob_level', 'resources/noob_level.json', null, Phaser.Tilemap.TILED_JSON);
             this.load.tilemap('joels_level', 'resources/joels_level.json', null, Phaser.Tilemap.TILED_JSON);
@@ -2247,6 +2295,7 @@ var GravityGuy;
             this.load.tilemap('Level_3', 'resources/Level_3.json', null, Phaser.Tilemap.TILED_JSON);
             this.load.tilemap('boss_level', 'resources/boss_level.json', null, Phaser.Tilemap.TILED_JSON);
             /*SPRITESHEETS*/
+            this.load.spritesheet('life', 'visuals/life.png', 80, 80); // example
             this.load.spritesheet('enemyAir', 'visuals/enemy_air.png', 65, 72);
             this.load.spritesheet('title_text', 'visuals/title_text.png', 474, 117);
             this.load.spritesheet('hero', 'visuals/hero_sprite_full.png', 41, 49);

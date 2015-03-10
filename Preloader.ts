@@ -1,5 +1,7 @@
-﻿module GravityGuy {
-    
+﻿
+
+module GravityGuy {
+
     export class Preloader extends Phaser.State {
         text: Phaser.Text
         pepper: Phaser.Sprite
@@ -10,7 +12,7 @@
             this.game.load.onLoadStart.add(this.loadStart, this);
             this.game.load.onFileComplete.add(this.fileComplete, this);
             this.game.load.onLoadComplete.add(this.loadComplete, this);
-       
+
             this.pepper = this.game.add.sprite(360, 196, 'pepper');
             this.pepper.animations.add('burn', [0, 1, 2, 3, 4], 9, true);
             this.pepper.play('burn');
@@ -18,10 +20,10 @@
             this.game.time.events.add(Phaser.Timer.SECOND * 2, this.loadAll, this);
         }
 
-        
+
         preload() {
 
-            this.game.load.spritesheet('pepper', 'visuals/spicy_pepper_sprite.png', 80, 120); 
+            this.game.load.spritesheet('pepper', 'visuals/spicy_pepper_sprite.png', 80, 120);
 
         }
 
@@ -36,7 +38,7 @@
             this.load.audio('hero_jump', ['audio/hero_jump.mp3', 'audio/hero_jump.ogg']);
             this.load.audio('enemy_shoot', ['audio/enemy_shoot.mp3', 'audio/enemy_shoot.ogg']);
             this.load.audio('victory', ['audio/victory.mp3', 'audio/victory.ogg']);
-         //   this.load.audio('hero_enemyChase_collision', ['audio/hero_enemyChase_collision.mp3', 'audio/hero_enemyChase_collision.mp3']);
+            //   this.load.audio('hero_enemyChase_collision', ['audio/hero_enemyChase_collision.mp3', 'audio/hero_enemyChase_collision.mp3']);
             this.load.audio('footstep', ['audio/landing_sound.mp3', 'audio/landing_sound.ogg']);
             this.load.audio('game_won_song', ['audio/game_won_song.mp3', 'audio/game_won_song.ogg']);
             this.load.audio('enemy_death', ['audio/enemy_death.mp3', 'audio/enemy_death.ogg']);
@@ -56,6 +58,9 @@
             this.load.image('spaceship', 'visuals/spaceship.png');
             this.load.image('game_won_background', 'visuals/game_won.png');
 
+            /* Invincibility */
+            //  this.load.image('invincibility', 'visuals/invincibility.png'); // ########  in sprite
+
             /*MAPS*/
             this.load.tilemap('noob_level', 'resources/noob_level.json', null, Phaser.Tilemap.TILED_JSON);
             this.load.tilemap('joels_level', 'resources/joels_level.json', null, Phaser.Tilemap.TILED_JSON);
@@ -64,6 +69,7 @@
             this.load.tilemap('boss_level', 'resources/boss_level.json', null, Phaser.Tilemap.TILED_JSON);
 
             /*SPRITESHEETS*/
+            this.load.spritesheet('life', 'visuals/life.png', 80, 80); // example
             this.load.spritesheet('enemyAir', 'visuals/enemy_air.png', 65, 72);
             this.load.spritesheet('title_text', 'visuals/title_text.png', 474, 117);
             this.load.spritesheet('hero', 'visuals/hero_sprite_full.png', 41, 49);
@@ -79,7 +85,7 @@
         }
         fileComplete(progress, cacheKey, success, totalLoaded, totalFiles) {
             this.text.setText("File Complete: " + progress + "% - " + totalLoaded + " out of " + totalFiles);
-            
+
         }
         loadComplete() {
             this.text.setText("LOAD COMPLETE");
@@ -96,3 +102,12 @@
 
     }
 } 
+
+
+
+
+
+
+
+
+

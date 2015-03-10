@@ -35,7 +35,7 @@
     var floorOtherEnemy;
     var hero_scale;
     var enemyChase_scale = 4;
-    
+
     var explode_emit;
     var dust_cloud_emit;
     var levelComplete;
@@ -55,9 +55,9 @@
     var background;
     var level;
 
-    export class Level0 extends Phaser.State {
+    var life;
 
-        //
+    export class Level0 extends Phaser.State {
 
         map: Phaser.Tilemap
         layer;
@@ -74,6 +74,9 @@
         sound_hero_enemyChase_collision: Phaser.Sound
 
         bullets: Phaser.Group
+
+        life: GravityGuy.Powerups
+
         enemyBullets: Phaser.Group
         //   enemies: Phaser.Group
 
@@ -82,6 +85,7 @@
         enemyChase: GravityGuy.enemyChase
         enemy: GravityGuy.Enemy
         enemyAir: GravityGuy.EnemyAir
+
         enemy_scale;
 
         init(aScore, aNumberLives) {
@@ -108,15 +112,20 @@
             this.init_sounds();
             this.init_emitters();
 
-         
             this.hero = new Hero(this.game, 150, 300, 1);
             hero_scale = this.hero.hero_scale;
-        
+
             this.physics.arcade.enableBody(this.hero);
 
             this.enemyChase = new enemyChase(this.game, 0, 300, 1);
 
             this.enemyAir = new EnemyAir(this.game, this, this.hero, true, 3700, 200, 200);
+
+            //this.game.add.sprite(3500, 110, 'life'); 
+            this.life = new Powerups(this.game, 3000, 150, 1);
+            //life.enableBody = true;
+            this.physics.arcade.enableBody(this.life);
+
 
             this.physics.arcade.enableBody(this.enemyChase);
             this.time.events.loop(25, this.timedUpdate, this);
@@ -130,24 +139,15 @@
             //this.createEnemies();
             //works above
 
-            
-
-
-
-
-
             //text = this.add.text(this.world.centerX, game.world.centerY, "- phaser -\nrocking with\ngoogle web fonts");
 
             //Bullets
 
             this.init_vars();
             //end added 
-            this. init_bullets();
+            this.init_bullets();
             //Enemy Bullets
-
-
-
-            
+    
         }
         init_emitters() {
 
@@ -166,7 +166,7 @@
         }
 
         init_sounds() {
-           this.music = this.add.audio('House');
+            this.music = this.add.audio('House');
             this.music.volume = .60;
             this.sound_enemy_death = this.add.audio('enemy_death');
             this.sound_enemy_death.volume = .80;
@@ -184,7 +184,7 @@
             this.sound_grav.volume = .70;
             this.sound_enemy_shoot = this.add.audio('enemy_shoot');
             this.sound_enemy_shoot.volume = .50;
-      //      this.sound_hero_enemyChase_collision = this.add.audio('hero_enemyChase_collision');
+            //      this.sound_hero_enemyChase_collision = this.add.audio('hero_enemyChase_collision');
             this.victoryMusic = this.add.audio('victory');
             this.music.play();
         }
@@ -203,7 +203,7 @@
             firstTimeGameOver = true;
             floor = true;
             floorEnemy = true;
-          
+
             enemies;
             enemiesTotal;
             enemiesDead;
@@ -215,7 +215,7 @@
             game_over = false;
             levelComplete = false;
             respawn = true;
-            swapGravity = false;    
+            swapGravity = false;
             heroAlive = true;
             scoreString = 'Score : ';
             //score = 0;
@@ -235,7 +235,6 @@
             this.bullets.setAll('anchor.y', 0);
             this.bullets.setAll('outOfBoundsKill', true);
             this.bullets.setAll('checkWorldBounds', true);
-
 
             this.enemyBullets = this.game.add.group();
             this.enemyBullets.enableBody = true;
@@ -274,8 +273,7 @@
                     this.endRound();
                 }
             }
-            
-            /* When hero is alive */
+
             if (heroAlive) {
                 this.enemyChase.body.velocity.x = 450;
                 if (this.enemyChase.x < (this.hero.x - 300) || this.enemyChase.y < (this.hero.y - 512) || this.enemyChase.y > (this.hero.y + 512)) {
@@ -378,7 +376,7 @@
                     for (var i = 0; i < enemies.length; i++) {
                         enemies[i].animations.stop();
                         enemies[i].my_velocity = 0;
-                        
+
                     }
                     this.enemyChase.play('idle', 4, true);
                     this.enemyChase.body.velocity.x = 0;
@@ -408,7 +406,6 @@
                     this.enemyChase.animations.play('run');
                     this.hero.alive = true;
                     enemiesKilled = 0;
-
 
                     floor = true;
 
@@ -502,7 +499,7 @@
             // Transitions to the Second Level after completing the first level
             // this.game.state.start('Level2', true, false);
         }
-       
+
 
         bulletWallCollide(bullet, layer) {
             bullet.kill();
@@ -525,10 +522,24 @@
         }
 
         collideEverything() {
+
             this.physics.arcade.collide(this.hero, layer);
 
             this.physics.arcade.collide(this.enemyChase, layer);
             //  this.physics.arcade.collide(this.enemies, layer);
+
+            this.physics.arcade.collide(this.life, layer);
+
+            /* Invincibility*/
+            //for (var i = 0; i < 4; i++) {
+            //    var invincible = invincibility.create(i * 70, 0, 'invincible');
+
+            //    invincible.body.gravity.y = 6;
+            //    invincible.body.bounce.y = 0.7 + Math.random() * 0.2;
+            //}
+
+            /* Invincibility*/
+            this.physics.arcade.overlap(this.hero, this.life, this.collectLife, null, this);
 
             for (var i = 0; i < enemyBulletsFired; i++) {
                 // this.physics.arcade.collide(enemyBulletList[i], layer);
@@ -608,6 +619,12 @@
             }
         }
 
+        /* Invincibility*/
+        collectLife(hero, life) {
+            life.kill();
+            numLives++;
+        }
+
         dustBurst(entity) {
             //explode_emit.x = entity.body.x;
             //explode_emit.y = entity.body.y;
@@ -619,7 +636,6 @@
             } else {
                 dust_cloud_emit.y = entity.body.y + entity.body.height;
             }
-
             dust_cloud_emit.start(true, 800, null, 1);
         }
 
@@ -667,7 +683,7 @@
         }
 
         flipEntity(entity) {
-           // console.log("HERYO");
+            // console.log("HERYO");
             this.sound_grav.play();
             entity.body.gravity.y *= -1;
             entity.anchor.setTo(1, .5);
@@ -755,7 +771,7 @@
             this.game.debug.spriteInfo(this.enemyAir, 400, 400);
             //  The score
            
-          //  this.game.debug.text(this.game.time.fps + '' || '--', 2, 60, "#00ff00");  
+            //  this.game.debug.text(this.game.time.fps + '' || '--', 2, 60, "#00ff00");  
             // this.game.debug.spriteCoords(this.hero, 300, 300);
             this.game.debug.text(scoreString + score, 10, 35, 'white', '34px Lucida Sans Unicode');
             this.game.debug.text('Bullets : ' + totalBullets, 345, 35, 'white', '34px Lucida Sans Unicode');
@@ -796,7 +812,7 @@
                 this.game.debug.text("Press 'R' to Respawn", 50, 462, 'white', '20px Lucida Sans Unicode');
             } else if (game_over) {
                 this.game.debug.text("Game Over", 40, 320, 'red', '70px Lucida Sans Unicode');
-             //   this.game.debug.text("That was sad to watch...", 160, 260, 'white', '50px Lucida Sans Unicode');
+                //   this.game.debug.text("That was sad to watch...", 160, 260, 'white', '50px Lucida Sans Unicode');
                 //while (count < 10) {
                 this.game.debug.text('Final Score: ' + score, 46, 368, 'white', '45px Lucida Sans Unicode');
                 this.game.debug.text("Click anywhere to try again.", 48, 415, 'white', '20px Lucida Sans Unicode');
@@ -816,7 +832,7 @@
         }
 
         setLayer(aLayer) {
-           
+
             layer = aLayer;
         }
 
@@ -849,4 +865,58 @@
             return numLives;
         }
     }
-}  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
