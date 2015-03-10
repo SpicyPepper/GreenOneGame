@@ -24,11 +24,11 @@
             layer.resizeWorld();
             super.setLayer(layer);
 
-            enemiesTotal = 23;
+            enemiesTotal = 13; //23 originally
             super.setEnemiesTotal(enemiesTotal);
 
-            enemyLocationsX = [this.game.rnd.integerInRange(500, 1214), this.game.rnd.integerInRange(1570, 1920), this.game.rnd.integerInRange(2000, 2400), this.game.rnd.integerInRange(6990, 7085),
-                                                8246, 8611, 8944, 9366, 9895, 10286, 11136, 11100, 11000, 12074, 12579, 13670, 13790, 5191, 5299, 5005, 6011, 6196, 6860];
+            enemyLocationsX = [this.game.rnd.integerInRange(500, 1214), /*this.game.rnd.integerInRange(1570, 1920), this.game.rnd.integerInRange(2000, 2400),this.game.rnd.integerInRange(6990, 7085),*/
+                                                8246, 8611, /*8944,*/ 9366, 9895, 10286, /*11136, 11100, 11000,*/ 12074, 12579, 13670, 13790, 5191, 5299, 5005, /*6011, 6196, 6860*/];
             enemyLocationsY = [360, 145, 75, 300, 200, 200, 200, 200, 200, 200, 200, 200, 200, 100, 250, 250, 250, 123, 335, 355, 135, 335, 130];
             super.setEnemyLocations(enemyLocationsX, enemyLocationsY);
 
@@ -51,7 +51,7 @@
         fadeOut() {
             this.victoryMusic.stop();
           //  this.game.state.start('BossLevel', true, false);
-            this.game.state.start('GameWon', true, false);
+            this.game.state.start('BossLevel', true, false);
         }
     
     }

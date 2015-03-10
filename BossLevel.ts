@@ -57,7 +57,7 @@
     var facingRight;
     var counterToKill;
     var shootingRight;
-
+    var offScreen;
 
 
     export class BossLevel extends Phaser.State {
@@ -165,6 +165,7 @@
             floor = true;
             floorEnemy = true;
             floorOtherEnemy = true;
+            offScreen = false;
 
             gravityButton = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
             cursors = this.game.input.keyboard.createCursorKeys();
@@ -289,12 +290,34 @@
 
 
 
-                if (this.hero.x > 800) {
+                if (this.hero.x > 750) {
                     this.hero.x = 8;
 
                 }
                 if (this.enemyChase.x > 800) {
-                    this.enemyChase.x = 8;
+                    offScreen = !offScreen;
+                    var temp = this.enemyChase.body.y;
+                    this.enemyChase.x = 100;
+                   
+                    //if (offScreen) {
+
+                    //    console.log(3);
+                    //    // if (this.y < 500 && this.y > 10) {
+                    //    //    console.log(3.3);
+
+                    //    this.enemyChase.body.gravity.y = -this.enemyChase.body.gravity.y;
+                    //    this.enemyChase.body.y = temp;
+                    //    // }
+                    //    if ((this.enemyChase.body.blocked.down || this.enemyChase.body.blocked.up)) {
+                    //        //this.scale.y = -this.scale.y;
+                    //        //this.body.gravity.y = -this.body.gravity.y;
+                    //        console.log(4);
+                    //        this.flipEnemy();
+                    //    }
+
+
+                    //}
+                    //this.enemyChase.y = 400;
                     //if (this.enemyChase.body.gravity.y < 0 && floor) {
                     //    console.log("Whoa");
                     //    this.flipEnemy();
@@ -302,20 +325,28 @@
                     //    console.log("Whoa2");
                     //    this.flipEnemy();
                     //}
-                    this.enemyChase.setOffScreen();
+                    //console.log("HELLO 1");
+                    this.enemyChase.setOffScreen(offScreen);
+
 
                 }
-                if (this.enemyChase.x < 8) {
+                if (this.enemyChase.x < 100) {
                     this.enemyChase.x = 800;
-
+                    console.log("HELLO 4");
+                    //this.enemyChase.setOffScreen(); 
                 }
 
-                if (this.enemyChase.y <= 0 || this.enemyChase.y >= 512 ) {
-                    this.enemyChase.y = 200;
-
-                }
+                //if (this.enemyChase.y < 0) {
+                //    //console.log("HELLO 2");
+                //    //this.enemyChase.y = 400;
+                //}
+                //if (this.enemyChase.y > 512) {
+                //    console.log("HELLO 3");
+                //    //this.enemyChase.y = 200;
+                //}
                 if (this.hero.x < 8) {
-                    this.hero.x = 800;
+
+                    this.hero.x = 750;
 
                 }
                 // if (heroAlive) {
@@ -356,11 +387,18 @@
                 }
                 swapGravity = false;
             } else { // HERO DEAD
-                if (!this.enemyChase.blocked_after_end && (this.enemyChase.body.blocked.right || this.enemyChase.body.blocked.down)) {
-                    this.enemyChase.blocked_after_end = true;
+                //if (!this.enemyChase.blocked_after_end && (this.enemyChase.body.blocked.right || this.enemyChase.body.blocked.down)) {
+                //    this.enemyChase.blocked_after_end = true;
 
+                //    this.enemyChase.play('idle', 4, true);
+                //    this.enemyChase.body.velocity.x = 0;
+                //}
+                //this.enemyChase.play('idle', 4, true);
+                if ((this.enemyChase.body.blocked.right || this.enemyChase.body.blocked.down)) {
                     this.enemyChase.play('idle', 4, true);
+                    this.enemyChase.setStop(true);
                     this.enemyChase.body.velocity.x = 0;
+
                 }
                 swapGravity = false;
                 //   console.log(this.hero.body.gravity.y);            
@@ -375,8 +413,9 @@
                     this.flipEnemy();
                 }
                 floor = true;
+                //this.enemyChase.set
                 if (respawnButton.isDown && !respawn) {
-                    this.enemyChase.kill();
+                    this.enemyChase.setStop(false);
                     this.hero.reset(750, 300);
                     this.enemyChase.reset(200, 100);
                     respawn = true;
@@ -613,9 +652,9 @@
             if (counterToKill > 40) {
                 this.deathBurst(enemyChase);
                 enemyChase.kill();
-                
-              
-                
+
+
+
                 this.game.state.start('GameWon', true, false);
             }
 
@@ -664,6 +703,7 @@
         flipEnemy() {
             this.sound_hero_gravity.play();
             this.dustBurst(this.enemyChase);
+            var temp = this.enemyChase.y;
             if (floorEnemy) {
                 this.enemyChase.anchor.setTo(1, .5); //so it flips around its middle
                 //  this.enemyChase.scale.y = 1; //facing default direction
@@ -677,6 +717,11 @@
                 //this.enemyChase.scale.y = -1; //facing default direction
                 this.enemyChase.scale.y = 4.0; //flipped
                 floorEnemy = true;
+            }
+            if (temp < 200) {
+                this.enemyChase.y = 150;
+            } else {
+                this.enemyChase.y = 400;
             }
         }
 
@@ -709,15 +754,15 @@
                     this.sound_hero_fire.play();
                     if (floor) {
                         if (first) {
-                            console.log("HERE1");
+                            //console.log("HERE1");
                             bullet.reset(this.hero.body.x + 140, this.hero.y);//  And fire it
                         }
                         else {
-                            console.log("HERE2");
+                            //console.log("HERE2");
                             bullet.reset(this.hero.x + 32, this.hero.y - 22);
                         }
                     } else {
-                        console.log("HERE3");
+                        // console.log("HERE3");
                         bullet.reset(this.hero.x + 35, this.hero.y);
                     }
                     bullet.body.velocity.x = 5000;
