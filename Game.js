@@ -2159,7 +2159,7 @@ var GravityGuy;
         };
         MainMenu.prototype.startGame = function () {
             this.song.destroy();
-            this.game.state.start('Level2', true, false);
+            this.game.state.start('LevelNoob', true, false);
         };
         return MainMenu;
     })(Phaser.State);
