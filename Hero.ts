@@ -14,7 +14,7 @@
         in_air;
 
         hero_scale = 1.65;
-        numLives = 3;
+        numLives = 0;
         sound_footstep: Phaser.Sound;
         sound_landing: Phaser.Sound;
 

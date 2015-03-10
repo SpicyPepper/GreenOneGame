@@ -802,7 +802,7 @@ var GravityGuy;
         }
         Enemy.prototype.update = function () {
             this.body.velocity.y = 0;
-            if (!this.cooldown && this.body.x - this.hero.body.x <= 400 && this.alive) {
+            if (!this.cooldown && !(this.body.x - this.hero.body.x >= 400) && (this.hero.body.x - this.body.x <= 400) && this.alive) {
                 this.body.velocity.x = this.my_velocity;
                 if (this.body.gravity.y > 0) {
                     if (this.hero.body.gravity.y < 0) {
@@ -1176,7 +1176,7 @@ var GravityGuy;
         function Hero(game, x, y, aState) {
             _super.call(this, game, x, y, 'hero', 0);
             this.hero_scale = 1.65;
-            this.numLives = 3;
+            this.numLives = 0;
             just_landed = false;
             //layer = layerT;
             //this.game.physics.arcade.enableBody(this);
@@ -1365,10 +1365,10 @@ var GravityGuy;
             *
             * The actual placing should be done in the actual level, similar to Enemy.ts spawning.
 
-            REMOVE if you implement.
+             please place this exact code lazily (with the parameters changed obvi) in the levels specifically. fuck groups. fuck all of that.
             */
-            this.life = new GravityGuy.PowerUp(this.game, this, this.hero, 'life', 2, 3000, 150, 0);
-            this.ammo = new GravityGuy.PowerUp(this.game, this, this.hero, 'ammo', 10, 2800, 150, 0);
+            //this.life = new PowerUp(this.game, this, this.hero, 'life',  2, 3000, 150, 0);
+            //this.ammo = new PowerUp(this.game, this, this.hero, 'ammo', 10, 2800, 150, 0);
             console.log("past");
             this.time.events.loop(25, this.timedUpdate, this);
             enemiesDead = 0;
@@ -2001,6 +2001,7 @@ var GravityGuy;
     var enemyLocationsX;
     var enemyLocationsY;
     var levelComplete;
+    var danger;
     var Level1 = (function (_super) {
         __extends(Level1, _super);
         function Level1() {
@@ -2019,6 +2020,7 @@ var GravityGuy;
             _super.prototype.create.call(this);
             _super.prototype.setLevel.call(this, 1);
             //LEVEL :D
+            // danger = this.game.add.sprite(9630, 300, 'danger');
             this.map = this.add.tilemap('level_test');
             this.map.addTilesetImage('tileset_1');
             this.map.setCollisionByExclusion([]);
@@ -2110,13 +2112,13 @@ var GravityGuy;
     var enemyLocationsX;
     var enemyLocationsY;
     var levelComplete;
+    var danger;
     var LevelNoob = (function (_super) {
         __extends(LevelNoob, _super);
         function LevelNoob() {
             _super.apply(this, arguments);
         }
         LevelNoob.prototype.init = function (aScore, aNumberLives) {
-            console.log(aScore);
             _super.prototype.init.call(this, aScore, aNumberLives);
         };
         LevelNoob.prototype.create = function () {
@@ -2127,6 +2129,9 @@ var GravityGuy;
             //end
             _super.prototype.create.call(this);
             _super.prototype.setLevel.call(this, 1);
+            danger = this.game.add.sprite(10030, 10, 'danger');
+            this.life = new GravityGuy.PowerUp(this.game, this, this.hero, 'life', 2, 3000, 150, 0);
+            //  this.ammo = new PowerUp(this.game, this, this.hero, 'ammo', 10, 2800, 150, 0);
             //LEVEL :D
             this.map = this.add.tilemap('noob_level');
             this.map.addTilesetImage('tileset_1');
@@ -2197,7 +2202,7 @@ var GravityGuy;
         };
         MainMenu.prototype.startGame = function () {
             this.song.destroy();
-            this.game.state.start('LevelNoob', true, false, 10000, 6);
+            this.game.state.start('LevelNoob', true, false, 0, 3);
         };
         return MainMenu;
     })(Phaser.State);
@@ -2301,6 +2306,7 @@ var GravityGuy;
             this.load.image('background2', 'visuals/surface_macbeth.png');
             this.load.image('spaceship', 'visuals/spaceship.png');
             this.load.image('game_won_background', 'visuals/game_won.png');
+            this.load.image('danger', 'visuals/danger.png');
             /* Invincibility */
             //  this.load.image('invincibility', 'visuals/invincibility.png'); // ########  in sprite
             /*MAPS*/
@@ -2310,6 +2316,7 @@ var GravityGuy;
             this.load.tilemap('Level_3', 'resources/Level_3.json', null, Phaser.Tilemap.TILED_JSON);
             this.load.tilemap('boss_level', 'resources/boss_level.json', null, Phaser.Tilemap.TILED_JSON);
             /*SPRITESHEETS*/
+            this.load.spritesheet('danger', 'visuals/danger.png', 200, 177);
             this.load.spritesheet('ammo', 'visuals/ammo.png', 44, 30);
             this.load.spritesheet('life', 'visuals/life.png', 42, 42); // example
             this.load.spritesheet('enemyAir', 'visuals/enemy_air.png', 65, 72);

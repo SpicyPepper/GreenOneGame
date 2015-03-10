@@ -57,6 +57,7 @@ module GravityGuy {
             this.load.image('background2', 'visuals/surface_macbeth.png');
             this.load.image('spaceship', 'visuals/spaceship.png');
             this.load.image('game_won_background', 'visuals/game_won.png');
+            this.load.image('danger', 'visuals/danger.png');
 
             /* Invincibility */
             //  this.load.image('invincibility', 'visuals/invincibility.png'); // ########  in sprite
@@ -69,6 +70,7 @@ module GravityGuy {
             this.load.tilemap('boss_level', 'resources/boss_level.json', null, Phaser.Tilemap.TILED_JSON);
 
             /*SPRITESHEETS*/
+            this.load.spritesheet('danger', 'visuals/danger.png', 200, 177);
             this.load.spritesheet('ammo', 'visuals/ammo.png', 44, 30);
             this.load.spritesheet('life', 'visuals/life.png', 42, 42); // example
             this.load.spritesheet('enemyAir', 'visuals/enemy_air.png', 65, 72);

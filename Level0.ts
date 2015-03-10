@@ -128,11 +128,11 @@
             *
             * The actual placing should be done in the actual level, similar to Enemy.ts spawning.
 
-            REMOVE if you implement.
+             please place this exact code lazily (with the parameters changed obvi) in the levels specifically. fuck groups. fuck all of that.
             */
 
-            this.life = new PowerUp(this.game, this, this.hero, 'life',  2, 3000, 150, 0);
-            this.ammo = new PowerUp(this.game, this, this.hero, 'ammo', 10, 2800, 150, 0);
+            //this.life = new PowerUp(this.game, this, this.hero, 'life',  2, 3000, 150, 0);
+            //this.ammo = new PowerUp(this.game, this, this.hero, 'ammo', 10, 2800, 150, 0);
             console.log("past");
             this.time.events.loop(25, this.timedUpdate, this);
 

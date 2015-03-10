@@ -6,11 +6,12 @@
     var enemyLocationsX;
     var enemyLocationsY;
     var levelComplete;
+    var danger;
     export class LevelNoob extends Level0 {
         background: Phaser.TileSprite;
 
         init(aScore, aNumberLives) {
-            console.log(aScore);
+            
             super.init(aScore, aNumberLives);
 
         }
@@ -24,6 +25,10 @@
             super.create();
             super.setLevel(1);
 
+
+            danger = this.game.add.sprite(10030, 10, 'danger');
+            this.life = new PowerUp(this.game, this, this.hero, 'life', 2, 3000, 150, 0);
+          //  this.ammo = new PowerUp(this.game, this, this.hero, 'ammo', 10, 2800, 150, 0);
             //LEVEL :D
             this.map = this.add.tilemap('noob_level');
             this.map.addTilesetImage('tileset_1');

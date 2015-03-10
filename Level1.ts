@@ -6,6 +6,7 @@
     var enemyLocationsX;
     var enemyLocationsY;
     var levelComplete;
+    var danger;
     export class Level1 extends Level0 {
         background: Phaser.TileSprite;
 
@@ -15,7 +16,7 @@
         }
 
         create() {
-
+            
             //has to be above super.ceate
             this.background = this.add.tileSprite(0, 0, 1024, 512, 'background');
             this.background.fixedToCamera = true;
@@ -25,6 +26,7 @@
             super.setLevel(1);
 
             //LEVEL :D
+           // danger = this.game.add.sprite(9630, 300, 'danger');
             this.map = this.add.tilemap('level_test');
             this.map.addTilesetImage('tileset_1');
             this.map.setCollisionByExclusion([]);

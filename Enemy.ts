@@ -35,7 +35,7 @@
 
             this.body.velocity.y = 0;
 
-            if (!this.cooldown && this.body.x - this.hero.body.x <= 400 && this.alive ) { /* I'M CLOSE TO THE HERO AND I'M ALIVE */
+            if (!this.cooldown && !(this.body.x - this.hero.body.x >= 400) && (this.hero.body.x - this.body.x <= 400) && this.alive ) { /* I'M CLOSE TO THE HERO AND I'M ALIVE */
                 this.body.velocity.x = this.my_velocity;
                 if (this.body.gravity.y > 0) {/* I'm going down */
                     if (this.hero.body.gravity.y < 0 /* && this.body.y < this.hero.body.y - this.hero.height*/) { /* hero is going up */
