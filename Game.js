@@ -1235,11 +1235,12 @@ var GravityGuy;
             else {
                 if (this.alive) {
                     /* For the purpose of knowing whether Hero is in air of on ground.*/
-                    if (this.in_air)
-                        if (this.body.blocked.down || this.body.blocked.up)
-                            this.in_air = false;
-                        else if (!this.body.blocked.down && !this.body.blocked.up)
-                            this.in_air = true;
+                    if (this.body.blocked.down || this.body.blocked.up) {
+                        this.in_air = false;
+                    }
+                    else if (!this.body.blocked.down && !this.body.blocked.up) {
+                        this.in_air = true;
+                    }
                     this.body.velocity.y = 0;
                     this.body.velocity.x = 450;
                     if (offset === 0) {
