@@ -38,7 +38,7 @@ module GravityGuy {
   //          console.log("powerup! " + this.key);
             if (this.key == 'life') {
   //              console.log("LIFE");
-                this.hero.addLives(this.val);
+                this.lvl.addLives(this.val);
             } else if (this.key == 'ammo') {
                 /* PLEASE IMPLEMENT ######################################### 
                   addBullets is near the end of Level0.ts ################### */

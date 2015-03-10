@@ -1176,11 +1176,11 @@ var GravityGuy;
         function Hero(game, x, y, aState) {
             _super.call(this, game, x, y, 'hero', 0);
             this.hero_scale = 1.65;
-            this.numLives = 0;
             just_landed = false;
             //layer = layerT;
             //this.game.physics.arcade.enableBody(this);
             this.game.add.existing(this);
+            this.in_air = true;
             state = aState;
             //added
             //this.game = game;
@@ -1222,11 +1222,9 @@ var GravityGuy;
         }
         Hero.prototype.running = function () {
             if (!this.in_air && this.alive) {
+                console.log("play");
                 this.sound_footstep.play();
             }
-        };
-        Hero.prototype.addLives = function (n) {
-            this.numLives += n;
         };
         Hero.prototype.update = function () {
             if (state === 3) {
@@ -1235,11 +1233,12 @@ var GravityGuy;
             else {
                 if (this.alive) {
                     /* For the purpose of knowing whether Hero is in air of on ground.*/
-                    if (this.in_air)
-                        if (this.body.blocked.down || this.body.blocked.up)
-                            this.in_air = false;
-                        else if (!this.body.blocked.down && !this.body.blocked.up)
-                            this.in_air = true;
+                    if (this.body.blocked.down || this.body.blocked.up) {
+                        this.in_air = false;
+                    }
+                    else if (!this.body.blocked.down && !this.body.blocked.up) {
+                        this.in_air = true;
+                    }
                     this.body.velocity.y = 0;
                     this.body.velocity.x = 450;
                     if (offset === 0) {
@@ -1328,6 +1327,7 @@ var GravityGuy;
     var timeDelay;
     var text;
     var grd;
+    var numLives;
     var enemyLocationsX;
     var enemyLocationsY;
     var background;
@@ -1340,6 +1340,9 @@ var GravityGuy;
         Level0.prototype.init = function (aScore, aNumberLives) {
             score = aScore;
             numLives = aNumberLives;
+        };
+        Level0.prototype.addLives = function (n) {
+            numLives += n;
         };
         Level0.prototype.create = function () {
             //FPS 
@@ -1355,7 +1358,7 @@ var GravityGuy;
             this.init_sounds();
             this.init_emitters();
             this.hero = new GravityGuy.Hero(this.game, 150, 300, 1);
-            this.hero.addLives(numLives);
+            numLives = 3;
             hero_scale = this.hero.hero_scale;
             this.physics.arcade.enableBody(this.hero);
             this.enemyChase = new GravityGuy.enemyChase(this.game, 0, 300, 1);
@@ -1441,7 +1444,7 @@ var GravityGuy;
             heroAlive = true;
             scoreString = 'Score : ';
             //score = 0;
-            //this.hero.numLives = 3;
+            //numLives = 3;
             heroJumped = false;
             enemyJump = false;
             totalBullets = 35;
@@ -1482,11 +1485,11 @@ var GravityGuy;
             if (!this.hero.alive && heroAlive) {
                 this.deathBurst(this.hero);
                 this.sound_hero_death.play();
-                if (this.hero.numLives == 0) {
+                if (numLives == 0) {
                     this.itsGameOver();
                 }
                 else {
-                    this.hero.numLives -= 1;
+                    numLives -= 1;
                     this.endRound();
                 }
             }
@@ -1628,7 +1631,7 @@ var GravityGuy;
                     this.removeEnemies();
                     this.createEnemies();
                 }
-                else if (game_over && this.hero.numLives == 0) {
+                else if (game_over && numLives == 0) {
                     if (firstTimeGameOver) {
                         firstTimeGameOver = false;
                         this.input.onDown.addOnce(this.restartAtFirstLevel, this);
@@ -1685,11 +1688,11 @@ var GravityGuy;
             this.sound_hero_death.play();
             enemy.kill();
             hero.kill();
-            if (this.hero.numLives == 0) {
+            if (numLives == 0) {
                 this.itsGameOver();
             }
             else {
-                this.hero.numLives -= 1;
+                numLives -= 1;
                 this.endRound();
             }
         };
@@ -1718,11 +1721,11 @@ var GravityGuy;
                 this.hero.kill();
                 this.sound_hero_death.play();
                 this.deathBurst(this.hero);
-                if (this.hero.numLives == 0) {
+                if (numLives == 0) {
                     this.itsGameOver();
                 }
                 else {
-                    this.hero.numLives -= 1;
+                    numLives -= 1;
                     this.endRound();
                 }
             }
@@ -1738,11 +1741,11 @@ var GravityGuy;
             this.deathBurst(hero);
             this.sound_hero_death.play();
             hero.kill();
-            if (this.hero.numLives == 0) {
+            if (numLives == 0) {
                 this.itsGameOver();
             }
             else {
-                this.hero.numLives -= 1;
+                numLives -= 1;
                 this.endRound();
             }
             heroAlive = false;
@@ -1762,11 +1765,11 @@ var GravityGuy;
             this.sound_hero_death.play();
             enemyBullet.kill();
             hero.kill();
-            if (this.hero.numLives == 0) {
+            if (numLives == 0) {
                 this.itsGameOver();
             }
             else {
-                this.hero.numLives -= 1;
+                numLives -= 1;
                 this.endRound();
             }
         };
@@ -1906,15 +1909,15 @@ var GravityGuy;
             // this.game.debug.spriteCoords(this.hero, 300, 300);
             this.game.debug.text(scoreString + score, 10, 35, 'white', '34px Lucida Sans Unicode');
             this.game.debug.text('Bullets : ' + totalBullets, 345, 35, 'white', '34px Lucida Sans Unicode');
-            this.game.debug.text('Lives : ' + this.hero.numLives, 660, 35, 'white', '34px Lucida Sans Unicode');
+            this.game.debug.text('Lives : ' + numLives, 660, 35, 'white', '34px Lucida Sans Unicode');
             if (levelComplete) {
                 this.game.debug.text('Level ' + level + ' Complete!', 190, 125, 'white', '50px Lucida Sans Unicode');
                 this.game.debug.text('Click to Continue', 200, 200, 'white', '50px Lucida Sans Unicode');
                 this.game.debug.text('Score: ' + score, 265, 260, 'white', '45px Lucida Sans Unicode');
                 this.game.debug.text('Enemies Killed: ' + enemiesKilled, 240, 325, 'white', '35px Lucida Sans Unicode');
                 this.game.debug.text('Bullets Left: ' + totalBullets, 260, 370, 'white', '35px Lucida Sans Unicode');
-                this.game.debug.text('Lives Left: ' + this.hero.numLives, 285, 415, 'white', '35px Lucida Sans Unicode');
-                this.game.debug.text('Bonus: ' + (enemiesKilled * 1000 + totalBullets * 100 + this.hero.numLives * 5000), 280, 475, 'white', '40px Lucida Sans Unicode');
+                this.game.debug.text('Lives Left: ' + numLives, 285, 415, 'white', '35px Lucida Sans Unicode');
+                this.game.debug.text('Bonus: ' + (enemiesKilled * 1000 + totalBullets * 100 + numLives * 5000), 280, 475, 'white', '40px Lucida Sans Unicode');
                 if (!bonusAdded) {
                     for (var i = 0; i < enemiesKilled * 1000; i++) {
                         score++;
@@ -1922,7 +1925,7 @@ var GravityGuy;
                     for (var i = 0; i < totalBullets * 100; i++) {
                         score++;
                     }
-                    for (var i = 0; i < this.hero.numLives * 5000; i++) {
+                    for (var i = 0; i < numLives * 5000; i++) {
                         score++;
                     }
                     bonusAdded = true;
@@ -1988,7 +1991,7 @@ var GravityGuy;
             return score;
         };
         Level0.prototype.getNumLives = function () {
-            return this.hero.numLives;
+            return numLives;
         };
         return Level0;
     })(Phaser.State);
@@ -2239,7 +2242,7 @@ var GravityGuy;
             //          console.log("powerup! " + this.key);
             if (this.key == 'life') {
                 //              console.log("LIFE");
-                this.hero.addLives(this.val);
+                this.lvl.addLives(this.val);
             }
             else if (this.key == 'ammo') {
                 /* PLEASE IMPLEMENT #########################################
