@@ -8,14 +8,16 @@
     var oldDistance;
     var just_landed;
     var state;
+
     export class Hero extends Phaser.Sprite {
 
         in_air;
 
         hero_scale = 1.65;
-
+        numLives = 3;
         sound_footstep: Phaser.Sound;
         sound_landing: Phaser.Sound;
+
 
         constructor(game: Phaser.Game, x: number, y: number, aState: number) {
 
@@ -72,6 +74,10 @@
             if (!this.in_air && this.alive) {
                 this.sound_footstep.play();
             }
+        }
+
+        addLives(n: number) {
+            this.numLives += n;
         }
 
         update() {

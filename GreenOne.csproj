@@ -41,7 +41,7 @@
     <TypeScriptCompile Include="MainMenu.ts" />
     <TypeScriptCompile Include="phaser.d.ts" />
     <TypeScriptCompile Include="pixi.d.ts" />
-    <TypeScriptCompile Include="Powerups.ts" />
+    <TypeScriptCompile Include="PowerUp.ts" />
     <TypeScriptCompile Include="Preloader.ts" />
   </ItemGroup>
   <ItemGroup>

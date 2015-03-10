@@ -1,4 +1,4 @@
-﻿body {
+﻿html {
     color: white;
     font-family: 'Segoe UI', sans-serif;
     /* IE10 Consumer Preview */
@@ -13,6 +13,10 @@
     background-image: -webkit-radial-gradient(left top, circle farthest-side, #080808 30%, #00283B 100%);
     /* W3C Markup, IE10 Release Preview */
     background-image: radial-gradient(circle farthest-side at left top, #080808 30%, #00283B 100%);
+}
+body {
+	text-align: center;
+	color: #FFFFFF;
 }
 span {
     font-style: italic;

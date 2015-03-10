@@ -20,8 +20,8 @@
     var scoreString;
     var score_text;
     var score;
-    var lives;
     var numLives;
+
     var layer;
     var gravityButton;
     var cursors;
@@ -55,7 +55,6 @@
     var background;
     var level;
 
-    var life;
 
     export class Level0 extends Phaser.State {
 
@@ -75,9 +74,10 @@
 
         bullets: Phaser.Group
 
-        life: GravityGuy.Powerups
+        life: GravityGuy.PowerUp
+        ammo: GravityGuy.PowerUp
 
-        enemyBullets: Phaser.Group
+        enemyBullets: Phaser.Group 
         //   enemies: Phaser.Group
 
         //player: GravityGuy.Player;
@@ -96,7 +96,7 @@
             //FPS 
             this.game.time.advancedTiming = true;
           
-            /*Working on key binding*/
+         
             keyboard_grav = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
             keyboard_grav.onDown.add(this.attemptGravitySwap, this);
 
@@ -113,21 +113,27 @@
             this.init_emitters();
 
             this.hero = new Hero(this.game, 150, 300, 1);
+            this.hero.addLives(numLives);
             hero_scale = this.hero.hero_scale;
 
             this.physics.arcade.enableBody(this.hero);
 
             this.enemyChase = new enemyChase(this.game, 0, 300, 1);
 
-            this.enemyAir = new EnemyAir(this.game, this, this.hero, true, 3700, 200, 200);
 
-            //this.game.add.sprite(3500, 110, 'life'); 
-            this.life = new Powerups(this.game, 3000, 150, 1);
-            //life.enableBody = true;
-            this.physics.arcade.enableBody(this.life);
+          //  this.enemyAir = new EnemyAir(this.game, this, this.hero, true, 3700, 200, 200);
+ 
+            /* GREAT use of object oriented programming right here. Marilyn helped create a dynamic
+            * object for creating new powerups. Please see PowerUp.ts for documentation.
+            *
+            * The actual placing should be done in the actual level, similar to Enemy.ts spawning.
 
+            REMOVE if you implement.
+            */
 
-            this.physics.arcade.enableBody(this.enemyChase);
+            this.life = new PowerUp(this.game, this, this.hero, 'life',  2, 3000, 150, 0);
+            this.ammo = new PowerUp(this.game, this, this.hero, 'ammo', 10, 2800, 150, 0);
+            console.log("past");
             this.time.events.loop(25, this.timedUpdate, this);
 
             enemiesDead = 0;
@@ -136,17 +142,8 @@
 
             enemies = [];
 
-            //this.createEnemies();
-            //works above
-
-            //text = this.add.text(this.world.centerX, game.world.centerY, "- phaser -\nrocking with\ngoogle web fonts");
-
-            //Bullets
-
             this.init_vars();
-            //end added 
             this.init_bullets();
-            //Enemy Bullets
     
         }
         init_emitters() {
@@ -204,7 +201,7 @@
             floor = true;
             floorEnemy = true;
 
-            enemies;
+            enemies = [];
             enemiesTotal;
             enemiesDead;
             enemiesKilled = 0;
@@ -219,7 +216,7 @@
             heroAlive = true;
             scoreString = 'Score : ';
             //score = 0;
-            //numLives = 3;
+            //this.hero.numLives = 3;
             heroJumped = false;
             enemyJump = false;
             totalBullets = 35;
@@ -266,10 +263,10 @@
             if (!this.hero.alive && heroAlive) {
                 this.deathBurst(this.hero);
                 this.sound_hero_death.play();
-                if (numLives == 0) {
+                if (this.hero.numLives == 0) {
                     this.itsGameOver();
                 } else {
-                    numLives -= 1;
+                    this.hero.numLives -= 1;
                     this.endRound();
                 }
             }
@@ -443,7 +440,7 @@
                     //    bullet.kill();
                     //if(enemyBullet != undefined)
                     //    enemyBullet.kill();
-                } else if (game_over && numLives == 0) {
+                } else if (game_over && this.hero.numLives == 0) {
                     if (firstTimeGameOver) {
                         firstTimeGameOver = false;
                         this.input.onDown.addOnce(this.restartAtFirstLevel, this);
@@ -512,11 +509,11 @@
             this.sound_hero_death.play();
             enemy.kill();
             hero.kill();
-            if (numLives == 0) {
+            if (this.hero.numLives == 0) {
                 this.itsGameOver();
             }
             else {
-                numLives -= 1;
+                this.hero.numLives -= 1;
                 this.endRound();
             }
         }
@@ -529,7 +526,7 @@
             //  this.physics.arcade.collide(this.enemies, layer);
 
             this.physics.arcade.collide(this.life, layer);
-
+            this.physics.arcade.collide(this.ammo, layer);
             /* Invincibility*/
             //for (var i = 0; i < 4; i++) {
             //    var invincible = invincibility.create(i * 70, 0, 'invincible');
@@ -539,7 +536,7 @@
             //}
 
             /* Invincibility*/
-            this.physics.arcade.overlap(this.hero, this.life, this.collectLife, null, this);
+           // this.physics.arcade.overlap(this.hero, this.life, this.collectLife, null, this);
 
             for (var i = 0; i < enemyBulletsFired; i++) {
                 // this.physics.arcade.collide(enemyBulletList[i], layer);
@@ -564,11 +561,11 @@
                 this.hero.kill();
                 this.sound_hero_death.play();
                 this.deathBurst(this.hero);
-                if (numLives == 0) {
+                if (this.hero.numLives == 0) {
                     this.itsGameOver();
                 }
                 else {
-                    numLives -= 1;
+                    this.hero.numLives -= 1;
                     this.endRound();
                 }
             }
@@ -585,10 +582,10 @@
             this.deathBurst(hero);
             this.sound_hero_death.play();
             hero.kill();
-            if (numLives == 0) {
+            if (this.hero.numLives == 0) {
                 this.itsGameOver();
             } else {
-                numLives -= 1;
+                this.hero.numLives -= 1;
                 this.endRound();
             }
             heroAlive = false;
@@ -610,20 +607,17 @@
             this.sound_hero_death.play();
             enemyBullet.kill();
             hero.kill();
-            if (numLives == 0) {
+            if (this.hero.numLives == 0) {
                 this.itsGameOver();
             }
             else {
-                numLives -= 1;
+                this.hero.numLives -= 1;
                 this.endRound();
             }
         }
 
         /* Invincibility*/
-        collectLife(hero, life) {
-            life.kill();
-            numLives++;
-        }
+
 
         dustBurst(entity) {
             //explode_emit.x = entity.body.x;
@@ -768,22 +762,22 @@
         }
 
         render() {
-            this.game.debug.spriteInfo(this.enemyAir, 400, 400);
+           // this.game.debug.spriteInfo(this.enemyAir, 400, 400);
             //  The score
            
             //  this.game.debug.text(this.game.time.fps + '' || '--', 2, 60, "#00ff00");  
             // this.game.debug.spriteCoords(this.hero, 300, 300);
             this.game.debug.text(scoreString + score, 10, 35, 'white', '34px Lucida Sans Unicode');
             this.game.debug.text('Bullets : ' + totalBullets, 345, 35, 'white', '34px Lucida Sans Unicode');
-            this.game.debug.text('Lives : ' + numLives, 660, 35, 'white', '34px Lucida Sans Unicode');
+            this.game.debug.text('Lives : ' + this.hero.numLives, 660, 35, 'white', '34px Lucida Sans Unicode');
             if (levelComplete) {
                 this.game.debug.text('Level ' + level + ' Complete!', 190, 125, 'white', '50px Lucida Sans Unicode');
                 this.game.debug.text('Click to Continue', 200, 200, 'white', '50px Lucida Sans Unicode');
                 this.game.debug.text('Score: ' + score, 265, 260, 'white', '45px Lucida Sans Unicode');
                 this.game.debug.text('Enemies Killed: ' + enemiesKilled, 240, 325, 'white', '35px Lucida Sans Unicode');
                 this.game.debug.text('Bullets Left: ' + totalBullets, 260, 370, 'white', '35px Lucida Sans Unicode');
-                this.game.debug.text('Lives Left: ' + numLives, 285, 415, 'white', '35px Lucida Sans Unicode');
-                this.game.debug.text('Bonus: ' + (enemiesKilled * 1000 + totalBullets * 100 + numLives * 5000), 280, 475, 'white', '40px Lucida Sans Unicode');
+                this.game.debug.text('Lives Left: ' + this.hero.numLives, 285, 415, 'white', '35px Lucida Sans Unicode');
+                this.game.debug.text('Bonus: ' + (enemiesKilled * 1000 + totalBullets * 100 + this.hero.numLives * 5000), 280, 475, 'white', '40px Lucida Sans Unicode');
                 if (!bonusAdded) {
                     for (var i = 0; i < enemiesKilled * 1000; i++) {
                         score++;
@@ -791,7 +785,7 @@
                     for (var i = 0; i < totalBullets * 100; i++) {
                         score++;
                     }
-                    for (var i = 0; i < numLives * 5000; i++) {
+                    for (var i = 0; i < this.hero.numLives * 5000; i++) {
                         score++;
                     }
 
@@ -817,6 +811,11 @@
                 this.game.debug.text('Final Score: ' + score, 46, 368, 'white', '45px Lucida Sans Unicode');
                 this.game.debug.text("Click anywhere to try again.", 48, 415, 'white', '20px Lucida Sans Unicode');
             }
+        }
+
+        addAmmo(n: number) {
+            // ############# PLEASE IMPLEMENT
+            n++; // <- this is garbage, just here so the function performs an operation. remove it before implementation
         }
 
         deleteReferences() {
@@ -862,7 +861,7 @@
         }
 
         getNumLives() {
-            return numLives;
+            return this.hero.numLives;
         }
     }
 }

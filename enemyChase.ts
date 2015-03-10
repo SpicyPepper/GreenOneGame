@@ -19,6 +19,7 @@
             state = aState;
             this.game.add.existing(this);
 
+            this.game.physics.arcade.enableBody(this);
             this.animations.add('run', [8, 9, 10, 11, 12, 13, 14, 15, 16, 17], 17, true);
             this.animations.add('idle', [0, 1, 0, 1, 0, 1, 2, 3, 2, 3, 4, 5, 6, 7, 0, 1, 0, 1, 0, 1, 2, 3, 2, 1, 2, 3, 4, 5, 5, 4, 5, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7]);
             this.animations.play('run');
@@ -59,7 +60,7 @@
                     if (firstTime) {
                         firstTime = false;
                         timeDelay = (Math.floor(this.game.time.time / 1000)) + 2;
-                        console.log(1);
+                       // console.log(1);
                     }
 
                     if ((Math.floor(this.game.time.time / 1000)) >= timeDelay) {
@@ -90,7 +91,7 @@
                             megaManPath = this.game.rnd.integerInRange(0, 100);
                             //console.log(megaManPath % 10 >= 9);
                             if ((megaManPath % 20 >= 19)) {
-                                console.log(megaManPath);
+                             //   console.log(megaManPath);
                                 // console.log("HERE1");
                                 if ((this.body.blocked.down || this.body.blocked.up)) {
                                     // //     //this.scale.y = -this.scale.y;
@@ -108,11 +109,11 @@
                         }
                         if ((this.body.blocked.down || this.body.blocked.up)) {
                             if (this.body.gravity.y < 0 && (bossLevel.getFloorEnemy() === true)) {
-                                console.log(5);
+                             //   console.log(5);
                                 this.x = 100;
                                 bossLevel.flipEnemy();
                             } else if (this.body.gravity.y > 0 && (bossLevel.getFloorEnemy()) === false) {
-                                console.log(6);
+                              //  console.log(6);
                                 this.x = 100;
                                 bossLevel.flipEnemy();
                             }
@@ -125,7 +126,7 @@
                         this.animations.play('idle');
                     }
                 } else {
-                    console.log(8);
+                 //   console.log(8);
                     firstTime = true;
                     offScreen = false;
                 }

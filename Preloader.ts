@@ -69,7 +69,8 @@ module GravityGuy {
             this.load.tilemap('boss_level', 'resources/boss_level.json', null, Phaser.Tilemap.TILED_JSON);
 
             /*SPRITESHEETS*/
-            this.load.spritesheet('life', 'visuals/life.png', 80, 80); // example
+            this.load.spritesheet('ammo', 'visuals/ammo.png', 44, 30);
+            this.load.spritesheet('life', 'visuals/life.png', 42, 42); // example
             this.load.spritesheet('enemyAir', 'visuals/enemy_air.png', 65, 72);
             this.load.spritesheet('title_text', 'visuals/title_text.png', 474, 117);
             this.load.spritesheet('hero', 'visuals/hero_sprite_full.png', 41, 49);
