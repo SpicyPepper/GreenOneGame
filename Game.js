@@ -92,6 +92,10 @@ var GravityGuy;
         function BossLevel() {
             _super.apply(this, arguments);
         }
+        BossLevel.prototype.init = function (aScore, aNumberLives) {
+            score = aScore;
+            numLives = aNumberLives;
+        };
         BossLevel.prototype.create = function () {
             /*Working on key binding*/
             keyboard_grav = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
@@ -1330,6 +1334,10 @@ var GravityGuy;
         function Level0() {
             _super.apply(this, arguments);
         }
+        Level0.prototype.init = function (aScore, aNumberLives) {
+            score = aScore;
+            numLives = aNumberLives;
+        };
         Level0.prototype.create = function () {
             //FPS 
             this.game.time.advancedTiming = true;
@@ -1426,8 +1434,8 @@ var GravityGuy;
             swapGravity = false;
             heroAlive = true;
             scoreString = 'Score : ';
-            score = 0;
-            numLives = 3;
+            //score = 0;
+            //numLives = 3;
             heroJumped = false;
             enemyJump = false;
             totalBullets = 35;
@@ -1963,6 +1971,12 @@ var GravityGuy;
         Level0.prototype.setLevel = function (aLevel) {
             level = aLevel;
         };
+        Level0.prototype.getScore = function () {
+            return score;
+        };
+        Level0.prototype.getNumLives = function () {
+            return numLives;
+        };
         return Level0;
     })(Phaser.State);
     GravityGuy.Level0 = Level0;
@@ -1979,6 +1993,10 @@ var GravityGuy;
         function Level1() {
             _super.apply(this, arguments);
         }
+        Level1.prototype.init = function (aScore, aNumberLives) {
+            console.log(aScore);
+            _super.prototype.init.call(this, aScore, aNumberLives);
+        };
         Level1.prototype.create = function () {
             //has to be above super.ceate
             this.background = this.add.tileSprite(0, 0, 1024, 512, 'background');
@@ -2013,7 +2031,7 @@ var GravityGuy;
         };
         Level1.prototype.fadeOut = function () {
             this.victoryMusic.stop();
-            this.game.state.start('Level2', true, false);
+            this.game.state.start('Level2', true, false, _super.prototype.getScore.call(this), _super.prototype.getNumLives.call(this));
         };
         return Level1;
     })(GravityGuy.Level0);
@@ -2031,6 +2049,9 @@ var GravityGuy;
         function Level2() {
             _super.apply(this, arguments);
         }
+        Level2.prototype.init = function (aScore, aNumberLives) {
+            _super.prototype.init.call(this, aScore, aNumberLives);
+        };
         Level2.prototype.create = function () {
             this.background = this.add.tileSprite(0, 0, 1024, 512, 'background2');
             this.background.fixedToCamera = true;
@@ -2063,7 +2084,7 @@ var GravityGuy;
         Level2.prototype.fadeOut = function () {
             this.victoryMusic.stop();
             //  this.game.state.start('BossLevel', true, false);
-            this.game.state.start('BossLevel', true, false);
+            this.game.state.start('BossLevel', true, false, _super.prototype.getScore.call(this), _super.prototype.getNumLives.call(this));
         };
         return Level2;
     })(GravityGuy.Level0);
@@ -2081,6 +2102,10 @@ var GravityGuy;
         function LevelNoob() {
             _super.apply(this, arguments);
         }
+        LevelNoob.prototype.init = function (aScore, aNumberLives) {
+            console.log(aScore);
+            _super.prototype.init.call(this, aScore, aNumberLives);
+        };
         LevelNoob.prototype.create = function () {
             //has to be above super.ceate
             this.background = this.add.tileSprite(0, 0, 1024, 512, 'background');
@@ -2115,7 +2140,7 @@ var GravityGuy;
         };
         LevelNoob.prototype.fadeOut = function () {
             this.victoryMusic.stop();
-            this.game.state.start('Level1', true, false);
+            this.game.state.start('Level1', true, false, _super.prototype.getScore.call(this), _super.prototype.getNumLives.call(this));
         };
         return LevelNoob;
     })(GravityGuy.Level0);
@@ -2159,7 +2184,7 @@ var GravityGuy;
         };
         MainMenu.prototype.startGame = function () {
             this.song.destroy();
-            this.game.state.start('LevelNoob', true, false);
+            this.game.state.start('LevelNoob', true, false, 10000, 6);
         };
         return MainMenu;
     })(Phaser.State);

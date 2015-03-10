@@ -83,10 +83,15 @@
         enemy: GravityGuy.Enemy
         enemyAir: GravityGuy.EnemyAir
         enemy_scale;
+
+        init(aScore, aNumberLives) {
+            score = aScore;
+            numLives = aNumberLives;
+        }
         create() {
             //FPS 
             this.game.time.advancedTiming = true;
-
+          
             /*Working on key binding*/
             keyboard_grav = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
             keyboard_grav.onDown.add(this.attemptGravitySwap, this);
@@ -213,8 +218,8 @@
             swapGravity = false;    
             heroAlive = true;
             scoreString = 'Score : ';
-            score = 0;
-            numLives = 3;
+            //score = 0;
+            //numLives = 3;
             heroJumped = false;
             enemyJump = false;
             totalBullets = 35;
@@ -834,6 +839,14 @@
 
         setLevel(aLevel) {
             level = aLevel;
+        }
+
+        getScore() {
+            return score;
+        }
+
+        getNumLives() {
+            return numLives;
         }
     }
 }  

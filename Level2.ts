@@ -10,6 +10,9 @@
 
         background: Phaser.TileSprite;
 
+        init(aScore, aNumberLives) {
+            super.init(aScore, aNumberLives);
+        }
 
         create() {
             this.background = this.add.tileSprite(0, 0, 1024, 512, 'background2');
@@ -51,7 +54,7 @@
         fadeOut() {
             this.victoryMusic.stop();
           //  this.game.state.start('BossLevel', true, false);
-            this.game.state.start('BossLevel', true, false);
+            this.game.state.start('BossLevel', true, false, super.getScore(), super.getNumLives());
         }
     
     }

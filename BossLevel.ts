@@ -85,6 +85,12 @@
         enemyChase: GravityGuy.enemyChase
         enemy: GravityGuy.Enemy
 
+
+        init(aScore, aNumberLives) {
+            score = aScore;
+            numLives = aNumberLives;
+
+        }
         create() {
 
             /*Working on key binding*/

@@ -8,6 +8,12 @@
     var levelComplete;
     export class Level1 extends Level0 {
         background: Phaser.TileSprite;
+
+        init(aScore, aNumberLives) {
+            console.log(aScore);
+            super.init(aScore, aNumberLives);
+        }
+
         create() {
 
             //has to be above super.ceate
@@ -57,7 +63,7 @@
 
         fadeOut() {
             this.victoryMusic.stop();
-            this.game.state.start('Level2', true, false);
+            this.game.state.start('Level2', true, false, super.getScore(), super.getNumLives());
         }
     }
 }  

@@ -8,8 +8,14 @@
     var levelComplete;
     export class LevelNoob extends Level0 {
         background: Phaser.TileSprite;
-        create() {
 
+        init(aScore, aNumberLives) {
+            console.log(aScore);
+            super.init(aScore, aNumberLives);
+
+        }
+        create() {
+           
             //has to be above super.ceate
             this.background = this.add.tileSprite(0, 0, 1024, 512, 'background');
             this.background.fixedToCamera = true;
@@ -52,7 +58,7 @@
 
         fadeOut() {
             this.victoryMusic.stop();
-            this.game.state.start('Level1', true, false);
+            this.game.state.start('Level1', true, false, super.getScore(), super.getNumLives());
         }
     }
 }   
