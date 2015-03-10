@@ -95,8 +95,7 @@
         create() {
             //FPS 
             this.game.time.advancedTiming = true;
-          
-         
+                   
             keyboard_grav = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
             keyboard_grav.onDown.add(this.attemptGravitySwap, this);
 
@@ -119,7 +118,6 @@
             this.physics.arcade.enableBody(this.hero);
 
             this.enemyChase = new enemyChase(this.game, 0, 300, 1);
-
 
           //  this.enemyAir = new EnemyAir(this.game, this, this.hero, true, 3700, 200, 200);
  
@@ -616,9 +614,6 @@
             }
         }
 
-        /* Invincibility*/
-
-
         dustBurst(entity) {
             //explode_emit.x = entity.body.x;
             //explode_emit.y = entity.body.y;
@@ -815,7 +810,9 @@
 
         addAmmo(n: number) {
             // ############# PLEASE IMPLEMENT
-            n++; // <- this is garbage, just here so the function performs an operation. remove it before implementation
+            //n++; // <- this is garbage, just here so the function performs an operation. remove it before implementation
+            totalBullets = totalBullets + n;
+
         }
 
         deleteReferences() {

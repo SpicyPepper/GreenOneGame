@@ -1,8 +1,6 @@
 ﻿
 module GravityGuy {
 
-
-
     export class PowerUp extends Phaser.Sprite {
         key;
         val;
@@ -11,7 +9,7 @@ module GravityGuy {
         /* Parameters: game: uh...
           //              key: this is the string that the game uses to identify the sprite, whatever the preloader code titles it.
           //              hero: uh...
-            //            level: uh....
+          //              level: uh....
           //              value: If the powerup uses a value, this is where you should add it (ex: 3, if 'life' will give you 3 lives. 10, if 'ammo' gives you ten bullets. 
           //              x: uh...
           //              y: uh...
@@ -21,7 +19,7 @@ module GravityGuy {
         constructor(game: Phaser.Game, level: Level0, hero: Hero, key: string, value: number, x: number, y: number, aState: number) {
 
             super(game, x, y, key, 0);
-    //        console.log(key + " PowerUp added");
+    //      console.log(key + " PowerUp added");
             this.val = value;
             this.lvl = level;
             this.hero = hero;
@@ -52,7 +50,5 @@ module GravityGuy {
             this.game.physics.arcade.overlap(this, this.hero, this.powerUpNow, null, this);
             /* UPDATE DEPENDS ON KEY (ex: 'life' 'ammo' etc */
         }
-
-
     }
 }
