@@ -58,6 +58,7 @@
     var counterToKill;
     var shootingRight;
     var offScreen;
+    var oringialScore;
 
 
     export class BossLevel extends Phaser.State {
@@ -88,6 +89,7 @@
 
         init(aScore, aNumberLives) {
             score = aScore;
+            oringialScore = aScore;
             numLives = aNumberLives;
 
         }
@@ -213,8 +215,8 @@
             enemyAlive = false;
             heroAlive = true;
             scoreString = 'Score : ';
-            score = 0;
-            numLives = 3;
+            //score = 0;
+            //numLives = 3;
             heroJumped = false;
             enemyJump = false;
             totalBullets = 500;
@@ -425,7 +427,7 @@
                     this.hero.reset(750, 300);
                     this.enemyChase.reset(200, 100);
                     respawn = true;
-                    score = 0;
+                    score = oringialScore;
                     heroAlive = true;
                     this.enemyChase.blocked_after_end = false;
                     this.enemyChase.animations.play('idle');

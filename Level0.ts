@@ -54,7 +54,7 @@
     var enemyLocationsY;
     var background;
     var level;
-
+    var originalScore;
 
     export class Level0 extends Phaser.State {
 
@@ -90,6 +90,7 @@
 
         init(aScore: number, aNumberLives: number) {
             score = aScore;
+            originalScore = aScore;
             numLives = aNumberLives;
         }
         create() {
@@ -395,7 +396,7 @@
                     this.hero.reset(150, 300);
                     this.enemyChase.reset(0, 300);
                     respawn = true;
-                    score = 0;
+                    score = originalScore;
                     heroAlive = true;
                     this.enemyChase.blocked_after_end = false;
                     this.enemyChase.animations.play('run');
