@@ -10,6 +10,8 @@
     var enemyCrawlLocationsY;
     var levelComplete;
     var danger;
+    var spacebar;
+    var rightarrow;
     export class LevelNoob extends Level0 {
         background: Phaser.TileSprite;
 
@@ -24,7 +26,8 @@
             super.create();
             super.setLevel(1);
 
-
+            spacebar = this.game.add.sprite(350, 200, 'spacebar');
+            rightarrow = this.game.add.sprite(11000, 50, 'rightarrow');
             danger = this.game.add.sprite(10030, 10, 'danger');
             this.life = new PowerUp(this.game, this, this.hero, 'life', 2, 3000, 150, 0);
             this.ammo = new PowerUp(this.game, this, this.hero, 'ammo', 10, 2800, 150, 0);

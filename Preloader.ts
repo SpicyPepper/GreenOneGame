@@ -58,6 +58,8 @@ module GravityGuy {
             this.load.image('spaceship', 'visuals/spaceship.png');
             this.load.image('game_won_background', 'visuals/game_won.png');
             this.load.image('danger', 'visuals/danger.png');
+            this.load.image('spacebar', 'visuals/spacebar.png');
+            this.load.image('rightarrow', 'visuals/rightarrow.png');
 
             /* Invincibility */
             //  this.load.image('invincibility', 'visuals/invincibility.png'); // ########  in sprite
