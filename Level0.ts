@@ -21,6 +21,7 @@
     var crawlEnemiesDead;
     var crawlEnemiesKilled;
     var crawlEnemyAlive;
+    var totalEnemiesKilled;
 
     var heroAlive;
     var enemyAliveCount;
@@ -233,6 +234,7 @@
             crawlEnemiesDead;
             crawlEnemiesKilled = 0;
             crawlEnemyAlive = false;
+            totalEnemiesKilled = 0;
 
             game_over = false;
             levelComplete = false;
@@ -449,6 +451,7 @@
                     this.hero.alive = true;
                     enemiesKilled = 0;
                     crawlEnemiesKilled = 0;
+                    totalEnemiesKilled = 0;
 
                     floor = true;
 
@@ -670,6 +673,7 @@
                 enemyBulletList[i].kill();
             }
             enemiesKilled++;
+            totalEnemiesKilled++;
         }
 
         heroShootsCrawlEnemy(bullet, enemy) {
@@ -678,6 +682,7 @@
             this.sound_enemy_death.play();
             enemy.kill();
             crawlEnemiesKilled++;
+            totalEnemiesKilled++;
         }
 
         enemyShootsHero(enemyBullet, hero) {
@@ -849,17 +854,15 @@
                 this.game.debug.text('Level ' + level + ' Complete!', 190, 125, 'white', '50px Lucida Sans Unicode');
                 this.game.debug.text('Click to Continue', 200, 200, 'white', '50px Lucida Sans Unicode');
                 this.game.debug.text('Score: ' + score, 265, 260, 'white', '45px Lucida Sans Unicode');
-                this.game.debug.text('Enemies Killed: ' + enemiesKilled + crawlEnemiesKilled, 240, 325, 'white', '35px Lucida Sans Unicode');
+                this.game.debug.text('Enemies Killed: ' + totalEnemiesKilled, 240, 325, 'white', '35px Lucida Sans Unicode');
                 this.game.debug.text('Bullets Left: ' + totalBullets, 260, 370, 'white', '35px Lucida Sans Unicode');
                 this.game.debug.text('Lives Left: ' + this.hero.numLives, 285, 415, 'white', '35px Lucida Sans Unicode');
-                this.game.debug.text('Bonus: ' + (enemiesKilled * 1000 + crawlEnemiesKilled * 1000 + totalBullets * 100 + this.hero.numLives * 5000), 280, 475, 'white', '40px Lucida Sans Unicode');
+                this.game.debug.text('Bonus: ' + (totalEnemiesKilled * 1000 + totalBullets * 100 + this.hero.numLives * 5000), 280, 475, 'white', '40px Lucida Sans Unicode');
                 if (!bonusAdded) {
-                    for (var i = 0; i < enemiesKilled * 1000; i++) {
+                    for (var i = 0; i < totalEnemiesKilled * 1000; i++) {
                         score++;
                     }
-                    for (var i = 0; i < crawlEnemiesKilled * 1000; i++) {
-                        score++;
-                    }
+                   
                     for (var i = 0; i < totalBullets * 100; i++) {
                         score++;
                     }

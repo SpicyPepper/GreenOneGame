@@ -36,6 +36,16 @@
 
             super.createEnemies();
 
+            crawlEnemiesTotal = 6;
+            super.setCrawlEnemiesTotal(crawlEnemiesTotal);
+
+            enemyCrawlLocationsX = [this.game.rnd.integerInRange(1424, 1480), this.game.rnd.integerInRange(6813, 7000), this.game.rnd.integerInRange(7840, 8000), this.game.rnd.integerInRange(8700, 8770),
+                this.game.rnd.integerInRange(9900, 10000), this.game.rnd.integerInRange(10900, 11050)];
+            enemyCrawlLocationsY = [430, 350, 30, 30, 30, 30];
+            super.setCrawlEnemyLocations(enemyCrawlLocationsX, enemyCrawlLocationsY);
+
+            super.createCrawlEnemies();
+
             var spaceship = this.game.add.sprite(13870, 195, 'spaceship');
             levelComplete = false;
 
