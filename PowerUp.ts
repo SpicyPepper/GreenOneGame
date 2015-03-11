@@ -33,18 +33,33 @@ module GravityGuy {
         }
         /* dynamic. */
         powerUpNow() {
-  //          console.log("powerup! " + this.key);
+            // console.log("powerup! " + this.key);
             if (this.key == 'life') {
-  //              console.log("LIFE");
+                // console.log("LIFE");
                 this.hero.addLives(this.val);
+
             } else if (this.key == 'ammo') {
-                /* PLEASE IMPLEMENT ######################################### 
-                  addBullets is near the end of Level0.ts ################### */
+                /* addBullets is near the end of Level0.ts ######## */
                 this.lvl.addAmmo(this.val);
+
+            } else if (this.key == 'star') {
+                this.lvl.addPoints(this.val);
+
+            } else if (this.key == 'diamond') {
+                this.lvl.addPoints(this.val);
+            
+            } else if(this.key == 'key') {
+                this.lvl.addPoints(this.val);
+        
+            } else if (this.key == 'magic') {
+                this.lvl.addPoints(this.val);
+
+            } else if (this.key == 'clock') {
+                this.lvl.addPoints(this.val);
             }
 
-            this.kill();
-        }
+                this.kill();
+            }
 
         update() {
             this.game.physics.arcade.overlap(this, this.hero, this.powerUpNow, null, this);

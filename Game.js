@@ -1704,6 +1704,11 @@ var GravityGuy;
             //  this.physics.arcade.collide(this.enemies, layer);
             this.physics.arcade.collide(this.life, layer);
             this.physics.arcade.collide(this.ammo, layer);
+            this.physics.arcade.collide(this.star, layer);
+            this.physics.arcade.collide(this.key, layer);
+            this.physics.arcade.collide(this.magic, layer);
+            this.physics.arcade.collide(this.clock, layer);
+            this.physics.arcade.collide(this.diamond, layer);
             for (var i = 0; i < enemyBulletsFired; i++) {
                 // this.physics.arcade.collide(enemyBulletList[i], layer);
                 this.physics.arcade.overlap(enemyBulletList, layer, this.bulletWallCollide, null, this);
@@ -1955,9 +1960,10 @@ var GravityGuy;
             }
         };
         Level0.prototype.addAmmo = function (n) {
-            // ############# PLEASE IMPLEMENT
-            //n++; // <- this is garbage, just here so the function performs an operation. remove it before implementation
             totalBullets = totalBullets + n;
+        };
+        Level0.prototype.addPoints = function (n) {
+            score = score + n;
         };
         Level0.prototype.deleteReferences = function () {
             delete totalBullets.regex;
@@ -2127,6 +2133,11 @@ var GravityGuy;
             danger = this.game.add.sprite(10030, 10, 'danger');
             this.life = new GravityGuy.PowerUp(this.game, this, this.hero, 'life', 2, 3000, 150, 0);
             this.ammo = new GravityGuy.PowerUp(this.game, this, this.hero, 'ammo', 10, 2800, 150, 0);
+            this.star = new GravityGuy.PowerUp(this.game, this, this.hero, 'star', 1000, 4000, 150, 0);
+            this.key = new GravityGuy.PowerUp(this.game, this, this.hero, 'key', 1000, 6500, 150, 0);
+            this.magic = new GravityGuy.PowerUp(this.game, this, this.hero, 'magic', 1000, 7500, 150, 0);
+            this.clock = new GravityGuy.PowerUp(this.game, this, this.hero, 'clock', 1000, 9000, 150, 0);
+            this.diamond = new GravityGuy.PowerUp(this.game, this, this.hero, 'diamond', 2000, 4700, 150, 0);
             //LEVEL :D
             this.map = this.add.tilemap('noob_level');
             this.map.addTilesetImage('tileset_1');
@@ -2231,15 +2242,29 @@ var GravityGuy;
         }
         /* dynamic. */
         PowerUp.prototype.powerUpNow = function () {
-            //          console.log("powerup! " + this.key);
+            // console.log("powerup! " + this.key);
             if (this.key == 'life') {
-                //              console.log("LIFE");
+                // console.log("LIFE");
                 this.hero.addLives(this.val);
             }
             else if (this.key == 'ammo') {
-                /* PLEASE IMPLEMENT #########################################
-                  addBullets is near the end of Level0.ts ################### */
+                /* addBullets is near the end of Level0.ts ######## */
                 this.lvl.addAmmo(this.val);
+            }
+            else if (this.key == 'star') {
+                this.lvl.addPoints(this.val);
+            }
+            else if (this.key == 'diamond') {
+                this.lvl.addPoints(this.val);
+            }
+            else if (this.key == 'key') {
+                this.lvl.addPoints(this.val);
+            }
+            else if (this.key == 'magic') {
+                this.lvl.addPoints(this.val);
+            }
+            else if (this.key == 'clock') {
+                this.lvl.addPoints(this.val);
             }
             this.kill();
         };
@@ -2314,6 +2339,11 @@ var GravityGuy;
             this.load.spritesheet('danger', 'visuals/danger.png', 200, 177);
             this.load.spritesheet('ammo', 'visuals/ammo.png', 44, 30);
             this.load.spritesheet('life', 'visuals/life.png', 42, 42); // example
+            this.load.spritesheet('key', 'visuals/key.png', 40, 40);
+            this.load.spritesheet('clock', 'visuals/clock.png', 90, 90);
+            this.load.spritesheet('magic', 'visuals/magic.png', 90, 90);
+            this.load.spritesheet('star', 'visuals/star.png', 40, 40);
+            this.load.spritesheet('diamond', 'visuals/diamond.png', 40, 40);
             this.load.spritesheet('enemyAir', 'visuals/enemy_air.png', 65, 72);
             this.load.spritesheet('title_text', 'visuals/title_text.png', 474, 117);
             this.load.spritesheet('hero', 'visuals/hero_sprite_full.png', 41, 49);

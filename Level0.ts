@@ -76,6 +76,11 @@
 
         life: GravityGuy.PowerUp
         ammo: GravityGuy.PowerUp
+        star: GravityGuy.PowerUp
+        key: GravityGuy.PowerUp
+        magic: GravityGuy.PowerUp
+        clock: GravityGuy.PowerUp
+        diamond: GravityGuy.PowerUp
 
         enemyBullets: Phaser.Group 
         //   enemies: Phaser.Group
@@ -472,7 +477,6 @@
             for (var i = 0; i < enemies.length; i++) {
                 enemies[i].kill();
             }
-
         }
         timedUpdate() {
             if (!game_over && !levelComplete && respawn) {
@@ -526,6 +530,12 @@
 
             this.physics.arcade.collide(this.life, layer);
             this.physics.arcade.collide(this.ammo, layer);
+            this.physics.arcade.collide(this.star, layer);
+            this.physics.arcade.collide(this.key, layer);
+            this.physics.arcade.collide(this.magic, layer);
+            this.physics.arcade.collide(this.clock, layer);
+            this.physics.arcade.collide(this.diamond, layer);
+
             /* Invincibility*/
             //for (var i = 0; i < 4; i++) {
             //    var invincible = invincibility.create(i * 70, 0, 'invincible');
@@ -810,10 +820,11 @@
         }
 
         addAmmo(n: number) {
-            // ############# PLEASE IMPLEMENT
-            //n++; // <- this is garbage, just here so the function performs an operation. remove it before implementation
             totalBullets = totalBullets + n;
+        }
 
+        addPoints(n: number) {
+            score = score + n;
         }
 
         deleteReferences() {

@@ -25,6 +25,11 @@
             danger = this.game.add.sprite(10030, 10, 'danger');
             this.life = new PowerUp(this.game, this, this.hero, 'life', 2, 3000, 150, 0);
             this.ammo = new PowerUp(this.game, this, this.hero, 'ammo', 10, 2800, 150, 0);
+            this.star = new PowerUp(this.game, this, this.hero, 'star', 1000, 4000, 150, 0);
+            this.key = new PowerUp(this.game, this, this.hero, 'key', 1000, 6500, 150, 0);
+            this.magic = new PowerUp(this.game, this, this.hero, 'magic', 1000, 7500, 150, 0);
+            this.clock = new PowerUp(this.game, this, this.hero, 'clock', 1000, 9000, 150, 0);
+            this.diamond = new PowerUp(this.game, this, this.hero, 'diamond',  2000, 4700, 150, 0);
 
             //LEVEL :D
             this.map = this.add.tilemap('noob_level');
