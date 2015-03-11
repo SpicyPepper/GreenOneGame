@@ -10,11 +10,6 @@
     export class Level1 extends Level0 {
         background: Phaser.TileSprite;
 
-        init(aScore, aNumberLives) {
-            console.log(aScore);
-            super.init(aScore, aNumberLives);
-        }
-
         create() {
             
             //has to be above super.ceate

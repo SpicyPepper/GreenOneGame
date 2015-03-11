@@ -19,8 +19,8 @@
     var enemyAliveCount;
     var scoreString;
     var score_text;
-    var score;
-    var numLives;
+    var score = 0;
+    var numLives = 3;
 
     var layer;
     var gravityButton;
@@ -88,7 +88,7 @@
 
         enemy_scale;
 
-        init(aScore, aNumberLives) {
+        init(aScore: number, aNumberLives: number) {
             score = aScore;
             numLives = aNumberLives;
         }

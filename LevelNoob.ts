@@ -10,11 +10,7 @@
     export class LevelNoob extends Level0 {
         background: Phaser.TileSprite;
 
-        init(aScore, aNumberLives) {
-            
-            super.init(aScore, aNumberLives);
-
-        }
+       
         create() {
            
             //has to be above super.ceate
