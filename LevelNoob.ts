@@ -5,6 +5,9 @@
     var enemiesTotal;
     var enemyLocationsX;
     var enemyLocationsY;
+    var crawlEnemiesTotal;
+    var enemyCrawlLocationsX;
+    var enemyCrawlLocationsY;
     var levelComplete;
     var danger;
     export class LevelNoob extends Level0 {
@@ -48,6 +51,15 @@
             super.setEnemyLocations(enemyLocationsX, enemyLocationsY);
 
             super.createEnemies();
+
+            crawlEnemiesTotal = 2;
+            super.setCrawlEnemiesTotal(crawlEnemiesTotal);
+
+            enemyCrawlLocationsX = [this.game.rnd.integerInRange(11500, 12500), this.game.rnd.integerInRange(15350, 15800)];
+            enemyCrawlLocationsY = [125, 125];
+            super.setCrawlEnemyLocations(enemyCrawlLocationsX, enemyCrawlLocationsY);
+
+            super.createCrawlEnemies();
 
             var spaceship = this.game.add.sprite(17080, 245, 'spaceship');
 

@@ -6,6 +6,7 @@
     var bulletsFired;
     var totalBullets;
     var enemyChaseBlockedAfterDeath;
+
     var enemies;
     var enemiesTotal;
     var enemiesDead;
@@ -15,6 +16,12 @@
     var enemyBulletWait;
     var enemyBulletsFired;
     var enemyAlive;
+    var crawlEnemies;
+    var crawlEnemiesTotal;
+    var crawlEnemiesDead;
+    var crawlEnemiesKilled;
+    var crawlEnemyAlive;
+
     var heroAlive;
     var enemyAliveCount;
     var scoreString;
@@ -52,6 +59,8 @@
     var grd;
     var enemyLocationsX;
     var enemyLocationsY;
+    var enemyCrawlLocationsX;
+    var enemyCrawlLocationsY;
     var background;
     var level;
     var originalScore;
@@ -90,8 +99,10 @@
         enemyChase: GravityGuy.enemyChase
         enemy: GravityGuy.Enemy
         enemyAir: GravityGuy.EnemyAir
+        enemyCrawl: GravityGuy.EnemyCrawl
 
         enemy_scale;
+    //    enemycrawl_scale;                                         ****************
 
         init(aScore: number, aNumberLives: number) {
             score = aScore;
@@ -106,6 +117,7 @@
             keyboard_grav.onDown.add(this.attemptGravitySwap, this);
 
             this.enemy_scale = 0.8;
+   //         this.enemycrawl_scale = 0.7;                                          ****************
             respawnButton = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
 
             /* If escape is pressed, game ends */
@@ -145,6 +157,9 @@
             enemyBulletList = [];
 
             enemies = [];
+
+            crawlEnemiesDead = 0;
+            crawlEnemies = [];
 
             this.init_vars();
             this.init_bullets();
@@ -213,6 +228,12 @@
             enemyBulletWait = 0;
             enemyBulletsFired = 0;
             enemyAlive = false;
+            crawlEnemies = [];
+            crawlEnemiesTotal;
+            crawlEnemiesDead;
+            crawlEnemiesKilled = 0;
+            crawlEnemyAlive = false;
+
             game_over = false;
             levelComplete = false;
             respawn = true;
@@ -254,11 +275,25 @@
             enemies = [];
         }
 
+        removeCrawlEnemies() {
+            for (var i = 0; i < crawlEnemiesTotal; i++) {
+                crawlEnemies[i].destroy();
+            }
+        }
+
         createEnemies() {
             enemies = [];
             for (var i = 0; i < enemiesTotal; i++) {
                 var anotherEnemy = new Enemy(this.game, this, this.hero, enemyLocationsX[i], enemyLocationsY[i]);
                 enemies.push(anotherEnemy);
+            }
+        }
+
+        createCrawlEnemies() {
+            crawlEnemies = [];
+            for (var i = 0; i < crawlEnemiesTotal; i++) {
+                var anotherCrawlEnemy = new EnemyCrawl(this.game, this, this.hero, enemyCrawlLocationsX[i], enemyCrawlLocationsY[i]);
+                crawlEnemies.push(anotherCrawlEnemy); 
             }
         }
 
@@ -370,6 +405,12 @@
                         enemiesDead++;
                     }
                 }
+
+                for (var j = crawlEnemiesDead; j < crawlEnemies.length; j++) {
+                    if (crawlEnemies[j].x < this.hero.x) {
+                        crawlEnemiesDead++;
+                    }
+                }
                 swapGravity = false;
             } else { // HERO DEAD
                 if (!this.enemyChase.blocked_after_end && (this.enemyChase.body.blocked.right || this.enemyChase.body.blocked.down)) {
@@ -407,6 +448,7 @@
                     this.enemyChase.animations.play('run');
                     this.hero.alive = true;
                     enemiesKilled = 0;
+                    crawlEnemiesKilled = 0;
 
                     floor = true;
 
@@ -427,6 +469,8 @@
                     //this.enemyChase.body.gravity.y = 18000;
                     this.removeEnemies();
                     this.createEnemies();
+                    this.removeCrawlEnemies();
+                    this.createCrawlEnemies();
                     
                     //for (var i = 0; i < this.enemyBullets.length; i++) {
                     //   if (this.enemyBullets[i] != undefined )
@@ -476,6 +520,9 @@
             this.enemyChase.kill();
             for (var i = 0; i < enemies.length; i++) {
                 enemies[i].kill();
+            }
+            for (var i = 0; i < crawlEnemies.length; i++) {
+                crawlEnemies[i].kill();
             }
         }
         timedUpdate() {
@@ -560,6 +607,14 @@
                 this.physics.arcade.overlap(this.bullets, enemies[i], this.heroShootsEnemy, null, this);
             }
 
+            for (var i = 0; i < crawlEnemies.length; i++) {
+                this.physics.arcade.collide(crawlEnemies[i], layer);
+                this.physics.arcade.overlap(this.hero, crawlEnemies[i], this.heroEnemyCollide, null, this);
+            }
+            for (var i = 0; i < crawlEnemies.length; i++) {
+                this.physics.arcade.overlap(this.bullets, crawlEnemies[i], this.heroShootsCrawlEnemy, null, this);
+            }
+
             /* COMMENT THIS OUT TO REMOVE ENEMY BULLETS KILLING HERO. */
             this.physics.arcade.overlap(this.enemyBullets, this.hero, this.enemyShootsHero, null, this);
 
@@ -583,6 +638,12 @@
                     enemies[i].kill();
                 }
             }
+            for (var i = 0; i < crawlEnemies.length; i++) {
+                if (!game_over && (crawlEnemies[i].y >= 512 || crawlEnemies[i].body.y <= -100)) {
+                    crawlEnemies[i].kill();
+                }
+            }
+
         }
 
         /* This function is to kill hero when collide with megaman*/
@@ -609,6 +670,14 @@
                 enemyBulletList[i].kill();
             }
             enemiesKilled++;
+        }
+
+        heroShootsCrawlEnemy(bullet, enemy) {
+            this.deathBurst(enemy);
+            bullet.kill();
+            this.sound_enemy_death.play();
+            enemy.kill();
+            crawlEnemiesKilled++;
         }
 
         enemyShootsHero(enemyBullet, hero) {
@@ -780,12 +849,15 @@
                 this.game.debug.text('Level ' + level + ' Complete!', 190, 125, 'white', '50px Lucida Sans Unicode');
                 this.game.debug.text('Click to Continue', 200, 200, 'white', '50px Lucida Sans Unicode');
                 this.game.debug.text('Score: ' + score, 265, 260, 'white', '45px Lucida Sans Unicode');
-                this.game.debug.text('Enemies Killed: ' + enemiesKilled, 240, 325, 'white', '35px Lucida Sans Unicode');
+                this.game.debug.text('Enemies Killed: ' + enemiesKilled + crawlEnemiesKilled, 240, 325, 'white', '35px Lucida Sans Unicode');
                 this.game.debug.text('Bullets Left: ' + totalBullets, 260, 370, 'white', '35px Lucida Sans Unicode');
                 this.game.debug.text('Lives Left: ' + this.hero.numLives, 285, 415, 'white', '35px Lucida Sans Unicode');
-                this.game.debug.text('Bonus: ' + (enemiesKilled * 1000 + totalBullets * 100 + this.hero.numLives * 5000), 280, 475, 'white', '40px Lucida Sans Unicode');
+                this.game.debug.text('Bonus: ' + (enemiesKilled * 1000 + crawlEnemiesKilled * 1000 + totalBullets * 100 + this.hero.numLives * 5000), 280, 475, 'white', '40px Lucida Sans Unicode');
                 if (!bonusAdded) {
                     for (var i = 0; i < enemiesKilled * 1000; i++) {
+                        score++;
+                    }
+                    for (var i = 0; i < crawlEnemiesKilled * 1000; i++) {
                         score++;
                     }
                     for (var i = 0; i < totalBullets * 100; i++) {
@@ -837,6 +909,11 @@
             delete jumpLocationList['regex'];
             delete enemyLocationsX.regex;
             delete enemyLocationsY.regex;
+            delete crawlEnemies.regex;
+            delete crawlEnemiesDead.regex;
+            delete crawlEnemiesKilled.regex;
+            delete enemyCrawlLocationsX.regex;
+            delete enemyCrawlLocationsY.regex;
         }
 
         setLayer(aLayer) {
@@ -852,9 +929,18 @@
             enemiesTotal = anEnemyAmount;
         }
 
+        setCrawlEnemiesTotal(anEnemyAmount) {
+            crawlEnemiesTotal = anEnemyAmount;
+        }
+
         setEnemyLocations(anEnemyLocationsX, anEnemyLocationsY) {
             enemyLocationsX = anEnemyLocationsX;
             enemyLocationsY = anEnemyLocationsY;
+        }
+
+        setCrawlEnemyLocations(anEnemyLocationsX, anEnemyLocationsY) {
+            enemyCrawlLocationsX = anEnemyLocationsX;
+            enemyCrawlLocationsY = anEnemyLocationsY;
         }
 
         setBackground(aBackground) {

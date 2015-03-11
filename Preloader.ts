@@ -84,6 +84,7 @@ module GravityGuy {
             this.load.spritesheet('enemyChase', 'visuals/mega_enemy_sprite.png', 50, 40);
             this.load.spritesheet('enemy1', 'visuals/enemy1.png', 68, 93);
             this.load.spritesheet('alien', 'visuals/alien.jpg', 100, 200);
+            this.load.spritesheet('enemyCrawl', 'visuals/enemycrawl.png', 50, 62);
 
             this.game.load.start();
         }

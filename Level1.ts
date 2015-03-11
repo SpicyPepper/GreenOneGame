@@ -5,6 +5,9 @@
     var enemiesTotal;
     var enemyLocationsX;
     var enemyLocationsY;
+    var crawlEnemiesTotal;
+    var enemyCrawlLocationsX;
+    var enemyCrawlLocationsY;
     var levelComplete;
     var danger;
     export class Level1 extends Level0 {
