@@ -18,7 +18,7 @@
             this.game.add.existing(this);
             this.hero = player;
             this.level = lvl;
-            this.my_velocity = -5;
+            this.my_velocity = -10;
             this.scale.setTo(lvl.enemy_scale, lvl.enemy_scale);
             this.animations.add('walk');
             this.animations.play('walk', 4, true);

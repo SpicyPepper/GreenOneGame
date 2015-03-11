@@ -102,7 +102,7 @@
         enemyCrawl: GravityGuy.EnemyCrawl
 
         enemy_scale;
-    //    enemycrawl_scale;                                         ****************
+        enemycrawl_scale;                                        
 
         init(aScore: number, aNumberLives: number) {
             score = aScore;
@@ -117,7 +117,7 @@
             keyboard_grav.onDown.add(this.attemptGravitySwap, this);
 
             this.enemy_scale = 0.8;
-   //         this.enemycrawl_scale = 0.7;                                          ****************
+            this.enemycrawl_scale = 1.2;                                          
             respawnButton = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
 
             /* If escape is pressed, game ends */
