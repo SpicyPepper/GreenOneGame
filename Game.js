@@ -88,6 +88,9 @@ var GravityGuy;
     var shootingRight;
     var offScreen;
     var oringialScore;
+    var akey;
+    var dkey;
+    var keyTimer = 200;
     var BossLevel = (function (_super) {
         __extends(BossLevel, _super);
         function BossLevel() {
@@ -111,6 +114,8 @@ var GravityGuy;
             this.world.setBounds(0, 0, 2000, 512);
             this.background = this.add.tileSprite(0, 0, 1024, 512, 'background');
             this.background.fixedToCamera = true;
+            akey = this.game.add.sprite(650, 50, 'akey');
+            dkey = this.game.add.sprite(725, 50, 'dkey');
             this.music = this.add.audio('House');
             this.sound_landing = this.add.audio('landing_sound');
             this.sound_hero_gravity = this.add.audio('hero_gravity');
@@ -203,6 +208,11 @@ var GravityGuy;
             counterToKill = 0;
         };
         BossLevel.prototype.update = function () {
+            keyTimer--;
+            if (keyTimer <= 0) {
+                akey.destroy();
+                dkey.destroy();
+            }
             this.game.camera.x = 0;
             this.hero.body.velocity.x = 0;
             //console.log(this.hero.x);
@@ -1008,7 +1018,7 @@ var GravityGuy;
                         }
                     }
                     else {
-                        console.log(7);
+                        //console.log(7);
                         this.body.velocity.x = 0;
                         this.animations.play('idle');
                     }
@@ -2518,6 +2528,8 @@ var GravityGuy;
             this.load.image('danger', 'visuals/danger.png');
             this.load.image('spacebar', 'visuals/spacebar.png');
             this.load.image('rightarrow', 'visuals/rightarrow.png');
+            this.load.image('akey', 'visuals/akey.png');
+            this.load.image('dkey', 'visuals/dkey.png');
             /* Invincibility */
             //  this.load.image('invincibility', 'visuals/invincibility.png'); // ########  in sprite
             /*MAPS*/

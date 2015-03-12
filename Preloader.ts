@@ -60,6 +60,8 @@ module GravityGuy {
             this.load.image('danger', 'visuals/danger.png');
             this.load.image('spacebar', 'visuals/spacebar.png');
             this.load.image('rightarrow', 'visuals/rightarrow.png');
+            this.load.image('akey', 'visuals/akey.png');
+            this.load.image('dkey', 'visuals/dkey.png');
 
             /* Invincibility */
             //  this.load.image('invincibility', 'visuals/invincibility.png'); // ########  in sprite
