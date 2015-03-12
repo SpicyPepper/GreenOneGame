@@ -26,7 +26,7 @@
             super.create();
             super.setLevel(1);
 
-            spacebar = this.game.add.sprite(350, 150, 'spacebar');
+            spacebar = this.game.add.sprite(840, 40, 'spacebar');
             rightarrow = this.game.add.sprite(11000, 50, 'rightarrow');
             danger = this.game.add.sprite(10030, 10, 'danger');
             this.life = new PowerUp(this.game, this, this.hero, 'life', 2, 3000, 150, 0);

@@ -16,6 +16,10 @@
     var enemyBulletWait;
     var enemyBulletsFired;
     var enemyAlive;
+    var airEnemies;
+    var airEnemiesTotal;
+    var airEnemiesDead;
+    var airEnemiesKilled;
     var crawlEnemies;
     var crawlEnemiesTotal;
     var crawlEnemiesDead;
@@ -99,11 +103,12 @@
         hero: GravityGuy.Hero
         enemyChase: GravityGuy.enemyChase
         enemy: GravityGuy.Enemy
-        enemyAir: GravityGuy.EnemyAir
+        airEnemy: GravityGuy.EnemyAir
         enemyCrawl: GravityGuy.EnemyCrawl
 
         enemy_scale;
-        enemycrawl_scale;                                        
+        enemycrawl_scale; 
+        airEnemy_scale;                                       
 
         init(aScore: number, aNumberLives: number) {
             score = aScore;
@@ -161,6 +166,9 @@
 
             crawlEnemiesDead = 0;
             crawlEnemies = [];
+
+            airEnemiesDead = 0;
+            airEnemies = [];
 
             this.init_vars();
             this.init_bullets();
@@ -229,6 +237,9 @@
             enemyBulletWait = 0;
             enemyBulletsFired = 0;
             enemyAlive = false;
+            airEnemies = [];
+            airEnemiesTotal;
+
             crawlEnemies = [];
             crawlEnemiesTotal;
             crawlEnemiesDead;
@@ -280,6 +291,12 @@
         removeCrawlEnemies() {
             for (var i = 0; i < crawlEnemiesTotal; i++) {
                 crawlEnemies[i].destroy();
+            }
+        }
+
+        setAirEnemies(airEnemyList) {
+            for (var i = 0; i < airEnemyList.length; i++) {
+                airEnemies[i] = airEnemyList[i];
             }
         }
 
@@ -586,17 +603,6 @@
             this.physics.arcade.collide(this.clock, layer);
             this.physics.arcade.collide(this.diamond, layer);
 
-            /* Invincibility*/
-            //for (var i = 0; i < 4; i++) {
-            //    var invincible = invincibility.create(i * 70, 0, 'invincible');
-
-            //    invincible.body.gravity.y = 6;
-            //    invincible.body.bounce.y = 0.7 + Math.random() * 0.2;
-            //}
-
-            /* Invincibility*/
-           // this.physics.arcade.overlap(this.hero, this.life, this.collectLife, null, this);
-
             for (var i = 0; i < enemyBulletsFired; i++) {
                 // this.physics.arcade.collide(enemyBulletList[i], layer);
                 this.physics.arcade.overlap(enemyBulletList, layer, this.bulletWallCollide, null, this);
@@ -608,6 +614,11 @@
             }
             for (var i = 0; i < enemies.length; i++) {
                 this.physics.arcade.overlap(this.bullets, enemies[i], this.heroShootsEnemy, null, this);
+            }
+
+            for (var i = 0; i < airEnemies.length; i++) {
+                this.physics.arcade.overlap(this.hero, airEnemies[i], this.heroAirEnemyCollide, null, this);
+                this.physics.arcade.overlap(this.bullets, airEnemies[i], this.heroShootsAirEnemy, null, this);
             }
 
             for (var i = 0; i < crawlEnemies.length; i++) {
@@ -646,7 +657,28 @@
                     crawlEnemies[i].kill();
                 }
             }
+            
 
+        }
+
+        heroShootsAirEnemy(bullet, enemy) {
+            /* play collision sound */
+            this.deathBurst(enemy);
+            bullet.kill();
+            airEnemiesKilled++;
+            totalEnemiesKilled++;
+            enemy.kill();
+        }
+        heroAirEnemyCollide(hero, enemy) {
+            this.deathBurst(hero);
+            hero.kill();
+            if (this.hero.numLives == 0) {
+                this.itsGameOver();
+            } else {
+                this.hero.numLives -= 1;
+                this.endRound();
+            }
+            
         }
 
         /* This function is to kill hero when collide with megaman*/

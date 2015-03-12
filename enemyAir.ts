@@ -16,9 +16,11 @@
         ascending;
         collides;
         gravity = 10000;
+        ascensionRate;
+        speed;
 
-        /* Parameters: game, the level, does the enemy collide with layers, x-coord to spawn, low y threshold for motion, high y threshold for motion.*/
-        constructor(game: Phaser.Game, lvl: Level0, player: Hero, collide: boolean, x: number,  yLow: number, yHigh: number) {
+        /* Parameters: game, the level, does the enemy collide with layers, x-coord to spawn, speed of movement, low y threshold for motion, high y threshold for motion.*/
+        constructor(game: Phaser.Game, lvl: Level0, player: Hero, collide: boolean, speed: number, x: number,  yLow: number, yHigh: number) {
 
             super(game, x, yLow, 'enemyAir', 0);
 
@@ -38,39 +40,29 @@
             this.body.bounce.y = 0.2;
             this.body.collideWorldBounds = false;
             this.body.allowRotation = true;
-            if (collide)
-             this.body.gravity.y = 1000;
+            this.speed = speed * .1;
+          //  if (collide)
+          //      this.body.gravity.y = 1000;
+
             //     this.anchor.setTo(0.5, 0);
 
         }
 
         update() {
-            //if (this.collides) {
-            //  //  console.log("hi");
-            //    this.level.physics.arcade.collide(this, this.level.getLayer());
-            //    if (this.body.blocked.up) {
-            //        this.ascending = false;
-            //        this.body.gravity.y = this.gravity;
-            //    } else if (this.body.blocked.down) {
-            //        this.ascending = true;
-            //        this.body.gravity.y = -this.gravity;
-            //    }
 
-            //} else {
-                if (this.body.y > this.y_high) {
-                    this.ascending = false;
-                } else if (this.body.y < this.y_low) {
-                    this.ascending = true;
-                }
-        //    }
+            if (this.body.y > this.y_high) {
+                this.ascending = false;
+            } else if (this.body.y < this.y_low) {
+                this.ascending = true;
+            }
 
             if (this.ascending) {
-                this.body.y += 10;
+                this.body.y += this.speed;
             } else {
-                this.body.y -= 10;
+                this.body.y -= this.speed;
             }
             
-            this.body.x = this.hero.body.x + 100; // THIS LINE IS ONLY FOR TESTING (TO KEEP THE ENEMY ON THE SCREEN)
+           // this.body.x = this.hero.body.x + 100; // THIS LINE IS ONLY FOR TESTING (TO KEEP THE ENEMY ON THE SCREEN)
             //this.body.x = this.hero.body.x + 100;
             //this.body.x = this.orbitRadius * Math.cos(this.angle) + this.body.x
             //this.y = this.orbitRadius * Math.sin(this.angle) + this.body.x;

@@ -5,6 +5,8 @@
     var enemiesTotal;
     var enemyLocationsX;
     var enemyLocationsY;
+    var airEnemiesTotal;
+    var airEnemies;
     var crawlEnemiesTotal;
     var enemyCrawlLocationsX;
     var enemyCrawlLocationsY;
@@ -24,7 +26,7 @@
             super.setLevel(1);
 
             //LEVEL :D
-           // danger = this.game.add.sprite(9630, 300, 'danger');
+            // danger = this.game.add.sprite(9630, 300, 'danger');
             this.map = this.add.tilemap('level_test');
             this.map.addTilesetImage('tileset_1');
             this.map.setCollisionByExclusion([]);
@@ -41,7 +43,7 @@
             this.magic = new PowerUp(this.game, this, this.hero, 'magic', 1000, 7500, 150, 0);
             this.clock = new PowerUp(this.game, this, this.hero, 'clock', 1000, 9000, 150, 0);
             this.diamond = new PowerUp(this.game, this, this.hero, 'diamond', 2000, 4700, 150, 0);
-            
+
             enemiesTotal = 18;
             super.setEnemiesTotal(enemiesTotal);
 
@@ -55,7 +57,7 @@
             super.setEnemyLocations(enemyLocationsX, enemyLocationsY);
 
             super.createEnemies();
-         
+
             crawlEnemiesTotal = 6;
             super.setCrawlEnemiesTotal(crawlEnemiesTotal);
 
@@ -65,7 +67,17 @@
             super.setCrawlEnemyLocations(enemyCrawlLocationsX, enemyCrawlLocationsY);
 
             super.createCrawlEnemies();
-              
+
+            airEnemies =
+            [
+               // new EnemyAir(this.game, this, this.hero, false, 50, 1475, 200, 400)
+
+            //new EnemyAir(this.game, this, this.hero, false, 300, 200, 400),
+           //     new EnemyAir(this.game, this, this.hero, false, 300, 200, 400), new EnemyAir(this.game, this, this.hero, false, 300, 200, 400);
+            ];
+            airEnemiesTotal = 1;
+            super.setAirEnemies(airEnemies);
+
             var spaceship = this.game.add.sprite(17080, 245, 'spaceship');
 
             levelComplete = false;
