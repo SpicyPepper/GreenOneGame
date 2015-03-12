@@ -116,7 +116,7 @@ var GravityGuy;
             this.background.fixedToCamera = true;
             akey = this.game.add.sprite(650, 50, 'akey');
             dkey = this.game.add.sprite(725, 50, 'dkey');
-            this.music = this.add.audio('House');
+            this.music = this.add.audio('bossmusic');
             this.sound_landing = this.add.audio('landing_sound');
             this.sound_hero_gravity = this.add.audio('hero_gravity');
             this.sound_hero_death = this.add.audio('hero_death');
@@ -2513,6 +2513,7 @@ var GravityGuy;
             this.load.audio('enemy_death', ['audio/enemy_death.mp3', 'audio/enemy_death.ogg']);
             this.load.audio('grav', ['audio/sound_enemies_grav.mp3', 'audio/sound_enemies_grav.ogg']);
             this.load.audio('collision', ['audio/collision.mp3', 'audio/collision.ogg']);
+            this.load.audio('bossmusic', ['audio/bossmusic.mp3', 'audio/bossmusic.ogg']);
             /*IMAGES*/
             this.load.image('explosion_small', 'visuals/explosion_small.png');
             this.load.image('dust_cloud', 'visuals/dust_cloud.png');

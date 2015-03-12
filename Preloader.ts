@@ -44,6 +44,7 @@ module GravityGuy {
             this.load.audio('enemy_death', ['audio/enemy_death.mp3', 'audio/enemy_death.ogg']);
             this.load.audio('grav', ['audio/sound_enemies_grav.mp3', 'audio/sound_enemies_grav.ogg']);
             this.load.audio('collision', ['audio/collision.mp3', 'audio/collision.ogg']);
+            this.load.audio('bossmusic', ['audio/bossmusic.mp3', 'audio/bossmusic.ogg']);
 
             /*IMAGES*/
             this.load.image('explosion_small', 'visuals/explosion_small.png');

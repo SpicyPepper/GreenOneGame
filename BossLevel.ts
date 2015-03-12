@@ -119,7 +119,7 @@
             dkey = this.game.add.sprite(725, 50, 'dkey');
 
 
-            this.music = this.add.audio('House');
+            this.music = this.add.audio('bossmusic');
             this.sound_landing = this.add.audio('landing_sound');
             this.sound_hero_gravity = this.add.audio('hero_gravity');
             this.sound_hero_death = this.add.audio('hero_death');
