@@ -881,7 +881,7 @@
             // this.game.debug.spriteCoords(this.hero, 300, 300);
             this.game.debug.text(scoreString + score, 10, 35, 'white', '34px Lucida Sans Unicode');
             this.game.debug.text('Bullets : ' + totalBullets, 345, 35, 'white', '34px Lucida Sans Unicode');
-            this.game.debug.text('Lives : ' + this.hero.numLives, 660, 35, 'white', '34px Lucida Sans Unicode');
+            this.game.debug.text('Lives : ' + this.hero.numLives, 640, 35, 'white', '34px Lucida Sans Unicode');
             if (levelComplete) {
                 this.game.debug.text('Level ' + level + ' Complete!', 190, 125, 'white', '50px Lucida Sans Unicode');
                 this.game.debug.text('Click to Continue', 200, 200, 'white', '50px Lucida Sans Unicode');

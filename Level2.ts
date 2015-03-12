@@ -46,12 +46,12 @@
 
             super.createEnemies();
 
-            crawlEnemiesTotal = 6;
+            crawlEnemiesTotal = 1; // 6 originally
             super.setCrawlEnemiesTotal(crawlEnemiesTotal);
 
-            enemyCrawlLocationsX = [this.game.rnd.integerInRange(1424, 1480), this.game.rnd.integerInRange(6813, 7000), this.game.rnd.integerInRange(7840, 8000), this.game.rnd.integerInRange(8700, 8770),
-                this.game.rnd.integerInRange(9900, 10000), this.game.rnd.integerInRange(10900, 11050)];
-            enemyCrawlLocationsY = [430, 350, 30, 30, 30, 30];
+            enemyCrawlLocationsX = [/*this.game.rnd.integerInRange(1424, 1480), this.game.rnd.integerInRange(6813, 7000), this.game.rnd.integerInRange(7840, 8000), this.game.rnd.integerInRange(8700, 8770),
+                this.game.rnd.integerInRange(9900, 10000), this.game.rnd.integerInRange(10900, 11050)*/13790];
+            enemyCrawlLocationsY = [/*430, 350, 30, 30, 30, 30*/355];
             super.setCrawlEnemyLocations(enemyCrawlLocationsX, enemyCrawlLocationsY);
 
             super.createCrawlEnemies();

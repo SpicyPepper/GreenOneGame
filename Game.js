@@ -2034,7 +2034,7 @@ var GravityGuy;
             // this.game.debug.spriteCoords(this.hero, 300, 300);
             this.game.debug.text(scoreString + score, 10, 35, 'white', '34px Lucida Sans Unicode');
             this.game.debug.text('Bullets : ' + totalBullets, 345, 35, 'white', '34px Lucida Sans Unicode');
-            this.game.debug.text('Lives : ' + this.hero.numLives, 660, 35, 'white', '34px Lucida Sans Unicode');
+            this.game.debug.text('Lives : ' + this.hero.numLives, 640, 35, 'white', '34px Lucida Sans Unicode');
             if (levelComplete) {
                 this.game.debug.text('Level ' + level + ' Complete!', 190, 125, 'white', '50px Lucida Sans Unicode');
                 this.game.debug.text('Click to Continue', 200, 200, 'white', '50px Lucida Sans Unicode');
@@ -2184,10 +2184,13 @@ var GravityGuy;
             enemyLocationsY = [373, 373, 32, 192, 192, 192, 192, 208, 208, 125, 125, 125, 125, 125, 125, 125, 125];
             _super.prototype.setEnemyLocations.call(this, enemyLocationsX, enemyLocationsY);
             _super.prototype.createEnemies.call(this);
-            crawlEnemiesTotal = 6;
+            crawlEnemiesTotal = 2; // originally 6
             _super.prototype.setCrawlEnemiesTotal.call(this, crawlEnemiesTotal);
-            enemyCrawlLocationsX = [this.game.rnd.integerInRange(2000, 2300), this.game.rnd.integerInRange(2800, 3200), this.game.rnd.integerInRange(3120, 3420), this.game.rnd.integerInRange(5510, 5600), this.game.rnd.integerInRange(6300, 6450), this.game.rnd.integerInRange(11100, 11500)];
-            enemyCrawlLocationsY = [25, 0, 130, 20, 300, 192];
+            enemyCrawlLocationsX = [
+                this.game.rnd.integerInRange(6300, 6450),
+                this.game.rnd.integerInRange(11100, 11500)
+            ];
+            enemyCrawlLocationsY = [300, 192];
             _super.prototype.setCrawlEnemyLocations.call(this, enemyCrawlLocationsX, enemyCrawlLocationsY);
             _super.prototype.createCrawlEnemies.call(this);
             airEnemies = [
@@ -2254,10 +2257,12 @@ var GravityGuy;
             enemyLocationsY = [360, 145, 75, 300, 200, 200, 200, 200, 200, 200, 200, 200, 200, 100, 250, 250, 250, 123, 335, 355, 135, 335, 130];
             _super.prototype.setEnemyLocations.call(this, enemyLocationsX, enemyLocationsY);
             _super.prototype.createEnemies.call(this);
-            crawlEnemiesTotal = 6;
+            crawlEnemiesTotal = 1; // 6 originally
             _super.prototype.setCrawlEnemiesTotal.call(this, crawlEnemiesTotal);
-            enemyCrawlLocationsX = [this.game.rnd.integerInRange(1424, 1480), this.game.rnd.integerInRange(6813, 7000), this.game.rnd.integerInRange(7840, 8000), this.game.rnd.integerInRange(8700, 8770), this.game.rnd.integerInRange(9900, 10000), this.game.rnd.integerInRange(10900, 11050)];
-            enemyCrawlLocationsY = [430, 350, 30, 30, 30, 30];
+            enemyCrawlLocationsX = [
+                13790
+            ];
+            enemyCrawlLocationsY = [355];
             _super.prototype.setCrawlEnemyLocations.call(this, enemyCrawlLocationsX, enemyCrawlLocationsY);
             _super.prototype.createCrawlEnemies.call(this);
             var spaceship = this.game.add.sprite(13870, 195, 'spaceship');

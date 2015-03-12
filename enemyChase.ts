@@ -121,7 +121,7 @@
                         }
 
                     } else {
-                        console.log(7);
+                        //console.log(7);
                         this.body.velocity.x = 0;
                         this.animations.play('idle');
                     }
