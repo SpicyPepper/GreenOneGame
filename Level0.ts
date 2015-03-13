@@ -84,6 +84,7 @@
         sound_hero_fire: Phaser.Sound
         sound_enemy_shoot: Phaser.Sound
         victoryMusic: Phaser.Sound
+        sound_invincibility: Phaser.Sound
         sound_hero_enemyChase_collision: Phaser.Sound
 
         bullets: Phaser.Group
@@ -211,6 +212,7 @@
             this.sound_enemy_shoot.volume = .50;
             //      this.sound_hero_enemyChase_collision = this.add.audio('hero_enemyChase_collision');
             this.victoryMusic = this.add.audio('victory');
+            this.sound_invincibility = this.add.audio('invincibility');
             this.music.play();
         }
 
@@ -669,6 +671,7 @@
             totalEnemiesKilled++;
             enemy.kill();
         }
+
         heroAirEnemyCollide(hero, enemy) {
             this.deathBurst(hero);
             hero.kill();
@@ -934,8 +937,18 @@
             score = score + n;
         }
 
+        /* In progress - Currently kills Megaman and Enemies and "invincibility" sound plays.
+         * Working on killing the crawl enemies and perhaps the visual aspect of Samus to make 
+         * the power up cooler */
         addInvincibility() {
-            // In progress
+
+            this.enemyChase.kill();
+            //this.crawlEnemies.kill();
+            //this.createCrawlEnemies();
+            this.removeEnemies();
+            //this.removeCrawlEnemies();
+            this.sound_invincibility.play();
+            //this.removeCrawlEnemies();
         }
 
         /* The key powerup grants access from the Noob Level to the original First Level, 
@@ -943,6 +956,7 @@
         addKeyToFirstLevel() {
             this.levelComplete();
             this.game.state.start('Level1', true, false);
+            this.victoryMusic.stop();
 
         }
 

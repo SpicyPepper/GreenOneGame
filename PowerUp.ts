@@ -59,8 +59,7 @@ module GravityGuy {
         
             /* The magic powerup adds invincibility to the hero */
             } else if (this.key == 'magic') {
-                this.lvl.addPoints(this.val);
-                //this.lvl.addInvincibility();
+                this.lvl.addInvincibility();
 
             /* The clock powerup adds points to the total score */
             } else if (this.key == 'clock') {

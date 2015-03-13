@@ -45,6 +45,7 @@ module GravityGuy {
             this.load.audio('grav', ['audio/sound_enemies_grav.mp3', 'audio/sound_enemies_grav.ogg']);
             this.load.audio('collision', ['audio/collision.mp3', 'audio/collision.ogg']);
             this.load.audio('bossmusic', ['audio/bossmusic.mp3', 'audio/bossmusic.ogg']);
+            this.load.audio('invincibility', ['audio/invincibility.mp3', 'audio/invincibility.mp3']);
 
             /*IMAGES*/
             this.load.image('explosion_small', 'visuals/explosion_small.png');
