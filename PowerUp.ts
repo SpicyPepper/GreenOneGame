@@ -31,29 +31,38 @@ module GravityGuy {
               this.body.allowRotation = true;
 
         }
+
         /* dynamic. */
         powerUpNow() {
             // console.log("powerup! " + this.key);
+            /* The life powerup adds 1 life to the total life count */
             if (this.key == 'life') {
                 // console.log("LIFE");
                 this.hero.addLives(this.val);
 
+            /* The ammo powerup adds ammo to the total ammo */
             } else if (this.key == 'ammo') {
                 /* addBullets is near the end of Level0.ts ######## */
                 this.lvl.addAmmo(this.val);
 
+            /* The star powerup adds points to the total score */
             } else if (this.key == 'star') {
                 this.lvl.addPoints(this.val);
 
+            /* The diamond powerup adds points to the total score */
             } else if (this.key == 'diamond') {
                 this.lvl.addPoints(this.val);
             
+            /* The key powerup grants access from the Noob Level to the original First Level */ 
             } else if(this.key == 'key') {
-                this.lvl.addPoints(this.val);
+                this.lvl.addKeyToFirstLevel();
         
+            /* The magic powerup adds invincibility to the hero */
             } else if (this.key == 'magic') {
                 this.lvl.addPoints(this.val);
+                //this.lvl.addInvincibility();
 
+            /* The clock powerup adds points to the total score */
             } else if (this.key == 'clock') {
                 this.lvl.addPoints(this.val);
             }

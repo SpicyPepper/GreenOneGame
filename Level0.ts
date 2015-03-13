@@ -934,6 +934,18 @@
             score = score + n;
         }
 
+        addInvincibility() {
+            // In progress
+        }
+
+        /* The key powerup grants access from the Noob Level to the original First Level, 
+         * since having to constantly test Noob level can be painstakingly easy ;) */ 
+        addKeyToFirstLevel() {
+            this.levelComplete();
+            this.game.state.start('Level1', true, false);
+
+        }
+
         deleteReferences() {
             delete totalBullets.regex;
             delete enemies.regex;
