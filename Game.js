@@ -453,11 +453,11 @@ var GravityGuy;
             this.enemyChase.kill();
             levelComplete = true;
             this.victoryMusic.play();
-            this.music.stop();
+            this.music.mute = true;
             this.input.onDown.addOnce(this.fadeOut, this);
         };
         BossLevel.prototype.fadeOut = function () {
-            this.victoryMusic.stop();
+            this.victoryMusic.mute = true;
             this.game.state.start('GameWon', true, false);
         };
         BossLevel.prototype.bulletWallCollide = function (bullet, layer) {
@@ -579,11 +579,19 @@ var GravityGuy;
             bullet.kill();
             //console.log("SHOT");
             counterToKill++;
-            if (counterToKill > 40) {
+            if (counterToKill == 10) {
                 this.deathBurst(enemyChase);
                 enemyChase.kill();
-                this.game.state.start('GameWon', true, false);
+                counterToKill++;
+                var style = { font: "45px Lucida Sans Console", fill: "#FFFFFF", align: "center" };
+                var text = this.game.add.text(300, 200, "You Win!\nFinal Score:\n" + score, style);
+                this.music.fadeOut(7000);
+                this.game.time.events.add(Phaser.Timer.SECOND * 7, this.gameWon, this);
             }
+        };
+        BossLevel.prototype.gameWon = function () {
+            this.music.mute = true;
+            this.game.state.start('GameWon', true, false);
         };
         BossLevel.prototype.dustBurst = function (entity) {
             if (entity.scale.x < 0) {
@@ -765,19 +773,14 @@ var GravityGuy;
                 }
             }
             else if (!respawn) {
-                this.game.debug.text("You Have Died......", 180, 200, 'white', '50px Arial');
-                this.game.debug.text("(you're bad, loser)", 180, 260, 'white', '50px Arial');
+                this.game.debug.text("You have died", 43, 435, 'red', '40px Lucida Sans Unicode');
                 var count = 0;
-                //while (count < 10) {
-                this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Arial');
-                this.game.debug.text("Press 'R' to Respawn Baddie", 120, 420, 'white', '40px Arial');
+                this.game.debug.text("Press 'R' to Respawn", 50, 462, 'white', '20px Lucida Sans Unicode');
             }
             else if (game_over) {
-                this.game.debug.text("Game Over", 265, 200, 'white', '50px Arial');
-                this.game.debug.text("That was sad to watch...", 160, 260, 'white', '50px Arial');
-                //while (count < 10) {
-                this.game.debug.text('Score: ' + score, 265, 320, 'white', '45px Arial');
-                this.game.debug.text("That all you got?", 210, 380, 'white', '45px Arial');
+                this.game.debug.text("Game Over", 40, 320, 'red', '70px Lucida Sans Unicode');
+                this.game.debug.text('Final Score: ' + score, 46, 368, 'white', '45px Lucida Sans Unicode');
+                this.game.debug.text("Click anywhere to try again.", 48, 415, 'white', '20px Lucida Sans Unicode');
             }
         };
         BossLevel.prototype.getFloorEnemy = function () {
@@ -2402,7 +2405,7 @@ var GravityGuy;
             this.title.animations.add('display');
             this.title.animations.play('display', 13, false);
             this.slam.play();
-            this.game.time.events.add(Phaser.Timer.SECOND * 4, this.startGame, this);
+            this.game.time.events.add(Phaser.Timer.SECOND * 3, this.startGame, this);
             //  tween.onComplete.add(this.startGame, this);
         };
         MainMenu.prototype.startGame = function () {

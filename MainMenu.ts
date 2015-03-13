@@ -44,7 +44,7 @@
             this.title.animations.add('display');
             this.title.animations.play('display', 13, false);
             this.slam.play();
-            this.game.time.events.add(Phaser.Timer.SECOND * 4, this.startGame, this);
+            this.game.time.events.add(Phaser.Timer.SECOND * 3, this.startGame, this);
 
           //  tween.onComplete.add(this.startGame, this);
 
