@@ -85,6 +85,10 @@
         sound_enemy_shoot: Phaser.Sound
         victoryMusic: Phaser.Sound
         sound_invincibility: Phaser.Sound
+        sound_shootingStar: Phaser.Sound
+        sound_lifeSound: Phaser.Sound
+        sound_sparkle: Phaser.Sound
+        sound_ammunition: Phaser.Sound
         sound_hero_enemyChase_collision: Phaser.Sound
 
         bullets: Phaser.Group
@@ -213,6 +217,10 @@
             //      this.sound_hero_enemyChase_collision = this.add.audio('hero_enemyChase_collision');
             this.victoryMusic = this.add.audio('victory');
             this.sound_invincibility = this.add.audio('invincibility');
+            this.sound_shootingStar = this.add.audio('shootingStar');
+            this.sound_lifeSound = this.add.audio('lifeSound');
+            this.sound_sparkle = this.add.audio('sparkle');
+            this.sound_ammunition = this.add.audio('ammunition');
             this.music.play();
         }
 
@@ -658,9 +666,7 @@
                 if (!game_over && (crawlEnemies[i].y >= 512 || crawlEnemies[i].body.y <= -100)) {
                     crawlEnemies[i].kill();
                 }
-            }
-            
-
+            }        
         }
 
         heroShootsAirEnemy(bullet, enemy) {
@@ -686,6 +692,8 @@
 
         /* This function is to kill hero when collide with megaman*/
         enemyCollidesHero(enemyChase, hero) {
+
+            //if(invincibility == false)
             this.sound_collision.play();
             this.deathBurst(hero);
             this.sound_hero_death.play();
@@ -930,10 +938,21 @@
         }
 
         addAmmo(n: number) {
+            this.sound_ammunition.play();
             totalBullets = totalBullets + n;
         }
 
+        addPointsStar(n: number) {
+            this.sound_shootingStar.play();
+            score = score + n;
+        }
+
         addPoints(n: number) {
+            this.sound_sparkle.play();
+            score = score + n;
+        }
+        addPointsDiamond(n: number) {
+            this.sound_sparkle.play();
             score = score + n;
         }
 

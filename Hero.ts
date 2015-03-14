@@ -29,6 +29,9 @@
             state = aState;
             //added
             //this.game = game;
+
+            this.game.add.sound
+
             this.scale.setTo(this.hero_scale, this.hero_scale);
             if (state === 3) {
                 //this.animations.add('walk', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 10, true);
@@ -77,6 +80,7 @@
         }
 
         addLives(n: number) {
+            //this.sound_lifeSound.play();
             this.numLives += n;
         }
 

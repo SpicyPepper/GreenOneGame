@@ -1220,6 +1220,7 @@ var GravityGuy;
             state = aState;
             //added
             //this.game = game;
+            this.game.add.sound;
             this.scale.setTo(this.hero_scale, this.hero_scale);
             if (state === 3) {
                 //this.animations.add('walk', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 10, true);
@@ -1262,6 +1263,7 @@ var GravityGuy;
             }
         };
         Hero.prototype.addLives = function (n) {
+            //this.sound_lifeSound.play();
             this.numLives += n;
         };
         Hero.prototype.update = function () {
@@ -1468,6 +1470,10 @@ var GravityGuy;
             //      this.sound_hero_enemyChase_collision = this.add.audio('hero_enemyChase_collision');
             this.victoryMusic = this.add.audio('victory');
             this.sound_invincibility = this.add.audio('invincibility');
+            this.sound_shootingStar = this.add.audio('shootingStar');
+            this.sound_lifeSound = this.add.audio('lifeSound');
+            this.sound_sparkle = this.add.audio('sparkle');
+            this.sound_ammunition = this.add.audio('ammunition');
             this.music.play();
         };
         Level0.prototype.init_vars = function () {
@@ -1868,6 +1874,7 @@ var GravityGuy;
         };
         /* This function is to kill hero when collide with megaman*/
         Level0.prototype.enemyCollidesHero = function (enemyChase, hero) {
+            //if(invincibility == false)
             this.sound_collision.play();
             this.deathBurst(hero);
             this.sound_hero_death.play();
@@ -2093,9 +2100,19 @@ var GravityGuy;
             }
         };
         Level0.prototype.addAmmo = function (n) {
+            this.sound_ammunition.play();
             totalBullets = totalBullets + n;
         };
+        Level0.prototype.addPointsStar = function (n) {
+            this.sound_shootingStar.play();
+            score = score + n;
+        };
         Level0.prototype.addPoints = function (n) {
+            this.sound_sparkle.play();
+            score = score + n;
+        };
+        Level0.prototype.addPointsDiamond = function (n) {
+            this.sound_sparkle.play();
             score = score + n;
         };
         /* In progress - Currently kills Megaman and Enemies and "invincibility" sound plays.
@@ -2208,7 +2225,7 @@ var GravityGuy;
             this.ammo = new GravityGuy.PowerUp(this.game, this, this.hero, 'ammo', 10, 2800, 150, 0);
             this.star = new GravityGuy.PowerUp(this.game, this, this.hero, 'star', 1000, 4000, 150, 0);
             this.magic = new GravityGuy.PowerUp(this.game, this, this.hero, 'magic', 1000, 7500, 150, 0);
-            this.clock = new GravityGuy.PowerUp(this.game, this, this.hero, 'clock', 1000, 9000, 150, 0);
+            //this.clock = new PowerUp(this.game, this, this.hero, 'clock', 1000, 9000, 150, 0);
             this.diamond = new GravityGuy.PowerUp(this.game, this, this.hero, 'diamond', 2000, 4700, 150, 0);
             enemiesTotal = 18;
             _super.prototype.setEnemiesTotal.call(this, enemiesTotal);
@@ -2280,7 +2297,7 @@ var GravityGuy;
             this.ammo = new GravityGuy.PowerUp(this.game, this, this.hero, 'ammo', 10, 2800, 150, 0);
             this.star = new GravityGuy.PowerUp(this.game, this, this.hero, 'star', 1000, 4000, 150, 0);
             this.magic = new GravityGuy.PowerUp(this.game, this, this.hero, 'magic', 1000, 7500, 150, 0);
-            this.clock = new GravityGuy.PowerUp(this.game, this, this.hero, 'clock', 1000, 9000, 150, 0);
+            //this.clock = new PowerUp(this.game, this, this.hero, 'clock', 1000, 9000, 150, 0);
             this.diamond = new GravityGuy.PowerUp(this.game, this, this.hero, 'diamond', 2000, 6000, 150, 0);
             enemiesTotal = 13; //23 originally
             _super.prototype.setEnemiesTotal.call(this, enemiesTotal);
@@ -2348,7 +2365,7 @@ var GravityGuy;
             this.life = new GravityGuy.PowerUp(this.game, this, this.hero, 'life', 2, 3000, 150, 0);
             this.ammo = new GravityGuy.PowerUp(this.game, this, this.hero, 'ammo', 10, 2800, 150, 0);
             this.star = new GravityGuy.PowerUp(this.game, this, this.hero, 'star', 1000, 4000, 150, 0);
-            this.key = new GravityGuy.PowerUp(this.game, this, this.hero, 'key', 1000, 6500, 150, 0);
+            //this.key = new PowerUp(this.game, this, this.hero, 'key', 1000, 6500, 150, 0);
             this.magic = new GravityGuy.PowerUp(this.game, this, this.hero, 'magic', 1000, 7500, 150, 0);
             this.clock = new GravityGuy.PowerUp(this.game, this, this.hero, 'clock', 1000, 9000, 150, 0);
             this.diamond = new GravityGuy.PowerUp(this.game, this, this.hero, 'diamond', 2000, 4700, 150, 0);
@@ -2473,15 +2490,16 @@ var GravityGuy;
                 this.lvl.addAmmo(this.val);
             }
             else if (this.key == 'star') {
-                this.lvl.addPoints(this.val);
+                this.lvl.addPointsStar(this.val);
             }
             else if (this.key == 'diamond') {
-                this.lvl.addPoints(this.val);
+                this.lvl.addPointsDiamond(this.val);
             }
             else if (this.key == 'key') {
                 this.lvl.addKeyToFirstLevel();
             }
             else if (this.key == 'magic') {
+                //this.lvl.addPoints(this.val);
                 this.lvl.addInvincibility();
             }
             else if (this.key == 'clock') {
@@ -2536,6 +2554,10 @@ var GravityGuy;
             this.load.audio('grav', ['audio/sound_enemies_grav.mp3', 'audio/sound_enemies_grav.ogg']);
             this.load.audio('collision', ['audio/collision.mp3', 'audio/collision.ogg']);
             this.load.audio('bossmusic', ['audio/bossmusic.mp3', 'audio/bossmusic.ogg']);
+            this.load.audio('shootingStar', ['audio/shootingStar.mp3', 'audio/shootingStar.mp3']);
+            this.load.audio('lifeSound', ['audio/lifeSound.mp3', 'audio/lifeSound.mp3']);
+            this.load.audio('sparkle', ['audio/sparkle.wav', 'audio/sparkle.wav']);
+            this.load.audio('ammunition', ['audio/ammunition.mp3', 'audio/ammunition.mp3']);
             this.load.audio('invincibility', ['audio/invincibility.mp3', 'audio/invincibility.mp3']);
             /*IMAGES*/
             this.load.image('explosion_small', 'visuals/explosion_small.png');
