@@ -34,6 +34,8 @@
     var score = 0;
     var numLives = 3;
 
+    var invincible = false;
+
     var layer;
     var gravityButton;
     var cursors;
@@ -110,6 +112,8 @@
         enemy: GravityGuy.Enemy
         airEnemy: GravityGuy.EnemyAir
         enemyCrawl: GravityGuy.EnemyCrawl
+
+        //invincible;
 
         enemy_scale;
         enemycrawl_scale; 
@@ -583,18 +587,22 @@
         }
 
         heroEnemyCollide(hero, enemy) {
-            this.deathBurst(hero);
-            this.deathBurst(enemy);
-            this.sound_collision.play();
-            this.sound_hero_death.play();
-            enemy.kill();
-            hero.kill();
-            if (this.hero.numLives == 0) {
-                this.itsGameOver();
-            }
-            else {
-                this.hero.numLives -= 1;
-                this.endRound();
+
+            if (!invincible) {
+
+                this.deathBurst(hero);
+                this.deathBurst(enemy);
+                this.sound_collision.play();
+                this.sound_hero_death.play();
+                enemy.kill();
+                hero.kill();
+                if (this.hero.numLives == 0) {
+                    this.itsGameOver();
+                }
+                else {
+                    this.hero.numLives -= 1;
+                    this.endRound();
+                }
             }
         }
 
@@ -679,13 +687,17 @@
         }
 
         heroAirEnemyCollide(hero, enemy) {
-            this.deathBurst(hero);
-            hero.kill();
-            if (this.hero.numLives == 0) {
-                this.itsGameOver();
-            } else {
-                this.hero.numLives -= 1;
-                this.endRound();
+
+            if (!invincible) {
+
+                this.deathBurst(hero);
+                hero.kill();
+                if (this.hero.numLives == 0) {
+                    this.itsGameOver();
+                } else {
+                    this.hero.numLives -= 1;
+                    this.endRound();
+                }
             }
             
         }
@@ -693,18 +705,20 @@
         /* This function is to kill hero when collide with megaman*/
         enemyCollidesHero(enemyChase, hero) {
 
-            //if(invincibility == false)
-            this.sound_collision.play();
-            this.deathBurst(hero);
-            this.sound_hero_death.play();
-            hero.kill();
-            if (this.hero.numLives == 0) {
-                this.itsGameOver();
-            } else {
-                this.hero.numLives -= 1;
-                this.endRound();
+            if (!invincible) {
+
+                this.sound_collision.play();
+                this.deathBurst(hero);
+                this.sound_hero_death.play();
+                hero.kill();
+                if (this.hero.numLives == 0) {
+                    this.itsGameOver();
+                } else {
+                    this.hero.numLives -= 1;
+                    this.endRound();
+                }
+                heroAlive = false;
             }
-            heroAlive = false;
         }
 
         heroShootsEnemy(bullet, enemy) {
@@ -729,16 +743,20 @@
         }
 
         enemyShootsHero(enemyBullet, hero) {
-            this.deathBurst(hero);
-            this.sound_hero_death.play();
-            enemyBullet.kill();
-            hero.kill();
-            if (this.hero.numLives == 0) {
-                this.itsGameOver();
-            }
-            else {
-                this.hero.numLives -= 1;
-                this.endRound();
+
+            if (!invincible) {
+
+                this.deathBurst(hero);
+                this.sound_hero_death.play();
+                enemyBullet.kill();
+                hero.kill();
+                if (this.hero.numLives == 0) {
+                    this.itsGameOver();
+                }
+                else {
+                    this.hero.numLives -= 1;
+                    this.endRound();
+                }
             }
         }
 
@@ -937,6 +955,11 @@
             }
         }
 
+        boolInvincibility(invincibility) {
+            invincible = false;
+
+        }
+
         addAmmo(n: number) {
             this.sound_ammunition.play();
             totalBullets = totalBullets + n;
@@ -951,6 +974,7 @@
             this.sound_sparkle.play();
             score = score + n;
         }
+
         addPointsDiamond(n: number) {
             this.sound_sparkle.play();
             score = score + n;
@@ -960,14 +984,7 @@
          * Working on killing the crawl enemies and perhaps the visual aspect of Samus to make 
          * the power up cooler */
         addInvincibility() {
-
-            this.enemyChase.kill();
-            //this.crawlEnemies.kill();
-            //this.createCrawlEnemies();
-            this.removeEnemies();
-            //this.removeCrawlEnemies();
-            this.sound_invincibility.play();
-            //this.removeCrawlEnemies();
+            invincible = true;
         }
 
         /* The key powerup grants access from the Noob Level to the original First Level, 

@@ -1350,6 +1350,7 @@ var GravityGuy;
     var score_text;
     var score = 0;
     var numLives = 3;
+    var invincible = false;
     var layer;
     var gravityButton;
     var cursors;
@@ -1779,18 +1780,20 @@ var GravityGuy;
             bullet.kill();
         };
         Level0.prototype.heroEnemyCollide = function (hero, enemy) {
-            this.deathBurst(hero);
-            this.deathBurst(enemy);
-            this.sound_collision.play();
-            this.sound_hero_death.play();
-            enemy.kill();
-            hero.kill();
-            if (this.hero.numLives == 0) {
-                this.itsGameOver();
-            }
-            else {
-                this.hero.numLives -= 1;
-                this.endRound();
+            if (!invincible) {
+                this.deathBurst(hero);
+                this.deathBurst(enemy);
+                this.sound_collision.play();
+                this.sound_hero_death.play();
+                enemy.kill();
+                hero.kill();
+                if (this.hero.numLives == 0) {
+                    this.itsGameOver();
+                }
+                else {
+                    this.hero.numLives -= 1;
+                    this.endRound();
+                }
             }
         };
         Level0.prototype.collideEverything = function () {
@@ -1862,31 +1865,34 @@ var GravityGuy;
             enemy.kill();
         };
         Level0.prototype.heroAirEnemyCollide = function (hero, enemy) {
-            this.deathBurst(hero);
-            hero.kill();
-            if (this.hero.numLives == 0) {
-                this.itsGameOver();
-            }
-            else {
-                this.hero.numLives -= 1;
-                this.endRound();
+            if (!invincible) {
+                this.deathBurst(hero);
+                hero.kill();
+                if (this.hero.numLives == 0) {
+                    this.itsGameOver();
+                }
+                else {
+                    this.hero.numLives -= 1;
+                    this.endRound();
+                }
             }
         };
         /* This function is to kill hero when collide with megaman*/
         Level0.prototype.enemyCollidesHero = function (enemyChase, hero) {
-            //if(invincibility == false)
-            this.sound_collision.play();
-            this.deathBurst(hero);
-            this.sound_hero_death.play();
-            hero.kill();
-            if (this.hero.numLives == 0) {
-                this.itsGameOver();
+            if (!invincible) {
+                this.sound_collision.play();
+                this.deathBurst(hero);
+                this.sound_hero_death.play();
+                hero.kill();
+                if (this.hero.numLives == 0) {
+                    this.itsGameOver();
+                }
+                else {
+                    this.hero.numLives -= 1;
+                    this.endRound();
+                }
+                heroAlive = false;
             }
-            else {
-                this.hero.numLives -= 1;
-                this.endRound();
-            }
-            heroAlive = false;
         };
         Level0.prototype.heroShootsEnemy = function (bullet, enemy) {
             this.deathBurst(enemy);
@@ -1908,16 +1914,18 @@ var GravityGuy;
             totalEnemiesKilled++;
         };
         Level0.prototype.enemyShootsHero = function (enemyBullet, hero) {
-            this.deathBurst(hero);
-            this.sound_hero_death.play();
-            enemyBullet.kill();
-            hero.kill();
-            if (this.hero.numLives == 0) {
-                this.itsGameOver();
-            }
-            else {
-                this.hero.numLives -= 1;
-                this.endRound();
+            if (!invincible) {
+                this.deathBurst(hero);
+                this.sound_hero_death.play();
+                enemyBullet.kill();
+                hero.kill();
+                if (this.hero.numLives == 0) {
+                    this.itsGameOver();
+                }
+                else {
+                    this.hero.numLives -= 1;
+                    this.endRound();
+                }
             }
         };
         Level0.prototype.dustBurst = function (entity) {
@@ -2099,6 +2107,9 @@ var GravityGuy;
                 this.game.debug.text("Click anywhere to try again.", 48, 415, 'white', '20px Lucida Sans Unicode');
             }
         };
+        Level0.prototype.boolInvincibility = function (invincibility) {
+            invincible = false;
+        };
         Level0.prototype.addAmmo = function (n) {
             this.sound_ammunition.play();
             totalBullets = totalBullets + n;
@@ -2119,13 +2130,7 @@ var GravityGuy;
          * Working on killing the crawl enemies and perhaps the visual aspect of Samus to make
          * the power up cooler */
         Level0.prototype.addInvincibility = function () {
-            this.enemyChase.kill();
-            //this.crawlEnemies.kill();
-            //this.createCrawlEnemies();
-            this.removeEnemies();
-            //this.removeCrawlEnemies();
-            this.sound_invincibility.play();
-            //this.removeCrawlEnemies();
+            invincible = true;
         };
         /* The key powerup grants access from the Noob Level to the original First Level,
          * since having to constantly test Noob level can be painstakingly easy ;) */
@@ -2499,8 +2504,9 @@ var GravityGuy;
                 this.lvl.addKeyToFirstLevel();
             }
             else if (this.key == 'magic') {
-                //this.lvl.addPoints(this.val);
                 this.lvl.addInvincibility();
+                this.lvl.invincible = true;
+                this.game.time.events.add(Phaser.Timer.SECOND * 12, this.lvl.boolInvincibility, this);
             }
             else if (this.key == 'clock') {
                 this.lvl.addPoints(this.val);

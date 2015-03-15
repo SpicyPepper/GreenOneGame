@@ -122,7 +122,6 @@
                         if (offset >= 3) {
                             offset -= 3;
                         }
-
                     }
 
                     oldDistance = currDistance;
