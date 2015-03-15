@@ -1795,6 +1795,11 @@ var GravityGuy;
                     this.endRound();
                 }
             }
+            else {
+                this.deathBurst(enemy);
+                this.sound_collision.play();
+                enemy.kill();
+            }
         };
         Level0.prototype.collideEverything = function () {
             this.physics.arcade.collide(this.hero, layer);
@@ -1876,6 +1881,11 @@ var GravityGuy;
                     this.endRound();
                 }
             }
+            else {
+                this.deathBurst(enemy);
+                this.sound_collision.play();
+                enemy.kill();
+            }
         };
         /* This function is to kill hero when collide with megaman*/
         Level0.prototype.enemyCollidesHero = function (enemyChase, hero) {
@@ -1892,6 +1902,11 @@ var GravityGuy;
                     this.endRound();
                 }
                 heroAlive = false;
+            }
+            else {
+                this.deathBurst(enemyChase);
+                this.sound_collision.play();
+                enemyChase.kill();
             }
         };
         Level0.prototype.heroShootsEnemy = function (bullet, enemy) {
@@ -1926,6 +1941,11 @@ var GravityGuy;
                     this.hero.numLives -= 1;
                     this.endRound();
                 }
+            }
+            else {
+                this.deathBurst(enemyBullet);
+                this.sound_collision.play();
+                enemyBullet.kill();
             }
         };
         Level0.prototype.dustBurst = function (entity) {
@@ -2131,6 +2151,7 @@ var GravityGuy;
          * the power up cooler */
         Level0.prototype.addInvincibility = function () {
             invincible = true;
+            this.sound_invincibility.play();
         };
         /* The key powerup grants access from the Noob Level to the original First Level,
          * since having to constantly test Noob level can be painstakingly easy ;) */
@@ -2226,12 +2247,12 @@ var GravityGuy;
             layer.resizeWorld();
             _super.prototype.setLayer.call(this, layer);
             // Powerups
-            this.life = new GravityGuy.PowerUp(this.game, this, this.hero, 'life', 2, 3000, 150, 0);
+            this.life = new GravityGuy.PowerUp(this.game, this, this.hero, 'life', 2, 9000, 150, 0);
             this.ammo = new GravityGuy.PowerUp(this.game, this, this.hero, 'ammo', 10, 2800, 150, 0);
             this.star = new GravityGuy.PowerUp(this.game, this, this.hero, 'star', 1000, 4000, 150, 0);
-            this.magic = new GravityGuy.PowerUp(this.game, this, this.hero, 'magic', 1000, 7500, 150, 0);
+            this.magic = new GravityGuy.PowerUp(this.game, this, this.hero, 'magic', 1000, 8000, 150, 0);
             //this.clock = new PowerUp(this.game, this, this.hero, 'clock', 1000, 9000, 150, 0);
-            this.diamond = new GravityGuy.PowerUp(this.game, this, this.hero, 'diamond', 2000, 4700, 150, 0);
+            this.diamond = new GravityGuy.PowerUp(this.game, this, this.hero, 'diamond', 2000, 6000, 150, 0);
             enemiesTotal = 18;
             _super.prototype.setEnemiesTotal.call(this, enemiesTotal);
             enemyLocationsX = [this.game.rnd.integerInRange(1215, 1840), this.game.rnd.integerInRange(3519, 3729), this.game.rnd.integerInRange(8369, 8752), this.game.rnd.integerInRange(11600, 12100), this.game.rnd.integerInRange(12101, 12600), this.game.rnd.integerInRange(12601, 13100), this.game.rnd.integerInRange(13101, 13965), this.game.rnd.integerInRange(15700, 16150), this.game.rnd.integerInRange(16151, 16560), this.game.rnd.integerInRange(13443, 13743), this.game.rnd.integerInRange(13959 + 400, 14259 + 400), this.game.rnd.integerInRange(13193, 13698), this.game.rnd.integerInRange(14727, 15027), this.game.rnd.integerInRange(15220, 15880), this.game.rnd.integerInRange(16000, 16320), this.game.rnd.integerInRange(16800, 16950), this.game.rnd.integerInRange(16600, 16800)];
@@ -2298,12 +2319,12 @@ var GravityGuy;
             layer.resizeWorld();
             _super.prototype.setLayer.call(this, layer);
             // Powerups
-            this.life = new GravityGuy.PowerUp(this.game, this, this.hero, 'life', 2, 3000, 150, 0);
+            this.life = new GravityGuy.PowerUp(this.game, this, this.hero, 'life', 2, 6000, 150, 0);
             this.ammo = new GravityGuy.PowerUp(this.game, this, this.hero, 'ammo', 10, 2800, 150, 0);
-            this.star = new GravityGuy.PowerUp(this.game, this, this.hero, 'star', 1000, 4000, 150, 0);
+            this.star = new GravityGuy.PowerUp(this.game, this, this.hero, 'star', 1000, 9000, 150, 0);
             this.magic = new GravityGuy.PowerUp(this.game, this, this.hero, 'magic', 1000, 7500, 150, 0);
             //this.clock = new PowerUp(this.game, this, this.hero, 'clock', 1000, 9000, 150, 0);
-            this.diamond = new GravityGuy.PowerUp(this.game, this, this.hero, 'diamond', 2000, 6000, 150, 0);
+            this.diamond = new GravityGuy.PowerUp(this.game, this, this.hero, 'diamond', 2000, 3000, 150, 0);
             enemiesTotal = 13; //23 originally
             _super.prototype.setEnemiesTotal.call(this, enemiesTotal);
             enemyLocationsX = [this.game.rnd.integerInRange(500, 1214), 8246, 8611, 9366, 9895, 10286, 12074, 12579, 13670, 13790, 5191, 5299, 5005,];
@@ -2367,13 +2388,13 @@ var GravityGuy;
             spacebar = this.game.add.sprite(840, 40, 'spacebar');
             rightarrow = this.game.add.sprite(11000, 50, 'rightarrow');
             danger = this.game.add.sprite(10030, 10, 'danger');
-            this.life = new GravityGuy.PowerUp(this.game, this, this.hero, 'life', 2, 3000, 150, 0);
-            this.ammo = new GravityGuy.PowerUp(this.game, this, this.hero, 'ammo', 10, 2800, 150, 0);
+            this.life = new GravityGuy.PowerUp(this.game, this, this.hero, 'life', 2, 9000, 150, 0);
+            this.ammo = new GravityGuy.PowerUp(this.game, this, this.hero, 'ammo', 10, 2500, 150, 0);
             this.star = new GravityGuy.PowerUp(this.game, this, this.hero, 'star', 1000, 4000, 150, 0);
             //this.key = new PowerUp(this.game, this, this.hero, 'key', 1000, 6500, 150, 0);
             this.magic = new GravityGuy.PowerUp(this.game, this, this.hero, 'magic', 1000, 7500, 150, 0);
-            this.clock = new GravityGuy.PowerUp(this.game, this, this.hero, 'clock', 1000, 9000, 150, 0);
-            this.diamond = new GravityGuy.PowerUp(this.game, this, this.hero, 'diamond', 2000, 4700, 150, 0);
+            //this.clock = new PowerUp(this.game, this, this.hero, 'clock', 1000, 9000, 150, 0);
+            this.diamond = new GravityGuy.PowerUp(this.game, this, this.hero, 'diamond', 2000, 55000, 150, 0);
             //LEVEL :D
             this.map = this.add.tilemap('noob_level');
             this.map.addTilesetImage('tileset_1');

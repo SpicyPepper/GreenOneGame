@@ -603,6 +603,11 @@
                     this.hero.numLives -= 1;
                     this.endRound();
                 }
+            } // When Samus is invincible, enemies die on collision
+            else {
+                this.deathBurst(enemy);
+                this.sound_collision.play();
+                enemy.kill();
             }
         }
 
@@ -698,8 +703,12 @@
                     this.hero.numLives -= 1;
                     this.endRound();
                 }
+            } // When hero is invincible
+            else {
+                this.deathBurst(enemy);
+                this.sound_collision.play();
+                enemy.kill();
             }
-            
         }
 
         /* This function is to kill hero when collide with megaman*/
@@ -718,6 +727,11 @@
                     this.endRound();
                 }
                 heroAlive = false;
+            } // When hero is invincible
+            else {
+                this.deathBurst(enemyChase);
+                this.sound_collision.play();
+                enemyChase.kill();
             }
         }
 
@@ -757,6 +771,11 @@
                     this.hero.numLives -= 1;
                     this.endRound();
                 }
+            } // When hero is invincible
+            else {
+                this.deathBurst(enemyBullet);
+                this.sound_collision.play();
+                enemyBullet.kill();
             }
         }
 
@@ -985,6 +1004,7 @@
          * the power up cooler */
         addInvincibility() {
             invincible = true;
+            this.sound_invincibility.play();
         }
 
         /* The key powerup grants access from the Noob Level to the original First Level, 

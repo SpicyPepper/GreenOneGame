@@ -27,12 +27,12 @@
             super.setLayer(layer);
 
             // Powerups
-            this.life = new PowerUp(this.game, this, this.hero, 'life', 2, 3000, 150, 0);
+            this.life = new PowerUp(this.game, this, this.hero, 'life', 2, 6000, 150, 0);
             this.ammo = new PowerUp(this.game, this, this.hero, 'ammo', 10, 2800, 150, 0);
-            this.star = new PowerUp(this.game, this, this.hero, 'star', 1000, 4000, 150, 0);
+            this.star = new PowerUp(this.game, this, this.hero, 'star', 1000, 9000, 150, 0);
             this.magic = new PowerUp(this.game, this, this.hero, 'magic', 1000, 7500, 150, 0);
             //this.clock = new PowerUp(this.game, this, this.hero, 'clock', 1000, 9000, 150, 0);
-            this.diamond = new PowerUp(this.game, this, this.hero, 'diamond', 2000, 6000, 150, 0);
+            this.diamond = new PowerUp(this.game, this, this.hero, 'diamond', 2000, 3000, 150, 0);
 
 
             enemiesTotal = 13; //23 originally
