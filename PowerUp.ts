@@ -19,7 +19,6 @@ module GravityGuy {
         constructor(game: Phaser.Game, level: Level0, hero: Hero, key: string, value: number, x: number, y: number, aState: number) {
 
             super(game, x, y, key, 0);
-    //      console.log(key + " PowerUp added");
             this.val = value;
             this.lvl = level;
             this.hero = hero;

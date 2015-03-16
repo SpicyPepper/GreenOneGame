@@ -85,11 +85,11 @@ module GravityGuy {
             this.load.spritesheet('danger', 'visuals/danger.png', 200, 177);
             this.load.spritesheet('ammo', 'visuals/ammo.png', 44, 30);
             this.load.spritesheet('life', 'visuals/life.png', 42, 42); // example
-            this.load.spritesheet('key', 'visuals/key.png', 40, 40);
+            this.load.spritesheet('key', 'visuals/key.png', 24, 42);
             this.load.spritesheet('clock', 'visuals/clock.png', 90, 90);
             this.load.spritesheet('magic', 'visuals/magic.png', 90, 90);
-            this.load.spritesheet('star', 'visuals/star.png', 40, 40);
-            this.load.spritesheet('diamond', 'visuals/diamond.png', 40, 40);
+            this.load.spritesheet('star', 'visuals/star.png', 24, 22);
+            this.load.spritesheet('diamond', 'visuals/diamond.png', 32, 28);
             this.load.spritesheet('enemyAir', 'visuals/enemy_air.png', 65, 72);
             this.load.spritesheet('title_text', 'visuals/title_text.png', 474, 117);
             this.load.spritesheet('hero', 'visuals/hero_sprite_full.png', 41, 49);
@@ -99,6 +99,7 @@ module GravityGuy {
             this.load.spritesheet('enemyCrawl', 'visuals/enemycrawl.png', 65, 62);
 
             this.game.load.start();
+            console.log("Hi! Thanks for playing our game and your interest in seeing if we have any bugs that show up in the console!! Good luck!");
         }
 
         loadStart() {

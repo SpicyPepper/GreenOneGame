@@ -1417,16 +1417,6 @@ var GravityGuy;
             this.physics.arcade.enableBody(this.hero);
             this.enemyChase = new GravityGuy.enemyChase(this.game, 0, 300, 1);
             //  this.enemyAir = new EnemyAir(this.game, this, this.hero, true, 3700, 200, 200);
-            /* GREAT use of object oriented programming right here. Marilyn helped create a dynamic
-            * object for creating new powerups. Please see PowerUp.ts for documentation.
-            *
-            * The actual placing should be done in the actual level, similar to Enemy.ts spawning.
-
-             please place this exact code lazily (with the parameters changed obvi) in the levels specifically. fuck groups. fuck all of that.
-            */
-            //this.life = new PowerUp(this.game, this, this.hero, 'life',  2, 3000, 150, 0);
-            //this.ammo = new PowerUp(this.game, this, this.hero, 'ammo', 10, 2800, 150, 0);
-            console.log("past");
             this.time.events.loop(25, this.timedUpdate, this);
             enemiesDead = 0;
             enemyBulletList = [];
@@ -2263,7 +2253,7 @@ var GravityGuy;
             // Powerups
             this.life = new GravityGuy.PowerUp(this.game, this, this.hero, 'life', 2, 9000, 150, 0);
             this.ammo = new GravityGuy.PowerUp(this.game, this, this.hero, 'ammo', 10, 2800, 150, 0);
-            this.star = new GravityGuy.PowerUp(this.game, this, this.hero, 'star', 1000, 4000, 150, 0);
+            this.star = new GravityGuy.PowerUp(this.game, this, this.hero, 'star', 10000, 4000, 150, 0);
             this.magic = new GravityGuy.PowerUp(this.game, this, this.hero, 'magic', 1000, 8000, 150, 0);
             //this.clock = new PowerUp(this.game, this, this.hero, 'clock', 1000, 9000, 150, 0);
             this.diamond = new GravityGuy.PowerUp(this.game, this, this.hero, 'diamond', 2000, 6000, 150, 0);
@@ -2506,7 +2496,6 @@ var GravityGuy;
         */
         function PowerUp(game, level, hero, key, value, x, y, aState) {
             _super.call(this, game, x, y, key, 0);
-            //      console.log(key + " PowerUp added");
             this.val = value;
             this.lvl = level;
             this.hero = hero;
@@ -2631,11 +2620,11 @@ var GravityGuy;
             this.load.spritesheet('danger', 'visuals/danger.png', 200, 177);
             this.load.spritesheet('ammo', 'visuals/ammo.png', 44, 30);
             this.load.spritesheet('life', 'visuals/life.png', 42, 42); // example
-            this.load.spritesheet('key', 'visuals/key.png', 40, 40);
+            this.load.spritesheet('key', 'visuals/key.png', 24, 42);
             this.load.spritesheet('clock', 'visuals/clock.png', 90, 90);
             this.load.spritesheet('magic', 'visuals/magic.png', 90, 90);
-            this.load.spritesheet('star', 'visuals/star.png', 40, 40);
-            this.load.spritesheet('diamond', 'visuals/diamond.png', 40, 40);
+            this.load.spritesheet('star', 'visuals/star.png', 24, 22);
+            this.load.spritesheet('diamond', 'visuals/diamond.png', 32, 28);
             this.load.spritesheet('enemyAir', 'visuals/enemy_air.png', 65, 72);
             this.load.spritesheet('title_text', 'visuals/title_text.png', 474, 117);
             this.load.spritesheet('hero', 'visuals/hero_sprite_full.png', 41, 49);
@@ -2644,6 +2633,7 @@ var GravityGuy;
             this.load.spritesheet('alien', 'visuals/alien.jpg', 100, 200);
             this.load.spritesheet('enemyCrawl', 'visuals/enemycrawl.png', 65, 62);
             this.game.load.start();
+            console.log("Hi! Thanks for playing our game and your interest in seeing if we have any bugs that show up in the console!! Good luck!");
         };
         Preloader.prototype.loadStart = function () {
             this.text.setText("Loading ...");

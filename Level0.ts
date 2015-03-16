@@ -156,18 +156,7 @@
             this.enemyChase = new enemyChase(this.game, 0, 300, 1);
 
           //  this.enemyAir = new EnemyAir(this.game, this, this.hero, true, 3700, 200, 200);
- 
-            /* GREAT use of object oriented programming right here. Marilyn helped create a dynamic
-            * object for creating new powerups. Please see PowerUp.ts for documentation.
-            *
-            * The actual placing should be done in the actual level, similar to Enemy.ts spawning.
 
-             please place this exact code lazily (with the parameters changed obvi) in the levels specifically. fuck groups. fuck all of that.
-            */
-
-            //this.life = new PowerUp(this.game, this, this.hero, 'life',  2, 3000, 150, 0);
-            //this.ammo = new PowerUp(this.game, this, this.hero, 'ammo', 10, 2800, 150, 0);
-            console.log("past");
             this.time.events.loop(25, this.timedUpdate, this);
 
             enemiesDead = 0;
