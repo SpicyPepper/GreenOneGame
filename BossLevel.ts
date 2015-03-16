@@ -62,6 +62,7 @@
     var akey;
     var dkey;
     var keyTimer = 200;
+    var stopScore;
 
     export class BossLevel extends Phaser.State {
 
@@ -514,7 +515,7 @@
 
         }
         timedUpdate() {
-            if (!game_over && !levelComplete && respawn) {
+            if (!game_over && !levelComplete && respawn && !stopScore) {
                 score += 10;
                 //this.background.tilePosition.x -= 4;
             }
@@ -672,6 +673,7 @@
             //console.log("SHOT");
             counterToKill++;
             if (counterToKill == 10) {
+                stopScore = true;
                 this.deathBurst(enemyChase);
                 enemyChase.kill();
                 counterToKill++;
