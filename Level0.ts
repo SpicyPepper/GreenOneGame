@@ -115,12 +115,16 @@
         enemy: GravityGuy.Enemy
         airEnemy: GravityGuy.EnemyAir
         enemyCrawl: GravityGuy.EnemyCrawl
-
+        keyboard_loadOne;
+        keyboard_loadTwo;
+        keyboard_loadThree;
+        keyboard_loadFour;
         //invincible;
 
         enemy_scale;
         enemycrawl_scale; 
-        airEnemy_scale;                                       
+        airEnemy_scale;  
+                                             
 
         init(aScore: number, aNumberLives: number) {
             score = aScore;
@@ -133,6 +137,15 @@
                    
             keyboard_grav = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
             keyboard_grav.onDown.add(this.attemptGravitySwap, this);
+            
+            this.keyboard_loadOne = this.input.keyboard.addKey(Phaser.Keyboard.ONE);
+            this.keyboard_loadOne.onDown.add(this.loadLevelNoob, this);
+            this.keyboard_loadTwo = this.input.keyboard.addKey(Phaser.Keyboard.TWO);
+            this.keyboard_loadTwo.onDown.add(this.loadLevelOne, this);
+            this.keyboard_loadThree = this.input.keyboard.addKey(Phaser.Keyboard.THREE);
+            this.keyboard_loadThree.onDown.add(this.loadLevelTwo, this);
+            this.keyboard_loadFour = this.input.keyboard.addKey(Phaser.Keyboard.FOUR);
+            this.keyboard_loadFour.onDown.add(this.loadBossLevel, this);
 
             this.enemy_scale = 0.8;
             this.enemycrawl_scale = 1.2;                                          
@@ -155,7 +168,7 @@
 
             this.enemyChase = new enemyChase(this.game, 0, 300, 1);
 
-          //  this.enemyAir = new EnemyAir(this.game, this, this.hero, true, 3700, 200, 200);
+          //  this.airEnemy = new EnemyAir(this.game, this, this.hero, true, 20, 17900, 200, 400);
 
             this.time.events.loop(25, this.timedUpdate, this);
 
@@ -1080,7 +1093,41 @@
         getNumLives() {
             return this.hero.numLives;
         }
+
+        loadLevelNoob() {
+            this.deleteReferences();
+            this.music.stop();
+            this.victoryMusic.stop();
+            this.game.state.start('LevelNoob', true, false, -10000, 6);
+            console.log("load tut level");
+        }
+        loadLevelOne() {
+            this.deleteReferences();
+            this.music.stop();
+            this.game.state.start('Level1', true, false, -10000, 6);
+            console.log("load level 1");
+        }
+
+        loadLevelTwo() {
+            this.deleteReferences();
+            this.music.stop();
+            this.game.state.start('Level2', true, false, -10000, 6);
+            console.log("load level 2");
+        }
+
+        loadBossLevel() {
+            this.deleteReferences();
+            this.music.stop();
+            this.game.state.start('BossLevel', true, false, -10000, 6);
+            console.log("load boss level");
+        }
+
+        loadVictory() {
+        }
+    
+        
     }
+    
 }
 
 

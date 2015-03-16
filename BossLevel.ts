@@ -89,6 +89,10 @@
         enemyChase: GravityGuy.enemyChase
         enemy: GravityGuy.Enemy
 
+        keyboard_loadOne;
+        keyboard_loadTwo;
+        keyboard_loadThree;
+        keyboard_loadFour;
 
         init(aScore, aNumberLives) {
             score = aScore;
@@ -98,9 +102,19 @@
         }
         create() {
 
+            this.keyboard_loadOne = this.input.keyboard.addKey(Phaser.Keyboard.ONE);
+            this.keyboard_loadOne.onDown.add(this.loadLevelNoob, this);
+            this.keyboard_loadTwo = this.input.keyboard.addKey(Phaser.Keyboard.TWO);
+            this.keyboard_loadTwo.onDown.add(this.loadLevelOne, this);
+            this.keyboard_loadThree = this.input.keyboard.addKey(Phaser.Keyboard.THREE);
+            this.keyboard_loadThree.onDown.add(this.loadLevelTwo, this);
+            this.keyboard_loadFour = this.input.keyboard.addKey(Phaser.Keyboard.FOUR);
+            this.keyboard_loadFour.onDown.add(this.loadBossLevel, this);
+
             /*Working on key binding*/
             keyboard_grav = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
             keyboard_grav.onDown.add(this.attemptGravitySwap, this);
+
 
             respawnButton = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
             moveRightButton = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
@@ -893,6 +907,34 @@
         }
         getFloorEnemy() {
             return floorEnemy;
+        }
+
+        loadLevelNoob() {
+         
+            this.music.stop();
+            this.victoryMusic.stop();
+            this.game.state.start('LevelNoob', true, false, -10000, 6);
+            console.log("load tut level");
+        }
+        loadLevelOne() {
+        
+            this.music.stop();
+            this.game.state.start('Level1', true, false, -10000, 6);
+            console.log("load level 1");
+        }
+
+        loadLevelTwo() {
+          
+            this.music.stop();
+            this.game.state.start('Level2', true, false, -10000, 6);
+            console.log("load level 2");
+        }
+
+        loadBossLevel() {
+           
+            this.music.stop();
+            this.game.state.start('BossLevel', true, false, -10000, 6);
+            console.log("load boss level");
         }
     }
 }  

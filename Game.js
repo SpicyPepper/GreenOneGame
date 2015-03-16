@@ -103,6 +103,14 @@ var GravityGuy;
             numLives = aNumberLives;
         };
         BossLevel.prototype.create = function () {
+            this.keyboard_loadOne = this.input.keyboard.addKey(Phaser.Keyboard.ONE);
+            this.keyboard_loadOne.onDown.add(this.loadLevelNoob, this);
+            this.keyboard_loadTwo = this.input.keyboard.addKey(Phaser.Keyboard.TWO);
+            this.keyboard_loadTwo.onDown.add(this.loadLevelOne, this);
+            this.keyboard_loadThree = this.input.keyboard.addKey(Phaser.Keyboard.THREE);
+            this.keyboard_loadThree.onDown.add(this.loadLevelTwo, this);
+            this.keyboard_loadFour = this.input.keyboard.addKey(Phaser.Keyboard.FOUR);
+            this.keyboard_loadFour.onDown.add(this.loadBossLevel, this);
             /*Working on key binding*/
             keyboard_grav = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
             keyboard_grav.onDown.add(this.attemptGravitySwap, this);
@@ -788,6 +796,27 @@ var GravityGuy;
         BossLevel.prototype.getFloorEnemy = function () {
             return floorEnemy;
         };
+        BossLevel.prototype.loadLevelNoob = function () {
+            this.music.stop();
+            this.victoryMusic.stop();
+            this.game.state.start('LevelNoob', true, false, -10000, 6);
+            console.log("load tut level");
+        };
+        BossLevel.prototype.loadLevelOne = function () {
+            this.music.stop();
+            this.game.state.start('Level1', true, false, -10000, 6);
+            console.log("load level 1");
+        };
+        BossLevel.prototype.loadLevelTwo = function () {
+            this.music.stop();
+            this.game.state.start('Level2', true, false, -10000, 6);
+            console.log("load level 2");
+        };
+        BossLevel.prototype.loadBossLevel = function () {
+            this.music.stop();
+            this.game.state.start('BossLevel', true, false, -10000, 6);
+            console.log("load boss level");
+        };
         return BossLevel;
     })(Phaser.State);
     GravityGuy.BossLevel = BossLevel;
@@ -1402,6 +1431,14 @@ var GravityGuy;
             this.game.time.advancedTiming = true;
             keyboard_grav = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
             keyboard_grav.onDown.add(this.attemptGravitySwap, this);
+            this.keyboard_loadOne = this.input.keyboard.addKey(Phaser.Keyboard.ONE);
+            this.keyboard_loadOne.onDown.add(this.loadLevelNoob, this);
+            this.keyboard_loadTwo = this.input.keyboard.addKey(Phaser.Keyboard.TWO);
+            this.keyboard_loadTwo.onDown.add(this.loadLevelOne, this);
+            this.keyboard_loadThree = this.input.keyboard.addKey(Phaser.Keyboard.THREE);
+            this.keyboard_loadThree.onDown.add(this.loadLevelTwo, this);
+            this.keyboard_loadFour = this.input.keyboard.addKey(Phaser.Keyboard.FOUR);
+            this.keyboard_loadFour.onDown.add(this.loadBossLevel, this);
             this.enemy_scale = 0.8;
             this.enemycrawl_scale = 1.2;
             respawnButton = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
@@ -1416,7 +1453,7 @@ var GravityGuy;
             hero_scale = this.hero.hero_scale;
             this.physics.arcade.enableBody(this.hero);
             this.enemyChase = new GravityGuy.enemyChase(this.game, 0, 300, 1);
-            //  this.enemyAir = new EnemyAir(this.game, this, this.hero, true, 3700, 200, 200);
+            //  this.airEnemy = new EnemyAir(this.game, this, this.hero, true, 20, 17900, 200, 400);
             this.time.events.loop(25, this.timedUpdate, this);
             enemiesDead = 0;
             enemyBulletList = [];
@@ -2211,6 +2248,33 @@ var GravityGuy;
         };
         Level0.prototype.getNumLives = function () {
             return this.hero.numLives;
+        };
+        Level0.prototype.loadLevelNoob = function () {
+            this.deleteReferences();
+            this.music.stop();
+            this.victoryMusic.stop();
+            this.game.state.start('LevelNoob', true, false, -10000, 6);
+            console.log("load tut level");
+        };
+        Level0.prototype.loadLevelOne = function () {
+            this.deleteReferences();
+            this.music.stop();
+            this.game.state.start('Level1', true, false, -10000, 6);
+            console.log("load level 1");
+        };
+        Level0.prototype.loadLevelTwo = function () {
+            this.deleteReferences();
+            this.music.stop();
+            this.game.state.start('Level2', true, false, -10000, 6);
+            console.log("load level 2");
+        };
+        Level0.prototype.loadBossLevel = function () {
+            this.deleteReferences();
+            this.music.stop();
+            this.game.state.start('BossLevel', true, false, -10000, 6);
+            console.log("load boss level");
+        };
+        Level0.prototype.loadVictory = function () {
         };
         return Level0;
     })(Phaser.State);
