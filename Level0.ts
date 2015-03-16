@@ -88,7 +88,7 @@
         sound_enemiesKilledSound: Phaser.Sound
         victoryMusic: Phaser.Sound
         sound_killEnemiesSound: Phaser.Sound
-        invincibilityMusic: Phaser.Sound
+        sound_invincibilityMusic: Phaser.Sound
         sound_invincibility: Phaser.Sound
         sound_shootingStar: Phaser.Sound
         sound_lifeSound: Phaser.Sound
@@ -224,7 +224,8 @@
             //      this.sound_hero_enemyChase_collision = this.add.audio('hero_enemyChase_collision');
             this.victoryMusic = this.add.audio('victory');
             this.sound_killEnemiesSound = this.add.audio('killEnemiesSound');
-            this.invincibilityMusic = this.add.audio('invincibilityMusic');
+            this.sound_invincibilityMusic = this.add.audio('invincibilityMusic');
+            this.sound_invincibilityMusic.volume = .99;
             this.sound_invincibility = this.add.audio('invincibility');
             this.sound_shootingStar = this.add.audio('shootingStar');
             this.sound_lifeSound = this.add.audio('lifeSound');
@@ -1014,8 +1015,8 @@
         addInvincibility() {
             invincible = true;
             this.sound_invincibility.play();
-            this.invincibilityMusic.play();
-            this.music.stop();
+            this.sound_invincibilityMusic.play();
+            //this.music.stop();
             
         }
 
