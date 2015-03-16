@@ -1936,7 +1936,7 @@ var GravityGuy;
             crawlEnemiesKilled++;
             totalEnemiesKilled++;
         };
-        Level0.prototype.enemyShootsHero = function (enemyBullet, hero) {
+        Level0.prototype.enemyShootsHero = function (hero, enemyBullet) {
             if (!invincible) {
                 this.deathBurst(hero);
                 this.sound_hero_death.play();

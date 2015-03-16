@@ -765,10 +765,9 @@
             totalEnemiesKilled++;
         }
 
-        enemyShootsHero(enemyBullet, hero) {
+        enemyShootsHero(hero, enemyBullet) {
 
             if (!invincible) {
-
                 this.deathBurst(hero);
                 this.sound_hero_death.play();
                 enemyBullet.kill();
@@ -786,6 +785,7 @@
                 this.sound_collision.play();
                 this.sound_killEnemiesSound.play();
                 enemyBullet.kill();
+                
             }
         }
 
