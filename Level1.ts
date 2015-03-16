@@ -43,7 +43,7 @@
             //this.clock = new PowerUp(this.game, this, this.hero, 'clock', 1000, 9000, 150, 0);
             this.diamond = new PowerUp(this.game, this, this.hero, 'diamond', 2000, 6000, 150, 0);
 
-            enemiesTotal = 18;
+            enemiesTotal = 17;
             super.setEnemiesTotal(enemiesTotal);
 
             enemyLocationsX = [this.game.rnd.integerInRange(1215, 1840), this.game.rnd.integerInRange(3519, 3729),

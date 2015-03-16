@@ -937,6 +937,9 @@
            
             //  this.game.debug.text(this.game.time.fps + '' || '--', 2, 60, "#00ff00");  
             // this.game.debug.spriteCoords(this.hero, 300, 300);
+            if (invincible) {
+                this.game.debug.text("Invincibility Active", 43, 500, 'red', '40px Lucida Sans Unicode');
+            }
             this.game.debug.text(scoreString + score, 10, 35, 'white', '34px Lucida Sans Unicode');
             this.game.debug.text('Bullets : ' + totalBullets, 345, 35, 'white', '34px Lucida Sans Unicode');
             this.game.debug.text('Lives : ' + this.hero.numLives, 640, 35, 'white', '34px Lucida Sans Unicode');
