@@ -85,7 +85,10 @@
         sound_hero_gravity: Phaser.Sound
         sound_hero_fire: Phaser.Sound
         sound_enemy_shoot: Phaser.Sound
+        sound_enemiesKilledSound: Phaser.Sound
         victoryMusic: Phaser.Sound
+        sound_killEnemiesSound: Phaser.Sound
+        invincibilityMusic: Phaser.Sound
         sound_invincibility: Phaser.Sound
         sound_shootingStar: Phaser.Sound
         sound_lifeSound: Phaser.Sound
@@ -220,6 +223,8 @@
             this.sound_enemy_shoot.volume = .50;
             //      this.sound_hero_enemyChase_collision = this.add.audio('hero_enemyChase_collision');
             this.victoryMusic = this.add.audio('victory');
+            this.sound_killEnemiesSound = this.add.audio('killEnemiesSound');
+            this.invincibilityMusic = this.add.audio('invincibilityMusic');
             this.sound_invincibility = this.add.audio('invincibility');
             this.sound_shootingStar = this.add.audio('shootingStar');
             this.sound_lifeSound = this.add.audio('lifeSound');
@@ -607,6 +612,7 @@
             else {
                 this.deathBurst(enemy);
                 this.sound_collision.play();
+                this.sound_killEnemiesSound.play();
                 enemy.kill();
             }
         }
@@ -707,6 +713,7 @@
             else {
                 this.deathBurst(enemy);
                 this.sound_collision.play();
+                this.sound_killEnemiesSound.play();
                 enemy.kill();
             }
         }
@@ -731,6 +738,7 @@
             else {
                 this.deathBurst(enemyChase);
                 this.sound_collision.play();
+                this.sound_killEnemiesSound.play();
                 enemyChase.kill();
             }
         }
@@ -775,6 +783,7 @@
             else {
                 this.deathBurst(enemyBullet);
                 this.sound_collision.play();
+                this.sound_killEnemiesSound.play();
                 enemyBullet.kill();
             }
         }
@@ -1005,6 +1014,9 @@
         addInvincibility() {
             invincible = true;
             this.sound_invincibility.play();
+            this.invincibilityMusic.play();
+            this.music.stop();
+            
         }
 
         /* The key powerup grants access from the Noob Level to the original First Level, 

@@ -38,6 +38,8 @@ module GravityGuy {
             this.load.audio('hero_jump', ['audio/hero_jump.mp3', 'audio/hero_jump.ogg']);
             this.load.audio('enemy_shoot', ['audio/enemy_shoot.mp3', 'audio/enemy_shoot.ogg']);
             this.load.audio('victory', ['audio/victory.mp3', 'audio/victory.ogg']);
+            this.load.audio('invincibilityMusic', ['audio/invincibilityMusic.mp3', 'audio/invincibilityMusic.mp3']);
+            this.load.audio('killEnemiesSound', ['audio/killEnemiesSound.mp3', 'audio/killEnemiesSound.mp3']);
             //   this.load.audio('hero_enemyChase_collision', ['audio/hero_enemyChase_collision.mp3', 'audio/hero_enemyChase_collision.mp3']);
             this.load.audio('footstep', ['audio/landing_sound.mp3', 'audio/landing_sound.ogg']);
             this.load.audio('game_won_song', ['audio/game_won_song.mp3', 'audio/game_won_song.ogg']);
